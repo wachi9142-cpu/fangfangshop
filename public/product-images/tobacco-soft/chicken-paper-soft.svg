@@ -1,0 +1,12 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" rx="72" fill="#fffbeb"/>
+  <circle cx="400" cy="390" r="276" fill="#fef3c7"/>
+  <rect x="238" y="144" width="324" height="520" rx="32" fill="#ffffff" stroke="#d97706" stroke-width="18"/>
+  <rect x="278" y="200" width="244" height="146" rx="22" fill="#fed7aa"/>
+  <path d="M372 308c-26-10-36-34-22-56 18-28 72-24 88 10 32 2 50 30 38 58-20 46-88 22-104-12Z" fill="#f59e0b"/>
+  <circle cx="392" cy="260" r="8" fill="#7c2d12"/>
+  <path d="M442 266l34-16-20 36" fill="#ea580c"/>
+  <text x="400" y="492" text-anchor="middle" font-size="42" font-weight="900" font-family="Arial, Tahoma, sans-serif" fill="#92400e">กระดาษอ่อน</text>
+  <text x="400" y="544" text-anchor="middle" font-size="42" font-weight="900" font-family="Arial, Tahoma, sans-serif" fill="#92400e">ตราไก่</text>
+  <text x="400" y="610" text-anchor="middle" font-size="34" font-weight="800" font-family="Arial, Tahoma, sans-serif" fill="#b45309">ซองละ 10 บาท</text>
+</svg>

@@ -1,0 +1,12 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" rx="72" fill="#f0fdf4"/>
+  <circle cx="400" cy="388" r="280" fill="#dcfce7"/>
+  <rect x="230" y="128" width="340" height="544" rx="44" fill="#15803d"/>
+  <rect x="264" y="172" width="272" height="206" rx="28" fill="#f0fdf4"/>
+  <rect x="264" y="414" width="272" height="166" rx="28" fill="#bbf7d0"/>
+  <path d="M340 502c42-64 108-64 150 0-52 34-98 34-150 0Z" fill="#22c55e"/>
+  <path d="M400 452v94" stroke="#f0fdf4" stroke-width="16" stroke-linecap="round"/>
+  <text x="400" y="272" text-anchor="middle" font-size="86" font-weight="900" font-family="Arial, Tahoma, sans-serif" fill="#14532d">SMS</text>
+  <text x="400" y="348" text-anchor="middle" font-size="58" font-weight="900" font-family="Arial, Tahoma, sans-serif" fill="#14532d">เขียว</text>
+  <text x="400" y="636" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial, Tahoma, sans-serif" fill="#f0fdf4">ซองละ 70 บาท</text>
+</svg>
