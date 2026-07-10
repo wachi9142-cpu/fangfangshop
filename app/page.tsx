@@ -70,6 +70,7 @@ type ProductFormValues = {
 
 const storageKey = "fangfangshop-products";
 const searchHistoryStorageKey = "fangfangshop-search-history";
+const shopImageStorageKey = "fangfangshop-shop-image";
 const smsRedImage = "/product-images/tobacco-soft/sms-red.svg";
 const smsGreenImage = "/product-images/tobacco-soft/sms-green.svg";
 const lmRedImage = "/product-images/tobacco-soft/lm-red.svg";
@@ -1003,8 +1004,9 @@ const defaultCategories = [
   "ขนมและของกินเล่น",
   "สินค้าใหม่แกะกล่อง",
   "เนื้อสัตว์",
+  "ไข่",
   "ผลไม้",
-  "แซนวิช",
+  "แซนวิช/ขนมปัง",
   "เลย์",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
   "นม/โยเกิร์ต",
@@ -1039,8 +1041,9 @@ const categoryEmoji: Record<string, string> = {
   ขนมและของกินเล่น: "🍿",
   สินค้าใหม่แกะกล่อง: "🆕",
   เนื้อสัตว์: "🥩",
+  ไข่: "🥚",
   ผลไม้: "🍎",
-  แซนวิช: "🥪",
+  "แซนวิช/ขนมปัง": "🥪",
   เลย์: "🥔",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "🥤",
   "นม/โยเกิร์ต": "🥛",
@@ -1055,7 +1058,7 @@ const categoryEmoji: Record<string, string> = {
   ลูกอมและหมากฝรั่ง: "🍬",
   เครื่องปรุง: "🧂",
   ขนมไทย: "🍡",
-  ของใช้ในบ้าน: "🧺",
+  ของใช้ในบ้าน: "🧼",
   เครื่องดื่มแอลกอฮอล์: "🍺",
   "บุหรี่/ยาสูบ": "🚬",
   อาหารกระป๋อง: "🥫",
@@ -1068,7 +1071,20 @@ const categoryEmoji: Record<string, string> = {
 
 const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
-  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-banner.png"
+  "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-banners/stationery-office-banner.png",
+  ยาสามัญประจำบ้าน: "/category-banners/medicine-banner.png",
+  สินค้าใหม่แกะกล่อง: "/category-banners/new-arrivals-banner.png",
+  ผลไม้: "/category-banners/fruit-banner.png",
+  เนื้อสัตว์: "/category-banners/meat-banner.png",
+  ไข่: "/category-banners/egg-banner.png",
+  "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
+  "แซนวิช/ขนมปัง": "/category-banners/sandwich-bread-banner.png",
+  น้ำสมุนไพรโฮมเมด: "/category-banners/herbal-drink-banner.png",
+  น้ำแข็ง: "/category-banners/ice-banner.png",
+  บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
+  อาหารแห้ง: "/category-banners/dry-food-banner.png",
+  ของใช้ในบ้าน: "/category-banners/household-banner.png",
+  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
@@ -1252,6 +1268,46 @@ function matchesCandySubcategory(product: Product, subcategory: CandySubcategory
   const searchableCandyText = `${product.name} ${product.shelf}`;
 
   return candySubcategoryKeywords[subcategory].some((keyword) => searchableCandyText.includes(keyword));
+}
+
+const meatCategory = "เนื้อสัตว์";
+const meatSubcategories = ["ทั้งหมด", "เนื้อหมู", "เนื้อไก่", "เนื้อปลา"] as const;
+type MeatSubcategory = (typeof meatSubcategories)[number];
+
+const meatSubcategoryEmoji: Record<MeatSubcategory, string> = {
+  ทั้งหมด: "🥩",
+  เนื้อหมู: "🐷",
+  เนื้อไก่: "🐔",
+  เนื้อปลา: "🐟"
+};
+
+function matchesMeatSubcategory(product: Product, subcategory: MeatSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  return product.name.includes(subcategory);
+}
+
+const eggCategory = "ไข่";
+const eggSubcategories = ["ทั้งหมด", "ไข่ไก่", "ไข่เป็ด", "ไข่นกกระทา", "ไข่เค็ม", "ไข่เยี่ยวม้า"] as const;
+type EggSubcategory = (typeof eggSubcategories)[number];
+
+const eggSubcategoryEmoji: Record<EggSubcategory, string> = {
+  ทั้งหมด: "🥚",
+  ไข่ไก่: "🐔",
+  ไข่เป็ด: "🦆",
+  ไข่นกกระทา: "🐣",
+  ไข่เค็ม: "🧂",
+  ไข่เยี่ยวม้า: "⚫"
+};
+
+function matchesEggSubcategory(product: Product, subcategory: EggSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  return product.name.includes(subcategory);
 }
 
 const productEmoji: Record<string, string> = {
@@ -1439,6 +1495,8 @@ const legacyCategoryMap: Record<string, string> = {
   ของเล่น: "แฟชั่น/ไลฟสไตล์",
   "แชมพู ครีมนวด": "สุขภาพ/ความงาม",
   แปรงสีฟัน: "สุขภาพ/ความงาม",
+  แซนวิช: "แซนวิช/ขนมปัง",
+  ขนมปัง: "แซนวิช/ขนมปัง",
   เครื่องดื่ม: "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
   หมวดเครื่องดื่ม: "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
   น้ำดื่ม: "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
@@ -1476,7 +1534,9 @@ const categorySearchAliases: Record<string, string[]> = {
   "สุขภาพ/ความงาม": ["beauty", "health"],
   ยาสามัญประจำบ้าน: ["medicine", "drug", "first aid"],
   น้ำแข็ง: ["ice"],
-  ขนมไทย: ["thai dessert", "dessert"]
+  ขนมไทย: ["thai dessert", "dessert"],
+  ไข่: ["egg", "eggs"],
+  "แซนวิช/ขนมปัง": ["sandwich", "bread", "bakery"]
 };
 
 const productSearchAliases: Record<string, string[]> = {
@@ -1957,11 +2017,16 @@ export default function Home() {
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
   const [instantNoodleSubcategory, setInstantNoodleSubcategory] = useState<InstantNoodleSubcategory>("ทั้งหมด");
   const [candySubcategory, setCandySubcategory] = useState<CandySubcategory>("ทั้งหมด");
+  const [meatSubcategory, setMeatSubcategory] = useState<MeatSubcategory>("ทั้งหมด");
+  const [eggSubcategory, setEggSubcategory] = useState<EggSubcategory>("ทั้งหมด");
   const [status, setStatus] = useState<"ทั้งหมด" | StockStatus>("ทั้งหมด");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [previewBanner, setPreviewBanner] = useState<{ imageUrl: string; title: string } | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [shopImageUrl, setShopImageUrl] = useState("");
   const categoryRowRef = useRef<HTMLDivElement>(null);
+  const subcategoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
 
   useEffect(() => {
@@ -1978,6 +2043,12 @@ export default function Home() {
     if (savedSearchHistory) {
       setSearchHistory(JSON.parse(savedSearchHistory) as string[]);
     }
+
+    const savedShopImage = window.localStorage.getItem(shopImageStorageKey);
+
+    if (savedShopImage) {
+      setShopImageUrl(savedShopImage);
+    }
   }, []);
 
   useEffect(() => {
@@ -1987,6 +2058,12 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem(searchHistoryStorageKey, JSON.stringify(searchHistory));
   }, [searchHistory]);
+
+  useEffect(() => {
+    if (shopImageUrl) {
+      window.localStorage.setItem(shopImageStorageKey, shopImageUrl);
+    }
+  }, [shopImageUrl]);
 
   const categories = useMemo(() => {
     return ["ทั้งหมด", ...defaultCategories];
@@ -2000,6 +2077,13 @@ export default function Home() {
     return { outOfStock, lowStock, totalStock };
   }, [products]);
   const categoryBannerImage = categoryBannerImages[category];
+  const openCategoryBannerPreview = () => {
+    if (!categoryBannerImage) {
+      return;
+    }
+
+    setPreviewBanner({ imageUrl: categoryBannerImage, title: getCategoryLabel(category) });
+  };
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeSearchText(query.trim());
@@ -2025,12 +2109,16 @@ export default function Home() {
                     ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
                     : category === candyCategory
                       ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
-                      : item.category === category);
+                      : category === meatCategory
+                        ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
+                        : category === eggCategory
+                          ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
+                          : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, petSubcategory, products, query, status]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -2054,6 +2142,23 @@ export default function Home() {
 
       reader.onload = () => {
         setImageUrl(String(reader.result));
+      };
+
+      reader.readAsDataURL(file);
+
+      return false;
+    }
+  };
+
+  const shopImageUploadProps: UploadProps = {
+    accept: "image/*",
+    maxCount: 1,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        setShopImageUrl(String(reader.result));
       };
 
       reader.readAsDataURL(file);
@@ -2112,6 +2217,14 @@ export default function Home() {
     if (nextCategory !== candyCategory) {
       setCandySubcategory("ทั้งหมด");
     }
+
+    if (nextCategory !== meatCategory) {
+      setMeatSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== eggCategory) {
+      setEggSubcategory("ทั้งหมด");
+    }
   }
 
   function scrollCategories(direction: "left" | "right") {
@@ -2121,13 +2234,68 @@ export default function Home() {
     });
   }
 
+  function scrollSubcategories(direction: "left" | "right") {
+    subcategoryRowRef.current?.scrollBy({
+      behavior: "smooth",
+      left: direction === "left" ? -260 : 260
+    });
+  }
+
+  function renderSubcategoryScroller<T extends string>(
+    label: string,
+    items: readonly T[],
+    activeItem: T,
+    setActiveItem: (item: T) => void,
+    emojiByItem: Record<T, string>
+  ) {
+    return (
+      <div className="subcategory-scroller">
+        <Button
+          aria-label="เลื่อนหัวข้อย่อยไปทางซ้าย"
+          className="category-scroll-button subcategory-scroll-button"
+          icon={<LeftOutlined />}
+          onClick={() => scrollSubcategories("left")}
+        />
+        <div className="subcategory-row" aria-label={label} ref={subcategoryRowRef}>
+          {items.map((item) => (
+            <Button
+              className="subcategory-chip"
+              key={item}
+              type={activeItem === item ? "primary" : "default"}
+              onClick={() => setActiveItem(item)}
+            >
+              {emojiByItem[item]} {item}
+            </Button>
+          ))}
+        </div>
+        <Button
+          aria-label="เลื่อนหัวข้อย่อยไปทางขวา"
+          className="category-scroll-button subcategory-scroll-button"
+          icon={<RightOutlined />}
+          onClick={() => scrollSubcategories("right")}
+        />
+      </div>
+    );
+  }
+
   return (
     <main className="shop-app">
       <div className="shop-shell">
         <header className="topbar">
           <div className="brand-row">
             <Space size={10}>
-              <div className="brand-mark">FF</div>
+              <Upload {...shopImageUploadProps}>
+                <button className={`brand-mark${shopImageUrl ? " has-image" : ""}`} type="button" aria-label="เลือกรูปร้าน">
+                  {shopImageUrl ? (
+                    <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
+                  ) : (
+                    "FF"
+                  )}
+                  <span className="brand-mark-edit" aria-hidden="true">
+                    <EditOutlined />
+                  </span>
+                </button>
+              </Upload>
               <div className="brand-text">
                 <h1>Fang Fang Shop</h1>
                 <p>สต็อกร้านของชำสำหรับเจ้าของร้านและพนักงาน</p>
@@ -2263,8 +2431,21 @@ export default function Home() {
 
         {category !== "ทั้งหมด" ? (
           <section
-            className={`category-banner${categoryBannerImage ? " has-image" : ""}`}
+            className={`category-banner${categoryBannerImage ? " has-image is-clickable" : ""}`}
             aria-label={`แบนเนอร์หมวด ${category}`}
+            role={categoryBannerImage ? "button" : undefined}
+            tabIndex={categoryBannerImage ? 0 : undefined}
+            onClick={categoryBannerImage ? openCategoryBannerPreview : undefined}
+            onKeyDown={
+              categoryBannerImage
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openCategoryBannerPreview();
+                    }
+                  }
+                : undefined
+            }
           >
             {categoryBannerImage ? (
               <NextImage className="category-banner-image" src={categoryBannerImage} alt="" fill sizes="100vw" priority />
@@ -2279,108 +2460,39 @@ export default function Home() {
         ) : null}
 
         {category === dryFoodCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยอาหารแห้ง">
-            {dryFoodSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={dryFoodSubcategory === item ? "primary" : "default"}
-                onClick={() => setDryFoodSubcategory(item)}
-              >
-                {dryFoodSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory, dryFoodSubcategoryEmoji)
         ) : null}
 
         {category === beverageCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยเครื่องดื่ม">
-            {beverageSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={beverageSubcategory === item ? "primary" : "default"}
-                onClick={() => setBeverageSubcategory(item)}
-              >
-                {beverageSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่ม", beverageSubcategories, beverageSubcategory, setBeverageSubcategory, beverageSubcategoryEmoji)
         ) : null}
 
         {category === alcoholCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยเครื่องดื่มแอลกอฮอล์">
-            {alcoholSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={alcoholSubcategory === item ? "primary" : "default"}
-                onClick={() => setAlcoholSubcategory(item)}
-              >
-                {alcoholSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่มแอลกอฮอล์", alcoholSubcategories, alcoholSubcategory, setAlcoholSubcategory, alcoholSubcategoryEmoji)
         ) : null}
 
         {category === petCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยสินค้าสัตว์เลี้ยง">
-            {petSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={petSubcategory === item ? "primary" : "default"}
-                onClick={() => setPetSubcategory(item)}
-              >
-                {petSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยสินค้าสัตว์เลี้ยง", petSubcategories, petSubcategory, setPetSubcategory, petSubcategoryEmoji)
         ) : null}
 
         {category === herbalDrinkCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยน้ำสมุนไพรโฮมเมด">
-            {herbalDrinkSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={herbalDrinkSubcategory === item ? "primary" : "default"}
-                onClick={() => setHerbalDrinkSubcategory(item)}
-              >
-                {herbalDrinkSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยน้ำสมุนไพรโฮมเมด", herbalDrinkSubcategories, herbalDrinkSubcategory, setHerbalDrinkSubcategory, herbalDrinkSubcategoryEmoji)
         ) : null}
 
         {category === instantNoodleCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป">
-            {instantNoodleSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={instantNoodleSubcategory === item ? "primary" : "default"}
-                onClick={() => setInstantNoodleSubcategory(item)}
-              >
-                {instantNoodleSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป", instantNoodleSubcategories, instantNoodleSubcategory, setInstantNoodleSubcategory, instantNoodleSubcategoryEmoji)
         ) : null}
 
         {category === candyCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยลูกอมและหมากฝรั่ง">
-            {candySubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={candySubcategory === item ? "primary" : "default"}
-                onClick={() => setCandySubcategory(item)}
-              >
-                {candySubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยลูกอมและหมากฝรั่ง", candySubcategories, candySubcategory, setCandySubcategory, candySubcategoryEmoji)
+        ) : null}
+
+        {category === meatCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยเนื้อสัตว์", meatSubcategories, meatSubcategory, setMeatSubcategory, meatSubcategoryEmoji)
+        ) : null}
+
+        {category === eggCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยไข่", eggSubcategories, eggSubcategory, setEggSubcategory, eggSubcategoryEmoji)
         ) : null}
 
         <section>
@@ -2517,6 +2629,29 @@ export default function Home() {
           หมวด
         </Button>
       </nav>
+
+      <Modal
+        centered
+        className="category-image-preview-modal"
+        footer={null}
+        open={Boolean(previewBanner)}
+        title={previewBanner?.title}
+        width="min(960px, calc(100vw - 28px))"
+        onCancel={() => setPreviewBanner(null)}
+      >
+        {previewBanner ? (
+          <div className="category-preview-frame">
+            <NextImage
+              alt={previewBanner.title}
+              className="category-preview-image"
+              height={500}
+              sizes="(max-width: 768px) 96vw, 960px"
+              src={previewBanner.imageUrl}
+              width={1600}
+            />
+          </div>
+        ) : null}
+      </Modal>
 
       <Modal
         centered
