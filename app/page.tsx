@@ -1385,6 +1385,36 @@ function statusStyle(status: StockStatus) {
   return { color: "success" as const, icon: <CheckCircleFilled /> };
 }
 
+// โลโก้แมวโทนครีมชานม ใช้เป็นสัญลักษณ์ร้าน
+function CatMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg
+      className="cat-mark"
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="#96653b" strokeWidth={2.4} strokeLinejoin="round" strokeLinecap="round">
+        <path d="M13 21 L17 7 L27 17 Z" fill="#fffdf8" />
+        <path d="M35 21 L31 7 L21 17 Z" fill="#fffdf8" />
+        <circle cx="24" cy="28" r="12" fill="#fffdf8" />
+      </g>
+      <g fill="#5b4636">
+        <circle cx="19.5" cy="27" r="1.9" />
+        <circle cx="28.5" cy="27" r="1.9" />
+        <path d="M24 33 l-2.6 -2.4 h5.2 Z" />
+      </g>
+      <g stroke="#96653b" strokeWidth={1.5} strokeLinecap="round">
+        <path d="M13.5 27 L7 25.5 M13.5 30 L7.5 31.5" />
+        <path d="M34.5 27 L41 25.5 M34.5 30 L40.5 31.5" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Home() {
   const { message } = App.useApp();
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -1703,7 +1733,7 @@ export default function Home() {
                     {shopImageUrl ? (
                       <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
                     ) : (
-                      "FF"
+                      <CatMark />
                     )}
                     <span className="brand-mark-edit" aria-hidden="true">
                       <EditOutlined />
@@ -1715,7 +1745,7 @@ export default function Home() {
                   {shopImageUrl ? (
                     <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
                   ) : (
-                    "FF"
+                    <CatMark />
                   )}
                 </div>
               )}
@@ -2212,6 +2242,9 @@ export default function Home() {
         }}
         onOk={() => loginForm.submit()}
       >
+        <div className="login-cat">
+          <CatMark size={56} />
+        </div>
         <p className="login-hint">เข้าสู่ระบบเพื่อจัดการสต็อกและเพิ่มสินค้า (สำหรับพนักงานเท่านั้น)</p>
         <Form form={loginForm} layout="vertical" onFinish={handleLogin}>
           <Form.Item label="ชื่อผู้ใช้" name="username" rules={[{ required: true, message: "กรอกชื่อผู้ใช้" }]}>

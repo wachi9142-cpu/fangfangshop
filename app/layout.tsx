@@ -30,11 +30,13 @@ export default function RootLayout({
             <ConfigProvider
             theme={{
               token: {
-                colorPrimary: "#0f766e",
-                colorInfo: "#2563eb",
-                colorSuccess: "#16a34a",
-                colorWarning: "#d97706",
-                colorError: "#dc2626",
+                colorPrimary: "#b07a4e",
+                colorInfo: "#b07a4e",
+                colorSuccess: "#6f8a4f",
+                colorWarning: "#c1832f",
+                colorError: "#c0492c",
+                colorBgLayout: "#f3e7d3",
+                colorTextBase: "#4a3a2b",
                 borderRadius: 8,
                 fontFamily:
                   'Arial, "Noto Sans Thai", "Tahoma", "Helvetica Neue", sans-serif'
@@ -48,7 +50,7 @@ export default function RootLayout({
                   borderRadiusLG: 8
                 },
                 Segmented: {
-                  itemSelectedBg: "#ffffff"
+                  itemSelectedBg: "#fffdf8"
                 }
               }
             }}
