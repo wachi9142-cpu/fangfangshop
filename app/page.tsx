@@ -2026,6 +2026,7 @@ export default function Home() {
   const [imageUrl, setImageUrl] = useState("");
   const [shopImageUrl, setShopImageUrl] = useState("");
   const categoryRowRef = useRef<HTMLDivElement>(null);
+  const subcategoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
 
   useEffect(() => {
@@ -2233,6 +2234,50 @@ export default function Home() {
     });
   }
 
+  function scrollSubcategories(direction: "left" | "right") {
+    subcategoryRowRef.current?.scrollBy({
+      behavior: "smooth",
+      left: direction === "left" ? -260 : 260
+    });
+  }
+
+  function renderSubcategoryScroller<T extends string>(
+    label: string,
+    items: readonly T[],
+    activeItem: T,
+    setActiveItem: (item: T) => void,
+    emojiByItem: Record<T, string>
+  ) {
+    return (
+      <div className="subcategory-scroller">
+        <Button
+          aria-label="เลื่อนหัวข้อย่อยไปทางซ้าย"
+          className="category-scroll-button subcategory-scroll-button"
+          icon={<LeftOutlined />}
+          onClick={() => scrollSubcategories("left")}
+        />
+        <div className="subcategory-row" aria-label={label} ref={subcategoryRowRef}>
+          {items.map((item) => (
+            <Button
+              className="subcategory-chip"
+              key={item}
+              type={activeItem === item ? "primary" : "default"}
+              onClick={() => setActiveItem(item)}
+            >
+              {emojiByItem[item]} {item}
+            </Button>
+          ))}
+        </div>
+        <Button
+          aria-label="เลื่อนหัวข้อย่อยไปทางขวา"
+          className="category-scroll-button subcategory-scroll-button"
+          icon={<RightOutlined />}
+          onClick={() => scrollSubcategories("right")}
+        />
+      </div>
+    );
+  }
+
   return (
     <main className="shop-app">
       <div className="shop-shell">
@@ -2415,138 +2460,39 @@ export default function Home() {
         ) : null}
 
         {category === dryFoodCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยอาหารแห้ง">
-            {dryFoodSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={dryFoodSubcategory === item ? "primary" : "default"}
-                onClick={() => setDryFoodSubcategory(item)}
-              >
-                {dryFoodSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory, dryFoodSubcategoryEmoji)
         ) : null}
 
         {category === beverageCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยเครื่องดื่ม">
-            {beverageSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={beverageSubcategory === item ? "primary" : "default"}
-                onClick={() => setBeverageSubcategory(item)}
-              >
-                {beverageSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่ม", beverageSubcategories, beverageSubcategory, setBeverageSubcategory, beverageSubcategoryEmoji)
         ) : null}
 
         {category === alcoholCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยเครื่องดื่มแอลกอฮอล์">
-            {alcoholSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={alcoholSubcategory === item ? "primary" : "default"}
-                onClick={() => setAlcoholSubcategory(item)}
-              >
-                {alcoholSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่มแอลกอฮอล์", alcoholSubcategories, alcoholSubcategory, setAlcoholSubcategory, alcoholSubcategoryEmoji)
         ) : null}
 
         {category === petCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยสินค้าสัตว์เลี้ยง">
-            {petSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={petSubcategory === item ? "primary" : "default"}
-                onClick={() => setPetSubcategory(item)}
-              >
-                {petSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยสินค้าสัตว์เลี้ยง", petSubcategories, petSubcategory, setPetSubcategory, petSubcategoryEmoji)
         ) : null}
 
         {category === herbalDrinkCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยน้ำสมุนไพรโฮมเมด">
-            {herbalDrinkSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={herbalDrinkSubcategory === item ? "primary" : "default"}
-                onClick={() => setHerbalDrinkSubcategory(item)}
-              >
-                {herbalDrinkSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยน้ำสมุนไพรโฮมเมด", herbalDrinkSubcategories, herbalDrinkSubcategory, setHerbalDrinkSubcategory, herbalDrinkSubcategoryEmoji)
         ) : null}
 
         {category === instantNoodleCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป">
-            {instantNoodleSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={instantNoodleSubcategory === item ? "primary" : "default"}
-                onClick={() => setInstantNoodleSubcategory(item)}
-              >
-                {instantNoodleSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป", instantNoodleSubcategories, instantNoodleSubcategory, setInstantNoodleSubcategory, instantNoodleSubcategoryEmoji)
         ) : null}
 
         {category === candyCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยลูกอมและหมากฝรั่ง">
-            {candySubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={candySubcategory === item ? "primary" : "default"}
-                onClick={() => setCandySubcategory(item)}
-              >
-                {candySubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยลูกอมและหมากฝรั่ง", candySubcategories, candySubcategory, setCandySubcategory, candySubcategoryEmoji)
         ) : null}
 
         {category === meatCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยเนื้อสัตว์">
-            {meatSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={meatSubcategory === item ? "primary" : "default"}
-                onClick={() => setMeatSubcategory(item)}
-              >
-                {meatSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยเนื้อสัตว์", meatSubcategories, meatSubcategory, setMeatSubcategory, meatSubcategoryEmoji)
         ) : null}
 
         {category === eggCategory ? (
-          <div className="subcategory-row" aria-label="หัวข้อย่อยไข่">
-            {eggSubcategories.map((item) => (
-              <Button
-                className="subcategory-chip"
-                key={item}
-                type={eggSubcategory === item ? "primary" : "default"}
-                onClick={() => setEggSubcategory(item)}
-              >
-                {eggSubcategoryEmoji[item]} {item}
-              </Button>
-            ))}
-          </div>
+          renderSubcategoryScroller("หัวข้อย่อยไข่", eggSubcategories, eggSubcategory, setEggSubcategory, eggSubcategoryEmoji)
         ) : null}
 
         <section>
