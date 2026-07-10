@@ -1079,6 +1079,7 @@ const categoryBannerImages: Record<string, string> = {
   ไข่: "/category-banners/egg-banner.png",
   "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
   "แซนวิช/ขนมปัง": "/category-banners/sandwich-bread-banner.png",
+  น้ำสมุนไพรโฮมเมด: "/category-banners/herbal-drink-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   อาหารแห้ง: "/category-banners/dry-food-banner.png",
