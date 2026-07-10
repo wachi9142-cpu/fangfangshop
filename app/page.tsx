@@ -1087,12 +1087,19 @@ const categoryBannerImages: Record<string, string> = {
   สินค้าสัตว์เลี้ยง: "/category-banners/pet-banner.png",
   "แฟชั่น/ไลฟสไตล์": "/category-banners/fashion-lifestyle-banner.png",
   ไอทีและมือถือ: "/category-banners/it-mobile-banner.png",
+  ของสด: "/category-banners/fresh-food-banner.png",
   ลูกอมและหมากฝรั่ง: "/category-banners/candy-gum-banner.png",
+  ขนมไทย: "/category-banners/thai-dessert-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   อาหารแห้ง: "/category-banners/dry-food-banner.png",
   ของใช้ในบ้าน: "/category-banners/household-banner.png",
   เครื่องดื่มแอลกอฮอล์: "/category-banners/alcohol-banner.png",
+  อาหารกระป๋อง: "/category-banners/canned-food-banner.png",
+  ช็อกโกแลต: "/category-banners/chocolate-banner.png",
+  "บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร": "/category-banners/packaging-banner.png",
+  ของแช่เย็น: "/category-banners/chilled-food-banner.png",
+  สินค้าขายยกแพ็ก: "/category-banners/wholesale-pack-banner.png",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
