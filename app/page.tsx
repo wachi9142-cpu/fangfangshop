@@ -1073,6 +1073,9 @@ const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
   "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-banners/stationery-office-banner.png",
   ยาสามัญประจำบ้าน: "/category-banners/medicine-banner.png",
+  "สุขภาพ/ความงาม": "/category-banners/health-beauty-banner.png",
+  "อาหารเสริม/เวชสำอาง": "/category-banners/supplement-cosmeceutical-banner.png",
+  ขนมและของกินเล่น: "/category-banners/snacks-banner.png",
   สินค้าใหม่แกะกล่อง: "/category-banners/new-arrivals-banner.png",
   ผลไม้: "/category-banners/fruit-banner.png",
   เนื้อสัตว์: "/category-banners/meat-banner.png",
@@ -1080,10 +1083,16 @@ const categoryBannerImages: Record<string, string> = {
   "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
   "แซนวิช/ขนมปัง": "/category-banners/sandwich-bread-banner.png",
   น้ำสมุนไพรโฮมเมด: "/category-banners/herbal-drink-banner.png",
+  เบเกอรี่: "/category-banners/bakery-banner.png",
+  สินค้าสัตว์เลี้ยง: "/category-banners/pet-banner.png",
+  "แฟชั่น/ไลฟสไตล์": "/category-banners/fashion-lifestyle-banner.png",
+  ไอทีและมือถือ: "/category-banners/it-mobile-banner.png",
+  ลูกอมและหมากฝรั่ง: "/category-banners/candy-gum-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   อาหารแห้ง: "/category-banners/dry-food-banner.png",
   ของใช้ในบ้าน: "/category-banners/household-banner.png",
+  เครื่องดื่มแอลกอฮอล์: "/category-banners/alcohol-banner.png",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
