@@ -1071,11 +1071,14 @@ const categoryEmoji: Record<string, string> = {
 
 const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
+  "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-banners/stationery-office-banner.png",
   ยาสามัญประจำบ้าน: "/category-banners/medicine-banner.png",
+  สินค้าใหม่แกะกล่อง: "/category-banners/new-arrivals-banner.png",
   ผลไม้: "/category-banners/fruit-banner.png",
   เนื้อสัตว์: "/category-banners/meat-banner.png",
   ไข่: "/category-banners/egg-banner.png",
   "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
+  "แซนวิช/ขนมปัง": "/category-banners/sandwich-bread-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   อาหารแห้ง: "/category-banners/dry-food-banner.png",
