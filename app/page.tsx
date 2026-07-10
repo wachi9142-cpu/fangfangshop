@@ -9,6 +9,9 @@ import {
   ExclamationCircleFilled,
   HomeOutlined,
   InboxOutlined,
+  LockOutlined,
+  LoginOutlined,
+  LogoutOutlined,
   PictureOutlined,
   PlusOutlined,
   ReloadOutlined,
@@ -17,6 +20,7 @@ import {
   ShoppingOutlined,
   TeamOutlined,
   UploadOutlined,
+  UserOutlined,
   WarningFilled
 } from "@ant-design/icons";
 import {
@@ -28,6 +32,7 @@ import {
   Image,
   Input,
   InputNumber,
+  message,
   Modal,
   Progress,
   Select,
@@ -49,7 +54,6 @@ type Product = {
   stock: number;
   minStock: number;
   unit: string;
-  shelf: string;
   price: number;
   updatedBy: string;
   sizeLabel?: string;
@@ -64,13 +68,22 @@ type ProductFormValues = {
   stock: number;
   minStock: number;
   unit: string;
-  shelf: string;
   updatedBy: string;
 };
 
 const storageKey = "fangfangshop-products";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
+const authStorageKey = "fangfangshop-auth";
+
+// ล็อกอินแบบง่ายสำหรับพนักงาน/เจ้าของร้าน (ยังไม่ใช้ backend)
+// ปรับหรือเพิ่มบัญชีได้ที่นี่ เมื่อทำ backend จริงให้ย้ายไปตรวจสอบฝั่งเซิร์ฟเวอร์
+type StaffAccount = { username: string; password: string; displayName: string };
+
+const staffAccounts: StaffAccount[] = [
+  { username: "owner", password: "1234", displayName: "เจ้าของร้าน" },
+  { username: "staff", password: "1234", displayName: "พนักงานขาย" }
+];
 const smsRedImage = "/product-images/tobacco-soft/sms-red.svg";
 const smsGreenImage = "/product-images/tobacco-soft/sms-green.svg";
 const lmRedImage = "/product-images/tobacco-soft/lm-red.svg";
@@ -389,7 +402,6 @@ const layProducts: Product[] = layFlavors.flatMap((flavor, index) => [
     stock: 18,
     minStock: 8,
     unit: "ซองเล็ก",
-    shelf: "ชั้น B2",
     price: 5,
     sizeLabel: "ซองเล็ก",
     updatedBy: "เจ้าของร้าน"
@@ -401,7 +413,6 @@ const layProducts: Product[] = layFlavors.flatMap((flavor, index) => [
     stock: 18,
     minStock: 8,
     unit: "ซองใหญ่",
-    shelf: "ชั้น B2",
     price: 20,
     sizeLabel: "ซองใหญ่",
     updatedBy: "เจ้าของร้าน",
@@ -417,7 +428,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -430,7 +440,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -443,7 +452,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -456,7 +464,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -469,7 +476,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -482,7 +488,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "150 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -495,7 +500,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "300 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -508,7 +512,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "80 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -521,7 +524,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "300 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -534,7 +536,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "300 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -547,7 +548,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "300 กรัม",
     updatedBy: "เจ้าของร้าน",
@@ -560,7 +560,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ขนมทานเล่นสุนัขแมว",
     price: 0,
     sizeLabel: "17 ชิ้น",
     updatedBy: "เจ้าของร้าน",
@@ -573,7 +572,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ซอง",
-    shelf: "ขนมแมวเลีย",
     price: 5,
     sizeLabel: "ซอง",
     updatedBy: "เจ้าของร้าน",
@@ -586,7 +584,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ซอง",
-    shelf: "ขนมแมวเลีย",
     price: 5,
     sizeLabel: "ซอง",
     updatedBy: "เจ้าของร้าน",
@@ -599,7 +596,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ซอง",
-    shelf: "ขนมแมวเลีย",
     price: 5,
     sizeLabel: "ซอง",
     updatedBy: "เจ้าของร้าน",
@@ -612,7 +608,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ซอง",
-    shelf: "ขนมแมวเลีย",
     price: 5,
     sizeLabel: "ซอง",
     updatedBy: "เจ้าของร้าน",
@@ -625,7 +620,6 @@ const petProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ซอง",
-    shelf: "ขนมแมวเลีย",
     price: 5,
     sizeLabel: "ซอง",
     updatedBy: "เจ้าของร้าน",
@@ -660,7 +654,6 @@ const herbalDrinkProducts: Product[] = [
   stock: 20,
   minStock: 5,
   unit: "ขวด",
-  shelf: "ตู้เย็นน้ำสมุนไพร",
   price: 10,
   sizeLabel: "220ml",
   updatedBy: "เจ้าของร้าน",
@@ -674,7 +667,6 @@ const thaiDessertProducts: Product[] = ["ขนมไทย ตะโก้ก�
   stock: 20,
   minStock: 5,
   unit: "กล่อง",
-  shelf: "ตู้ขนมไทย",
   price: 20,
   sizeLabel: "ขนาดเดียว",
   updatedBy: "เจ้าของร้าน",
@@ -759,7 +751,6 @@ const beverageProducts: Product[] = [
   category: "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
   stock: 20,
   minStock: 5,
-  shelf: "ตู้เครื่องดื่ม",
   updatedBy: "เจ้าของร้าน",
   imageUrl: productImageByName[product.name],
   ...product
@@ -774,7 +765,6 @@ const milkProducts: Product[] = [
   category: "นม/โยเกิร์ต",
   stock: 20,
   minStock: 5,
-  shelf: "ตู้เย็นนม",
   updatedBy: "เจ้าของร้าน",
   imageUrl: productImageByName[product.name],
   ...product
@@ -792,7 +782,6 @@ const bulkPackProducts: Product[] = [
   category: "สินค้าขายยกแพ็ก",
   stock: 20,
   minStock: 5,
-  shelf: "โซนยกแพ็ก",
   price: 0,
   updatedBy: "เจ้าของร้าน",
   imageUrl: productImageByName[product.name],
@@ -807,7 +796,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ชั้นเครื่องปรุง",
     price: 29,
     sizeLabel: "1 กิโลกรัม",
     updatedBy: "เจ้าของร้าน",
@@ -820,7 +808,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ถุง",
-    shelf: "ชั้นเครื่องปรุง",
     price: 0,
     sizeLabel: "1 กิโลกรัม",
     updatedBy: "เจ้าของร้าน",
@@ -833,7 +820,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ขวด",
-    shelf: "ชั้นเครื่องปรุง",
     price: 0,
     sizeLabel: "ขวดเล็ก",
     updatedBy: "เจ้าของร้าน",
@@ -846,7 +832,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ขวด",
-    shelf: "ชั้นเครื่องปรุง",
     price: 0,
     sizeLabel: "ขวดเล็ก ทรงสูง",
     updatedBy: "เจ้าของร้าน",
@@ -859,7 +844,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "ขวด",
-    shelf: "ชั้นเครื่องปรุง",
     price: 0,
     sizeLabel: "350ml",
     updatedBy: "เจ้าของร้าน",
@@ -872,7 +856,6 @@ const seasoningProducts: Product[] = [
     stock: 20,
     minStock: 5,
     unit: "กล่อง",
-    shelf: "ชั้นเครื่องปรุง",
     price: 0,
     sizeLabel: "500ml",
     updatedBy: "เจ้าของร้าน",
@@ -923,7 +906,6 @@ const alcoholProducts: Product[] = [
   stock: productStockByName[product.name] ?? 20,
   minStock: 5,
   unit: product.unit,
-  shelf: "ตู้แอลกอฮอล์",
   price: product.price,
   sizeLabel: product.sizeLabel,
   updatedBy: "เจ้าของร้าน",
@@ -936,24 +918,24 @@ const alcoholProductNames = new Set([
 ]);
 
 const initialProducts: Product[] = [
-  { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", shelf: "ชั้น A1", price: 5, updatedBy: "พนักงานขาย" },
-  { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", shelf: "ชั้น A2", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3, name: "ขนมห่อเล็ก รสบาร์บีคิว", category: "ขนมและของกินเล่น", stock: 0, minStock: 15, unit: "ห่อ", shelf: "ชั้น B1", price: 6, updatedBy: "พนักงานขาย" },
-  { id: 5, name: "เบียร์กระป๋อง", category: "เครื่องดื่มแอลกอฮอล์", stock: 18, minStock: 12, unit: "กระป๋อง", shelf: "ตู้เย็น 1", price: 42, updatedBy: "เจ้าของร้าน" },
-  { id: 7, name: "ยาดมสมุนไพร", category: "ยาสามัญประจำบ้าน", stock: 26, minStock: 10, unit: "ชิ้น", shelf: "ชั้น C1", price: 20, updatedBy: "เจ้าของร้าน" },
-  { id: 8, name: "ไฟแช็คคละสี", category: "ของใช้ในบ้าน", stock: 4, minStock: 8, unit: "ชิ้น", shelf: "เคาน์เตอร์", price: 10, updatedBy: "พนักงานขาย", imageUrl: "/product-images/lighter-mixed-color.png" },
-  { id: 9, name: "น้ำยาล้างจาน", category: "ของใช้ในบ้าน", stock: 16, minStock: 6, unit: "ขวด", shelf: "ชั้น D1", price: 35, updatedBy: "เจ้าของร้าน" },
-  { id: 10, name: "ตะหลิวสแตนเลส", category: "ของใช้ในบ้าน", stock: 5, minStock: 4, unit: "อัน", shelf: "ชั้น D2", price: 49, updatedBy: "พนักงานขาย" },
-  { id: 11, name: "น้ำปลาแท้", category: "อาหารแห้ง", stock: 13, minStock: 8, unit: "ขวด", shelf: "ชั้น E1", price: 28, updatedBy: "เจ้าของร้าน" },
-  { id: 12, name: "รถของเล่นจิ๋ว", category: "แฟชั่น/ไลฟสไตล์", stock: 11, minStock: 8, unit: "ชิ้น", shelf: "ชั้น F1", price: 15, updatedBy: "พนักงานขาย" },
-  { id: 13, name: "ปากกาลูกลื่น", category: "อุปกรณ์เครื่องเขียน/สำนักงาน", stock: 35, minStock: 12, unit: "ด้าม", shelf: "ชั้น F2", price: 7, updatedBy: "เจ้าของร้าน" },
-  { id: 14, name: "แชมพูถุงเติม", category: "สุขภาพ/ความงาม", stock: 6, minStock: 10, unit: "ถุง", shelf: "ชั้น G1", price: 39, updatedBy: "พนักงานขาย" },
-  { id: 15, name: "แปรงสีฟันนุ่ม", category: "สุขภาพ/ความงาม", stock: 23, minStock: 8, unit: "ด้าม", shelf: "ชั้น G2", price: 18, updatedBy: "เจ้าของร้าน" },
-  { id: 16, name: "SMS แดง", category: "บุหรี่/ยาสูบ", stock: 12, minStock: 5, unit: "ซอง", shelf: "เคาน์เตอร์", price: 70, updatedBy: "เจ้าของร้าน" },
-  { id: 17, name: "SMS เขียว", category: "บุหรี่/ยาสูบ", stock: 10, minStock: 5, unit: "ซอง", shelf: "เคาน์เตอร์", price: 70, updatedBy: "เจ้าของร้าน" },
-  { id: 18, name: "LM แดง", category: "บุหรี่/ยาสูบ", stock: 9, minStock: 5, unit: "ซอง", shelf: "เคาน์เตอร์", price: 72, updatedBy: "เจ้าของร้าน" },
-  { id: 19, name: "LM เขียว", category: "บุหรี่/ยาสูบ", stock: 8, minStock: 5, unit: "ซอง", shelf: "เคาน์เตอร์", price: 72, updatedBy: "เจ้าของร้าน" },
-  { id: 20, name: "ยาสูบตราสมอ", category: "บุหรี่/ยาสูบ", stock: 14, minStock: 6, unit: "ซอง", shelf: "เคาน์เตอร์", price: 25, updatedBy: "เจ้าของร้าน" },
+  { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
+  { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3, name: "ขนมห่อเล็ก รสบาร์บีคิว", category: "ขนมและของกินเล่น", stock: 0, minStock: 15, unit: "ห่อ", price: 6, updatedBy: "พนักงานขาย" },
+  { id: 5, name: "เบียร์กระป๋อง", category: "เครื่องดื่มแอลกอฮอล์", stock: 18, minStock: 12, unit: "กระป๋อง", price: 42, updatedBy: "เจ้าของร้าน" },
+  { id: 7, name: "ยาดมสมุนไพร", category: "ยาสามัญประจำบ้าน", stock: 26, minStock: 10, unit: "ชิ้น", price: 20, updatedBy: "เจ้าของร้าน" },
+  { id: 8, name: "ไฟแช็คคละสี", category: "ของใช้ในบ้าน", stock: 4, minStock: 8, unit: "ชิ้น", price: 10, updatedBy: "พนักงานขาย", imageUrl: "/product-images/lighter-mixed-color.png" },
+  { id: 9, name: "น้ำยาล้างจาน", category: "ของใช้ในบ้าน", stock: 16, minStock: 6, unit: "ขวด", price: 35, updatedBy: "เจ้าของร้าน" },
+  { id: 10, name: "ตะหลิวสแตนเลส", category: "ของใช้ในบ้าน", stock: 5, minStock: 4, unit: "อัน", price: 49, updatedBy: "พนักงานขาย" },
+  { id: 11, name: "น้ำปลาแท้", category: "อาหารแห้ง", stock: 13, minStock: 8, unit: "ขวด", price: 28, updatedBy: "เจ้าของร้าน" },
+  { id: 12, name: "รถของเล่นจิ๋ว", category: "แฟชั่น/ไลฟสไตล์", stock: 11, minStock: 8, unit: "ชิ้น", price: 15, updatedBy: "พนักงานขาย" },
+  { id: 13, name: "ปากกาลูกลื่น", category: "อุปกรณ์เครื่องเขียน/สำนักงาน", stock: 35, minStock: 12, unit: "ด้าม", price: 7, updatedBy: "เจ้าของร้าน" },
+  { id: 14, name: "แชมพูถุงเติม", category: "สุขภาพ/ความงาม", stock: 6, minStock: 10, unit: "ถุง", price: 39, updatedBy: "พนักงานขาย" },
+  { id: 15, name: "แปรงสีฟันนุ่ม", category: "สุขภาพ/ความงาม", stock: 23, minStock: 8, unit: "ด้าม", price: 18, updatedBy: "เจ้าของร้าน" },
+  { id: 16, name: "SMS แดง", category: "บุหรี่/ยาสูบ", stock: 12, minStock: 5, unit: "ซอง", price: 70, updatedBy: "เจ้าของร้าน" },
+  { id: 17, name: "SMS เขียว", category: "บุหรี่/ยาสูบ", stock: 10, minStock: 5, unit: "ซอง", price: 70, updatedBy: "เจ้าของร้าน" },
+  { id: 18, name: "LM แดง", category: "บุหรี่/ยาสูบ", stock: 9, minStock: 5, unit: "ซอง", price: 72, updatedBy: "เจ้าของร้าน" },
+  { id: 19, name: "LM เขียว", category: "บุหรี่/ยาสูบ", stock: 8, minStock: 5, unit: "ซอง", price: 72, updatedBy: "เจ้าของร้าน" },
+  { id: 20, name: "ยาสูบตราสมอ", category: "บุหรี่/ยาสูบ", stock: 14, minStock: 6, unit: "ซอง", price: 25, updatedBy: "เจ้าของร้าน" },
   {
     id: 21,
     name: "ยาสูบตราแมวเขียว",
@@ -961,7 +943,6 @@ const initialProducts: Product[] = [
     stock: 11,
     minStock: 6,
     unit: "ซอง",
-    shelf: "เคาน์เตอร์",
     price: 20,
     updatedBy: "เจ้าของร้าน",
     imageUrl: greenCatTobaccoImage
@@ -973,18 +954,17 @@ const initialProducts: Product[] = [
     stock: 20,
     minStock: 6,
     unit: "ซอง",
-    shelf: "เคาน์เตอร์",
     price: 2,
     updatedBy: "เจ้าของร้าน",
     imageUrl: anchorRollingPaperHardImage
   },
-  { id: 23, name: "กระดาษอ่อนตราไก่", category: "บุหรี่/ยาสูบ", stock: 20, minStock: 6, unit: "ซอง", shelf: "เคาน์เตอร์", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3000, name: "น้ำแข็งก้อน", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3001, name: "น้ำแข็งป่น", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3002, name: "น้ำแข็งก้อนเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3003, name: "น้ำแข็ง 5 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 5, sizeLabel: "ถุง 5 บาท", updatedBy: "เจ้าของร้าน" },
-  { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
-  { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", shelf: "ถังน้ำแข็ง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
+  { id: 23, name: "กระดาษอ่อนตราไก่", category: "บุหรี่/ยาสูบ", stock: 20, minStock: 6, unit: "ซอง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3000, name: "น้ำแข็งก้อน", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3001, name: "น้ำแข็งป่น", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3002, name: "น้ำแข็งก้อนเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3003, name: "น้ำแข็ง 5 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 5, sizeLabel: "ถุง 5 บาท", updatedBy: "เจ้าของร้าน" },
+  { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
+  { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
   ...seasoningProducts,
   ...beverageProducts,
   ...milkProducts,
@@ -1200,7 +1180,7 @@ function matchesPetSubcategory(product: Product, subcategory: PetSubcategory) {
     return true;
   }
 
-  const searchablePetText = `${product.name} ${product.shelf}`;
+  const searchablePetText = `${product.name}`;
 
   return petSubcategoryKeywords[subcategory].some((keyword) => searchablePetText.includes(keyword));
 }
@@ -1220,7 +1200,7 @@ function matchesHerbalDrinkSubcategory(product: Product, subcategory: HerbalDrin
     return true;
   }
 
-  const searchableHerbalText = `${product.name} ${product.sizeLabel ?? ""} ${product.shelf}`;
+  const searchableHerbalText = `${product.name} ${product.sizeLabel ?? ""}`;
   const isNoSugar = searchableHerbalText.includes("ไม่มีน้ำตาล");
 
   return subcategory === "น้ำสมุนไพรไม่มีน้ำตาล" ? isNoSugar : !isNoSugar;
@@ -1256,7 +1236,7 @@ function matchesInstantNoodleSubcategory(product: Product, subcategory: InstantN
     return true;
   }
 
-  const searchableNoodleText = `${product.name} ${product.shelf}`;
+  const searchableNoodleText = `${product.name}`;
 
   return instantNoodleSubcategoryKeywords[subcategory].some((keyword) => searchableNoodleText.includes(keyword));
 }
@@ -1281,7 +1261,7 @@ function matchesCandySubcategory(product: Product, subcategory: CandySubcategory
     return true;
   }
 
-  const searchableCandyText = `${product.name} ${product.shelf}`;
+  const searchableCandyText = `${product.name}`;
 
   return candySubcategoryKeywords[subcategory].some((keyword) => searchableCandyText.includes(keyword));
 }
@@ -1526,327 +1506,6 @@ const legacyCategoryMap: Record<string, string> = {
   "อื่น ๆ": "สินค้าใหม่แกะกล่อง"
 };
 
-const categorySearchAliases: Record<string, string[]> = {
-  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": [
-    "drink",
-    "beverage",
-    "water",
-    "soda",
-    "softdrink",
-    "soft drink",
-    "tea",
-    "coffee"
-  ],
-  "นม/โยเกิร์ต": ["milk", "yogurt", "dairy"],
-  น้ำสมุนไพรโฮมเมด: ["herbal drink", "juice", "homemade", "healthy drink"],
-  เครื่องดื่มแอลกอฮอล์: ["alcohol", "beer", "liquor", "whisky", "wine cooler"],
-  เลย์: ["lay", "lays", "chips", "potato chips", "snack"],
-  ขนมและของกินเล่น: ["snack", "candy", "jelly"],
-  ลูกอมและหมากฝรั่ง: ["candy", "gum"],
-  "บุหรี่/ยาสูบ": ["tobacco", "cigarette", "rolling paper"],
-  ของใช้ในบ้าน: ["home", "household", "lighter"],
-  สินค้าสัตว์เลี้ยง: ["pet", "cat", "dog"],
-  "อุปกรณ์เครื่องเขียน/สำนักงาน": ["stationery", "office"],
-  "สุขภาพ/ความงาม": ["beauty", "health"],
-  ยาสามัญประจำบ้าน: ["medicine", "drug", "first aid"],
-  น้ำแข็ง: ["ice"],
-  ขนมไทย: ["thai dessert", "dessert"],
-  ไข่: ["egg", "eggs"],
-  "แซนวิช/ขนมปัง": ["sandwich", "bread", "bakery"]
-};
-
-const productSearchAliases: Record<string, string[]> = {
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รส ออริจินอล": [
-    "okashi",
-    "pet snack",
-    "fish strip",
-    "original",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด": [
-    "okashi",
-    "pet snack",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รสปูอัด": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รส ออริจินอล": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "original",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รสปูอัด&ออริจินอล": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "original",
-    "mixed flavor",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด&ออริจินอล": [
-    "okashi",
-    "pet snack",
-    "large fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "original",
-    "mixed flavor",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 300 กรัม รสออริจินอล": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "original",
-    "300g",
-    "300 gram",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 80 กรัม รสออริจินอล": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "original",
-    "80g",
-    "80 gram",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นเล็ก 300 กรัม รสปูอัด": [
-    "okashi",
-    "pet snack",
-    "small fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "300g",
-    "300 gram",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 300 กรัม รสปูอัด": [
-    "okashi",
-    "pet snack",
-    "large fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "300g",
-    "300 gram",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 300 กรัม รสปูอัด&ออริจินอล": [
-    "okashi",
-    "pet snack",
-    "large fish strip",
-    "fish strip",
-    "crab stick",
-    "kani",
-    "original",
-    "mixed flavor",
-    "300g",
-    "300 gram",
-    "cat snack",
-    "dog snack"
-  ],
-  "Okashi โอคาชิ ไก่พันปลาเส้น 17 ชิ้น": [
-    "okashi",
-    "pet snack",
-    "chicken wrap",
-    "fish stick",
-    "chicken wrapped fish stick",
-    "17 pcs",
-    "17 pieces",
-    "cat snack",
-    "dog snack"
-  ],
-  สิงห์โซดาวันเวย์: ["singha soda", "singha soda one way", "soda water"],
-  "สิงห์ เลมอน โซดา": ["singha lemon soda", "singha soda lemon", "lemon soda", "can"],
-  "สิงห์ เลมอน&บ๊วย โซดา": ["singha lemon plum soda", "singha lime lemon soda", "lemon plum soda", "plum soda", "can"],
-  "สิงห์ แดงเลมอน โซดา": ["singha red lemon soda", "red lemon soda", "lemon soda", "can"],
-  "สิงห์ พิงค์เลมอน โซดา": ["singha pink lemon soda", "pink lemon soda", "strawberry lemon soda", "can"],
-  "สิงห์ ยูซุเลมอน โซดา": ["singha yuzu lemon soda", "yuzu lemon soda", "yuzu soda", "can"],
-  "สิงห์ เมล่อนเลมอน โซดา": ["singha melon lemon soda", "melon lemon soda", "melon soda", "can"],
-  "สิงห์ เลมอนครีม โซดา": ["singha lemon cream soda", "lemon cream soda", "cream soda", "can"],
-  สไปรท์: ["sprite", "sprite bottle", "lemon lime soda"],
-  "สไปรท์ กระป๋อง": ["sprite", "sprite can", "lemon lime soda", "กระป๋อง"],
-  "สไปรท์ สูตรไม่มีน้ำตาล (ฝาดำ)": ["sprite", "sprite zero", "sprite no sugar", "black cap", "lemon lime soda"],
-  "แฟนต้า น้ำแดง 15 บาท": ["fanta red", "red fanta", "fanta strawberry", "small bottle", "15 baht"],
-  "แฟนต้า น้ำแดง 10 บาท": ["fanta red", "red fanta", "fanta strawberry", "small bottle", "10 baht"],
-  "แฟนต้า น้ำแดงกระป๋อง": ["fanta red can", "red fanta can", "fanta strawberry can", "กระป๋อง"],
-  "แฟนต้า น้ำแดงขวดลิตร": ["fanta red large", "red fanta large", "fanta strawberry large", "liter bottle"],
-  เป๊บซี่กระป๋อง: ["pepsi", "pepsi can", "cola"],
-  "แฟนต้า น้ำเขียวขวดเล็ก": ["fanta green", "green fanta", "small bottle"],
-  "แฟนต้า น้ำเขียวขวดลิตร": ["fanta green large", "green fanta large", "liter bottle"],
-  "แฟนต้า น้ำเขียวกระป๋อง": ["fanta green can", "green fanta can", "กระป๋อง"],
-  "แฟนต้า น้ำส้มกระป๋อง": ["fanta orange can", "orange fanta can", "กระป๋อง"],
-  "แฟนต้า น้ำส้มขวดเล็ก": ["fanta orange", "orange fanta", "small bottle"],
-  น้ำทิพย์ขวดเล็ก: ["namthip", "nam thip", "water small"],
-  น้ำทิพย์ขวดใหญ่: ["namthip", "nam thip", "water large"],
-  น้ำวีด้าขวดเล็ก: ["vida", "vida water", "water small"],
-  น้ำวีด้าขวดใหญ่: ["vida", "vida water", "water large"],
-  น้ำคริสตัลขวดจิ๋ว: ["crystal", "crystal water", "mini water", "small water", "น้ำดื่มขวดจิ๋ว"],
-  "น้ำดื่มยันฮี ฝาเหลือง": ["yanhee", "yanhee yellow cap", "vitamin water"],
-  "น้ำดื่มยันฮี ฝาขาว": ["yanhee", "yanhee white cap", "water"],
-  น้ำดื่มคริสตัลขวดเล็ก: ["crystal", "crystal water", "water small"],
-  น้ำดื่มคริสตัลขวดใหญ่: ["crystal", "crystal water", "water large"],
-  น้ำวีด้าขวดเล็กยกแพ็ก: ["vida", "vida water", "water pack", "small bottle pack", "ยกแพ็ค"],
-  น้ำทิพย์ขวดเล็กยกแพ็ก: ["namthip", "nam thip", "water pack", "small bottle pack", "ยกแพ็ค"],
-  น้ำทิพย์ขวดใหญ่ยกแพ็ก: ["namthip", "nam thip", "water pack", "large bottle pack", "ยกแพ็ค"],
-  น้ำคริสตัลจิ๋วยกแพ็ก: ["crystal", "crystal water", "mini water pack", "ยกแพ็ค", "คริสตัส"],
-  น้ำคริสตัลขวดใหญ่ยกแพ็ก: ["crystal", "crystal water", "large bottle pack", "ยกแพ็ค", "คริสตัส"],
-  น้ำคริสตัลขวดเล็กยกแพ็ก: ["crystal", "crystal water", "small bottle pack", "ยกแพ็ค", "คริสตัส"],
-  น้ำจับใจ: ["jubjai", "jabjai", "herbal tea", "jub liang"],
-  "เย็นเย็น เก๊กฮวยน้ำผึ้ง": ["yen yen", "yenyen", "chrysanthemum", "honey tea"],
-  "เย็นเย็น จับเลี้ยง น้ำตาล 2%": ["yen yen", "yenyen", "jub liang", "2 percent sugar", "low sugar"],
-  "เย็นเย็น รสสละพุทราจีน": ["yen yen", "yenyen", "sala", "chinese date"],
-  "โออิชิ กรีนทีชาเขียว รสต้นตำรับ": ["oishi", "green tea", "original"],
-  "โออิชิ กรีนที รสแตงโม": ["oishi", "green tea", "watermelon", "water melon"],
-  "อิชิตัน กรีนที รสต้นตำรับ": ["ichitan", "green tea", "original"],
-  "อิชิตัน กรีนที รสน้ำผึ้งผสมมะนาว": ["ichitan", "green tea", "honey lemon", "honey lemon green tea"],
-  "อิชิตัน กรีนที รสจมูกข้าวญี่ปุ่น": ["ichitan", "green tea", "japanese rice", "rice tea"],
-  "เนสกาแฟกระป๋องเขียว เอสเปรสโซ โรสต์": ["nescafe", "nescafe espresso roast", "espresso roast", "green can", "coffee can"],
-  "เนสกาแฟซองเขียว Blend & Brew 3 in 1": ["nescafe", "blend brew", "3 in 1", "sachet", "green sachet", "instant coffee"],
-  "เนสกาแฟซองแดง Blend & Brew Rich Aroma": ["nescafe", "blend brew", "rich aroma", "red sachet", "sachet", "instant coffee"],
-  "กาแฟเบอร์ดี้แดง โรบัสต้า กระป๋อง": ["birdy", "birdy robusta", "robusta", "red birdy", "coffee can"],
-  "กาแฟเบอร์ดี้ ลาเต้ สูตรน้ำตาลน้อย กระป๋อง": ["birdy", "birdy latte", "latte", "less sugar", "coffee can"],
-  "กาแฟเบอร์ดี้ เอสเปรสโซ สูตรน้ำตาลน้อย กระป๋อง": ["birdy", "birdy espresso", "espresso", "less sugar", "coffee can"],
-  "กาแฟเบอร์ดี้ แบล็ค สูตรน้ำตาลน้อย กระป๋อง": ["birdy", "birdy black", "black less sugar", "less sugar", "coffee can"],
-  "กาแฟเบอร์ดี้ แบล็ค ซีโร่ กระป๋อง": ["birdy", "birdy black zero", "black zero", "zero sugar", "coffee can"],
-  "กาแฟเบอร์ดี้ โรบัสต้า ซีโร่ กระป๋อง": ["birdy", "birdy robusta zero", "robusta zero", "zero sugar", "coffee can"],
-  M150: ["m150", "energy drink"],
-  ลิโพ: ["lipo", "energy drink"],
-  กระทิงแดง: ["red bull", "krating daeng", "energy drink"],
-  คาราบาว: ["carabao", "energy drink"],
-  โสมเกาหลี: ["ginseng", "korean ginseng", "energy drink"],
-  "แบรนด์ซุปไก่ ขวดใหญ่": ["brands", "brand chicken essence", "chicken essence large"],
-  "แบรนด์ซุปไก่ ขวดเล็ก": ["brands", "brand chicken essence", "chicken essence small"],
-  "แบรนด์วีด้า ขวดใหญ่": ["brands vita", "brand vita", "vita large"],
-  "แบรนด์วีด้า ขวดเล็ก": ["brands vita", "brand vita", "vita small"],
-  สปอนเซอร์: ["sponsor", "energy drink"],
-  มิรินด้าขวดเล็ก: ["mirinda", "mirinda small", "orange soda"],
-  มิรินด้าขวดใหญ่: ["mirinda", "mirinda large", "orange soda"],
-  โค้กขวดใหญ่: ["coke", "coca cola", "cola large"],
-  โค้กขวดเล็ก: ["coke", "coca cola", "cola small"],
-  โค้กกระป๋อง: ["coke", "coca cola", "cola can"],
-  เป๊บซี่ขวดใหญ่: ["pepsi", "pepsi large", "cola"],
-  "เป๊บซี่ขวด 10 บาท": ["pepsi", "pepsi bottle", "cola"],
-  "เป๊บซี่ขวด 13 บาท": ["pepsi", "pepsi bottle", "cola"],
-  แฟนต้าสีส้มขวดใหญ่: ["fanta orange large", "orange fanta large"],
-  แฟนต้าสีเขียวไม่มีน้ำตาล: ["fanta green zero", "fanta green no sugar"],
-  แฟนต้าสีแดงไม่มีน้ำตาล: ["fanta red zero", "fanta red no sugar"],
-  แฟนต้าสีส้มไม่มีน้ำตาล: ["fanta orange zero", "fanta orange no sugar"],
-  เซเว่นอัป: ["7up", "seven up", "lemon lime soda"],
-  "โค้กไม่มีน้ำตาล ขวดใหญ่": ["coke zero", "coca cola zero", "coke no sugar large"],
-  นมไวตามินขวด: ["vitamilk", "soy milk"],
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสปลาหิมะ โซเดียมต่ำ": [
-    "tinkerbell",
-    "cat treat",
-    "cat snack",
-    "creamy cat treat",
-    "snow fish",
-    "low sodium"
-  ],
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสแซลมอน โซเดียมต่ำ": [
-    "tinkerbell",
-    "cat treat",
-    "cat snack",
-    "creamy cat treat",
-    "salmon",
-    "low sodium"
-  ],
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสทูน่า โซเดียมต่ำ": [
-    "tinkerbell",
-    "cat treat",
-    "cat snack",
-    "creamy cat treat",
-    "tuna",
-    "low sodium"
-  ],
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสเนื้อวัว โซเดียมต่ำ": [
-    "tinkerbell",
-    "cat treat",
-    "cat snack",
-    "creamy cat treat",
-    "beef",
-    "low sodium"
-  ],
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสเนื้อวัวผสมเนื้อแกะ โซเดียมต่ำ": [
-    "tinkerbell",
-    "cat treat",
-    "cat snack",
-    "creamy cat treat",
-    "beef",
-    "lamb",
-    "beef lamb",
-    "low sodium"
-  ],
-  สิงห์ขวด: ["singha", "singha bottle", "beer"],
-  สิงห์กระป๋องยาว: ["singha", "singha long can", "beer"],
-  สิงห์กระป๋องสั้น: ["singha", "singha short can", "beer"],
-  ลีโอขวด: ["leo", "leo bottle", "beer"],
-  ลีโอกระป๋องยาว: ["leo", "leo long can", "beer"],
-  ลีโอกระป๋องสั้น: ["leo", "leo short can", "beer"],
-  ช้างขวด: ["chang", "chang bottle", "beer"],
-  ช้างกระป๋องยาว: ["chang", "chang long can", "beer"],
-  ช้างกระป๋องสั้น: ["chang", "chang short can", "beer"],
-  "ฟลูมูน Full Moon": ["full moon", "fullmoon"],
-  "สปาย Red": ["spy red"],
-  "สปาย Classic": ["spy classic"],
-  "น้ำตาลทรายขาวมิตรผล 1 กิโลกรัม": ["mitr phol", "white sugar", "pure refined sugar", "sugar", "1kg"],
-  "น้ำตาลทรายแดงมิตรผล 1 กิโลกรัม": ["mitr phol", "brown sugar", "natural cane sugar", "sugar", "1kg"],
-  "น้ำปลาแท้ตราทิพรส ขวดเล็ก": ["tiparos", "fish sauce", "small bottle"],
-  "น้ำปลาแท้ตราทิพรส ขวดเล็ก ทรงสูง": ["tiparos", "fish sauce", "small bottle", "tall bottle"],
-  "น้ำปลาร้าแซ่บไมค์": ["zab mike", "plara mike", "fermented fish sauce", "pla ra"],
-  "กะทิชาวเกาะ 500ml": ["chaokoh", "coconut milk", "500ml"],
-  น้ำแตงโม: ["watermelon", "watermelon juice"],
-  น้ำเก๊กฮวย: ["chrysanthemum"],
-  น้ำเฉาก๊วย: ["grass jelly"],
-  น้ำตะไคร้ใบเตย: ["lemongrass pandan"],
-  น้ำทับทิม: ["pomegranate"],
-  น้ำกระเจี๊ยบ: ["roselle"],
-  น้ำข้าวโพด: ["corn"],
-  น้ำขิง: ["ginger"],
-  น้ำมะนาว: ["lime", "lemon"],
-  น้ำมะพร้าว: ["coconut"],
-  น้ำส้ม: ["orange"],
-  น้ำเสาวรส: ["passionfruit", "passion fruit"],
-  น้ำฟักทอง: ["pumpkin"],
-  น้ำองุ่น: ["grape"],
-  น้ำอัญชันมะนาว: ["butterfly pea lemonade"],
-  ไฟแช็คคละสี: ["lighter", "taiyo lighter"],
-  "SMS แดง": ["sms red"],
-  "SMS เขียว": ["sms green"],
-  "LM แดง": ["lm red"],
-  "LM เขียว": ["lm green"]
-};
 
 function normalizeCategory(category: string) {
   return legacyCategoryMap[category] ?? category;
@@ -1859,18 +1518,6 @@ function normalizeSearchText(value: string) {
     .replace(/[()\s/+·฿-]/g, "");
 }
 
-function getProductSearchText(product: Product) {
-  const aliases = [
-    ...(categorySearchAliases[product.category] ?? []),
-    ...(productSearchAliases[product.name] ?? [])
-  ];
-
-  if (product.category === "เลย์") {
-    aliases.push("lay", "lays", "chips", "potato chips");
-  }
-
-  return `${product.name} ${product.category} ${product.unit} ${product.shelf} ${product.sizeLabel ?? ""} ${aliases.join(" ")}`;
-}
 
 function hydrateProduct(product: Product): Product {
   const name = legacyProductNameMap[product.name] ?? product.name;
@@ -2041,6 +1688,10 @@ export default function Home() {
   const [previewBanner, setPreviewBanner] = useState<{ imageUrl: string; title: string } | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [shopImageUrl, setShopImageUrl] = useState("");
+  const [staffName, setStaffName] = useState<string | null>(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginForm] = Form.useForm<{ username: string; password: string }>();
+  const isStaff = staffName !== null;
   const categoryRowRef = useRef<HTMLDivElement>(null);
   const subcategoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
@@ -2064,6 +1715,12 @@ export default function Home() {
 
     if (savedShopImage) {
       setShopImageUrl(savedShopImage);
+    }
+
+    const savedStaffName = window.localStorage.getItem(authStorageKey);
+
+    if (savedStaffName) {
+      setStaffName(savedStaffName);
     }
   }, []);
 
@@ -2106,9 +1763,8 @@ export default function Home() {
 
     return products.filter((item) => {
       const itemStatus = getStatus(item);
-      const searchableText = getProductSearchText(item);
       const matchesText =
-        query.trim().length === 0 || normalizeSearchText(searchableText).includes(normalizedQuery);
+        query.trim().length === 0 || normalizeSearchText(item.name).includes(normalizedQuery);
       const matchesCategory =
         category === "ทั้งหมด" ||
         (category === dryFoodCategory
@@ -2187,6 +1843,30 @@ export default function Home() {
     setIsAddOpen(false);
     setImageUrl("");
     form.resetFields();
+  }
+
+  function handleLogin(values: { username: string; password: string }) {
+    const account = staffAccounts.find(
+      (item) => item.username === values.username.trim() && item.password === values.password
+    );
+
+    if (!account) {
+      message.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      return;
+    }
+
+    setStaffName(account.displayName);
+    window.localStorage.setItem(authStorageKey, account.displayName);
+    setIsLoginOpen(false);
+    loginForm.resetFields();
+    message.success(`เข้าสู่ระบบในชื่อ ${account.displayName}`);
+  }
+
+  function handleLogout() {
+    setStaffName(null);
+    window.localStorage.removeItem(authStorageKey);
+    setIsAddOpen(false);
+    message.success("ออกจากระบบแล้ว");
   }
 
   function addProduct(values: ProductFormValues) {
@@ -2300,76 +1980,99 @@ export default function Home() {
         <header className="topbar">
           <div className="brand-row">
             <Space size={10}>
-              <Upload {...shopImageUploadProps}>
-                <button className={`brand-mark${shopImageUrl ? " has-image" : ""}`} type="button" aria-label="เลือกรูปร้าน">
+              {isStaff ? (
+                <Upload {...shopImageUploadProps}>
+                  <button className={`brand-mark${shopImageUrl ? " has-image" : ""}`} type="button" aria-label="เลือกรูปร้าน">
+                    {shopImageUrl ? (
+                      <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
+                    ) : (
+                      "FF"
+                    )}
+                    <span className="brand-mark-edit" aria-hidden="true">
+                      <EditOutlined />
+                    </span>
+                  </button>
+                </Upload>
+              ) : (
+                <div className={`brand-mark${shopImageUrl ? " has-image" : ""}`} aria-hidden="true">
                   {shopImageUrl ? (
                     <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
                   ) : (
                     "FF"
                   )}
-                  <span className="brand-mark-edit" aria-hidden="true">
-                    <EditOutlined />
-                  </span>
-                </button>
-              </Upload>
+                </div>
+              )}
               <div className="brand-text">
                 <h1>Fang Fang Shop</h1>
-                <p>สต็อกร้านของชำสำหรับเจ้าของร้านและพนักงาน</p>
+                <p>{isStaff ? `พนักงาน: ${staffName}` : "รายการสินค้าและราคาในร้าน"}</p>
               </div>
             </Space>
 
             <div className="header-actions">
-              <Badge count={summary.lowStock + summary.outOfStock} size="small">
-                <Button aria-label="แจ้งเตือนสินค้า" icon={<BellOutlined />} />
-              </Badge>
-              <Button
-                aria-label="เพิ่มสินค้า"
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => setIsAddOpen(true)}
-              />
+              {isStaff ? (
+                <>
+                  <Badge count={summary.lowStock + summary.outOfStock} size="small">
+                    <Button aria-label="แจ้งเตือนสินค้า" icon={<BellOutlined />} />
+                  </Badge>
+                  <Button
+                    aria-label="เพิ่มสินค้า"
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setIsAddOpen(true)}
+                  />
+                  <Button aria-label="ออกจากระบบ" icon={<LogoutOutlined />} onClick={handleLogout} />
+                </>
+              ) : (
+                <Button type="primary" icon={<LoginOutlined />} onClick={() => setIsLoginOpen(true)}>
+                  พนักงานเข้าสู่ระบบ
+                </Button>
+              )}
             </div>
           </div>
         </header>
 
-        <section className="hero-band" aria-label="ภาพรวมร้าน">
-          <div className="stat-grid">
-            <div className="stat-box">
-              <span className="stat-number">{products.length}</span>
-              <span className="tiny-text">รายการสินค้า</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-number">{summary.totalStock}</span>
-              <span className="tiny-text">ชิ้นในร้าน</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-number">{summary.outOfStock}</span>
-              <span className="tiny-text">สินค้าหมด</span>
-            </div>
-          </div>
-        </section>
+        {isStaff ? (
+          <>
+            <section className="hero-band" aria-label="ภาพรวมร้าน">
+              <div className="stat-grid">
+                <div className="stat-box">
+                  <span className="stat-number">{products.length}</span>
+                  <span className="tiny-text">รายการสินค้า</span>
+                </div>
+                <div className="stat-box stat-box-warning">
+                  <span className="stat-number">{summary.lowStock}</span>
+                  <span className="tiny-text">ใกล้หมด</span>
+                </div>
+                <div className="stat-box stat-box-danger">
+                  <span className="stat-number">{summary.outOfStock}</span>
+                  <span className="tiny-text">สินค้าหมด</span>
+                </div>
+              </div>
+            </section>
 
-        <section className="quick-tools" aria-label="เครื่องมือร้าน">
-          <Button className="tool-button" icon={<PlusOutlined />} type="primary" onClick={() => setIsAddOpen(true)}>
-            รับของเข้า
-          </Button>
-          <Button className="tool-button" icon={<EditOutlined />}>
-            ปรับสต็อก
-          </Button>
-          <Button className="tool-button" icon={<ReloadOutlined />}>
-            เช็กรอบวัน
-          </Button>
-          <Button className="tool-button" icon={<TeamOutlined />}>
-            พนักงาน
-          </Button>
-        </section>
+            <section className="quick-tools" aria-label="เครื่องมือร้าน">
+              <Button className="tool-button" icon={<PlusOutlined />} type="primary" onClick={() => setIsAddOpen(true)}>
+                รับของเข้า
+              </Button>
+              <Button className="tool-button" icon={<EditOutlined />}>
+                ปรับสต็อก
+              </Button>
+              <Button className="tool-button" icon={<ReloadOutlined />}>
+                เช็กรอบวัน
+              </Button>
+              <Button className="tool-button" icon={<TeamOutlined />}>
+                พนักงาน
+              </Button>
+            </section>
+          </>
+        ) : null}
 
         <section className="filters" aria-label="ค้นหาและกรองสินค้า">
           <div className="search-box">
             <Input
               allowClear
               prefix={<SearchOutlined />}
-              placeholder="ค้นหาชื่อสินค้า หมวดหมู่ หรือชั้นวาง"
+              placeholder="ค้นหาชื่อสินค้า"
               size="large"
               value={query}
               onBlur={() => commitSearchHistory(query)}
@@ -2404,18 +2107,6 @@ export default function Home() {
               </div>
             ) : null}
           </div>
-          <Select
-            aria-label="กรองสถานะสินค้า"
-            value={status}
-            size="large"
-            onChange={setStatus}
-            options={[
-              { value: "ทั้งหมด", label: "ทุกสถานะ" },
-              { value: "พร้อมขาย", label: "พร้อมขาย" },
-              { value: "ใกล้หมด", label: "ใกล้หมด" },
-              { value: "หมด", label: "หมด" }
-            ]}
-          />
         </section>
 
         <div className="category-scroller">
@@ -2515,7 +2206,7 @@ export default function Home() {
           <div className="section-head">
             <div>
               <Typography.Title level={2}>สินค้าในร้าน</Typography.Title>
-              <p>ดูจำนวนของที่มี สถานะ และตำแหน่งวางขาย</p>
+              <p>ดูราคา จำนวนคงเหลือ และสถานะสินค้า</p>
             </div>
             <div className="status-tabs" role="group" aria-label="กรองสถานะสินค้าแบบเร็ว">
               {(["ทั้งหมด", "ใกล้หมด", "หมด"] as const).map((item) => (
@@ -2576,8 +2267,8 @@ export default function Home() {
                         </div>
                         <p className="product-detail">
                           {item.isPlaceholder
-                            ? `${getProductCategoryLabel(item)} · ${item.shelf}`
-                            : `${getProductCategoryLabel(item)} · ${item.sizeLabel ?? item.unit} · ${item.shelf}`}
+                            ? getProductCategoryLabel(item)
+                            : `${getProductCategoryLabel(item)} · ${item.sizeLabel ?? item.unit}`}
                         </p>
                       </div>
                     </div>
@@ -2608,17 +2299,23 @@ export default function Home() {
                     <div className="stock-summary">
                       <span className="stock-count">{item.isPlaceholder ? "-" : item.stock}</span>
                       <span className="tiny-text">
-                        {item.isPlaceholder ? "ค่อยเพิ่มสินค้าในหัวข้อนี้" : `${item.unit} · ขั้นต่ำ ${item.minStock}`}
+                        {item.isPlaceholder
+                          ? "ค่อยเพิ่มสินค้าในหัวข้อนี้"
+                          : isStaff
+                            ? `${item.unit} · ขั้นต่ำ ${item.minStock}`
+                            : item.unit}
                       </span>
                     </div>
-                    <Space>
-                      <Tag>{item.updatedBy}</Tag>
-                      <Button
-                        aria-label={`แก้ไข ${item.name}`}
-                        icon={<EditOutlined />}
-                        onClick={(event) => event.stopPropagation()}
-                      />
-                    </Space>
+                    {isStaff ? (
+                      <Space>
+                        <Tag>{item.updatedBy}</Tag>
+                        <Button
+                          aria-label={`แก้ไข ${item.name}`}
+                          icon={<EditOutlined />}
+                          onClick={(event) => event.stopPropagation()}
+                        />
+                      </Space>
+                    ) : null}
                   </div>
                 </Card>
               );
@@ -2638,9 +2335,11 @@ export default function Home() {
         <Button className="tab-button" icon={<ShoppingOutlined />}>
           สินค้า
         </Button>
-        <Button className="tab-button" icon={<InboxOutlined />}>
-          สต็อก
-        </Button>
+        {isStaff ? (
+          <Button className="tab-button" icon={<InboxOutlined />}>
+            สต็อก
+          </Button>
+        ) : null}
         <Button className="tab-button" icon={<AppstoreOutlined />}>
           หมวด
         </Button>
@@ -2702,8 +2401,7 @@ export default function Home() {
               {selectedProduct.price === 0 ? "รอราคา" : `฿${selectedProduct.price}`}
             </div>
             <p className="product-preview-detail">
-              {getProductCategoryLabel(selectedProduct)} · {selectedProduct.sizeLabel ?? selectedProduct.unit} ·{" "}
-              {selectedProduct.shelf}
+              {getProductCategoryLabel(selectedProduct)} · {selectedProduct.sizeLabel ?? selectedProduct.unit}
             </p>
           </div>
         ) : null}
@@ -2724,7 +2422,6 @@ export default function Home() {
           initialValues={{
             category: "อื่น ๆ",
             minStock: 5,
-            shelf: "ยังไม่ระบุ",
             stock: 1,
             unit: "ชิ้น",
             updatedBy: "เจ้าของร้าน"
@@ -2774,10 +2471,6 @@ export default function Home() {
             </Form.Item>
           </div>
 
-          <Form.Item label="ตำแหน่งวาง" name="shelf" rules={[{ required: true, message: "กรอกชั้นวาง" }]}>
-            <Input placeholder="เช่น ชั้น A1 / ตู้เย็น 1" />
-          </Form.Item>
-
           <Form.Item label="ผู้เพิ่มสินค้า" name="updatedBy">
             <Select
               options={[
@@ -2785,6 +2478,30 @@ export default function Home() {
                 { label: "พนักงานขาย", value: "พนักงานขาย" }
               ]}
             />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        centered
+        destroyOnHidden
+        okText="เข้าสู่ระบบ"
+        cancelText="ยกเลิก"
+        open={isLoginOpen}
+        title="พนักงานเข้าสู่ระบบ"
+        onCancel={() => {
+          setIsLoginOpen(false);
+          loginForm.resetFields();
+        }}
+        onOk={() => loginForm.submit()}
+      >
+        <p className="login-hint">เข้าสู่ระบบเพื่อจัดการสต็อกและเพิ่มสินค้า (สำหรับพนักงานเท่านั้น)</p>
+        <Form form={loginForm} layout="vertical" onFinish={handleLogin}>
+          <Form.Item label="ชื่อผู้ใช้" name="username" rules={[{ required: true, message: "กรอกชื่อผู้ใช้" }]}>
+            <Input prefix={<UserOutlined />} placeholder="ชื่อผู้ใช้" autoComplete="username" />
+          </Form.Item>
+          <Form.Item label="รหัสผ่าน" name="password" rules={[{ required: true, message: "กรอกรหัสผ่าน" }]}>
+            <Input.Password prefix={<LockOutlined />} placeholder="รหัสผ่าน" autoComplete="current-password" onPressEnter={() => loginForm.submit()} />
           </Form.Item>
         </Form>
       </Modal>
