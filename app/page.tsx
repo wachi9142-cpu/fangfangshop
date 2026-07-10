@@ -28,7 +28,6 @@ import {
   Badge,
   Button,
   Card,
-  Empty,
   Form,
   Image,
   Input,
@@ -1386,7 +1385,15 @@ function statusStyle(status: StockStatus) {
 }
 
 // โลโก้แมวโทนครีมชานม ใช้เป็นสัญลักษณ์ร้าน
-function CatMark({ size = 28 }: { size?: number }) {
+function CatMark({
+  size = 28,
+  fur = "#fdf4e4",
+  outline = "#6f4a2b"
+}: {
+  size?: number;
+  fur?: string;
+  outline?: string;
+}) {
   return (
     <svg
       className="cat-mark"
@@ -1397,20 +1404,52 @@ function CatMark({ size = 28 }: { size?: number }) {
       aria-hidden="true"
       focusable="false"
     >
-      <g stroke="#96653b" strokeWidth={2.4} strokeLinejoin="round" strokeLinecap="round">
-        <path d="M13 21 L17 7 L27 17 Z" fill="#fffdf8" />
-        <path d="M35 21 L31 7 L21 17 Z" fill="#fffdf8" />
-        <circle cx="24" cy="28" r="12" fill="#fffdf8" />
+      <g stroke={outline} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round">
+        <path d="M12 21 L14.5 7.5 L26 16 Z" fill={fur} />
+        <path d="M36 21 L33.5 7.5 L22 16 Z" fill={fur} />
+        <path
+          d="M24 14.5 C33 14.5 39.5 20.5 39.5 28.5 C39.5 36 32.5 41.5 24 41.5 C15.5 41.5 8.5 36 8.5 28.5 C8.5 20.5 15 14.5 24 14.5 Z"
+          fill={fur}
+        />
       </g>
-      <g fill="#5b4636">
-        <circle cx="19.5" cy="27" r="1.9" />
-        <circle cx="28.5" cy="27" r="1.9" />
-        <path d="M24 33 l-2.6 -2.4 h5.2 Z" />
+      {/* หูชั้นใน */}
+      <g fill={outline} opacity={0.22}>
+        <path d="M15.5 12.5 L17 18.5 L21 15.2 Z" />
+        <path d="M32.5 12.5 L31 18.5 L27 15.2 Z" />
       </g>
-      <g stroke="#96653b" strokeWidth={1.5} strokeLinecap="round">
-        <path d="M13.5 27 L7 25.5 M13.5 30 L7.5 31.5" />
-        <path d="M34.5 27 L41 25.5 M34.5 30 L40.5 31.5" />
+      {/* ตา จมูก */}
+      <g fill={outline}>
+        <circle cx="19" cy="28.5" r="2.1" />
+        <circle cx="29" cy="28.5" r="2.1" />
       </g>
+      <path d="M24 34 l-2.6 -2.4 h5.2 Z" fill="#d98c8c" stroke={outline} strokeWidth={1} strokeLinejoin="round" />
+      {/* หนวด */}
+      <g stroke={outline} strokeWidth={1.5} strokeLinecap="round">
+        <path d="M24 34.4 L24 36.4" />
+        <path d="M12 29 L4.5 27 M12 32.4 L5 34" />
+        <path d="M36 29 L43.5 27 M36 32.4 L43 34" />
+      </g>
+    </svg>
+  );
+}
+
+// รอยเท้าแมว ใช้เป็นลวดลายตกแต่ง
+function PawMark({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      className="paw-mark"
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <ellipse cx="16" cy="20.5" rx="7.5" ry="6.5" />
+      <ellipse cx="7.5" cy="12.5" rx="3" ry="4" />
+      <ellipse cx="13" cy="8" rx="3" ry="4.2" />
+      <ellipse cx="19" cy="8" rx="3" ry="4.2" />
+      <ellipse cx="24.5" cy="12.5" rx="3" ry="4" />
     </svg>
   );
 }
@@ -1952,7 +1991,12 @@ export default function Home() {
         <section>
           <div className="section-head">
             <div>
-              <Typography.Title level={2}>สินค้าในร้าน</Typography.Title>
+              <Typography.Title level={2}>
+                <span className="title-paw">
+                  <PawMark size={18} />
+                </span>
+                สินค้าในร้าน
+              </Typography.Title>
               <p>ดูราคา จำนวนคงเหลือ และสถานะสินค้า</p>
             </div>
             <div className="status-tabs" role="group" aria-label="กรองสถานะสินค้าแบบเร็ว">
@@ -2070,7 +2114,12 @@ export default function Home() {
           </div>
 
           {filteredProducts.length === 0 ? (
-            <Empty description="ไม่พบสินค้าที่ตรงกับตัวกรอง" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <div className="empty-cat">
+              <div className="empty-cat-face">
+                <CatMark size={64} />
+              </div>
+              <p>ไม่พบสินค้าที่ตรงกับตัวกรอง</p>
+            </div>
           ) : null}
         </section>
       </div>
