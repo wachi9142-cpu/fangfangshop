@@ -70,6 +70,7 @@ type ProductFormValues = {
 
 const storageKey = "fangfangshop-products";
 const searchHistoryStorageKey = "fangfangshop-search-history";
+const shopImageStorageKey = "fangfangshop-shop-image";
 const smsRedImage = "/product-images/tobacco-soft/sms-red.svg";
 const smsGreenImage = "/product-images/tobacco-soft/sms-green.svg";
 const lmRedImage = "/product-images/tobacco-soft/lm-red.svg";
@@ -1960,7 +1961,9 @@ export default function Home() {
   const [status, setStatus] = useState<"ทั้งหมด" | StockStatus>("ทั้งหมด");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [previewBanner, setPreviewBanner] = useState<{ imageUrl: string; title: string } | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [shopImageUrl, setShopImageUrl] = useState("");
   const categoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
 
@@ -1978,6 +1981,12 @@ export default function Home() {
     if (savedSearchHistory) {
       setSearchHistory(JSON.parse(savedSearchHistory) as string[]);
     }
+
+    const savedShopImage = window.localStorage.getItem(shopImageStorageKey);
+
+    if (savedShopImage) {
+      setShopImageUrl(savedShopImage);
+    }
   }, []);
 
   useEffect(() => {
@@ -1987,6 +1996,12 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem(searchHistoryStorageKey, JSON.stringify(searchHistory));
   }, [searchHistory]);
+
+  useEffect(() => {
+    if (shopImageUrl) {
+      window.localStorage.setItem(shopImageStorageKey, shopImageUrl);
+    }
+  }, [shopImageUrl]);
 
   const categories = useMemo(() => {
     return ["ทั้งหมด", ...defaultCategories];
@@ -2000,6 +2015,13 @@ export default function Home() {
     return { outOfStock, lowStock, totalStock };
   }, [products]);
   const categoryBannerImage = categoryBannerImages[category];
+  const openCategoryBannerPreview = () => {
+    if (!categoryBannerImage) {
+      return;
+    }
+
+    setPreviewBanner({ imageUrl: categoryBannerImage, title: getCategoryLabel(category) });
+  };
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeSearchText(query.trim());
@@ -2054,6 +2076,23 @@ export default function Home() {
 
       reader.onload = () => {
         setImageUrl(String(reader.result));
+      };
+
+      reader.readAsDataURL(file);
+
+      return false;
+    }
+  };
+
+  const shopImageUploadProps: UploadProps = {
+    accept: "image/*",
+    maxCount: 1,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        setShopImageUrl(String(reader.result));
       };
 
       reader.readAsDataURL(file);
@@ -2127,7 +2166,18 @@ export default function Home() {
         <header className="topbar">
           <div className="brand-row">
             <Space size={10}>
-              <div className="brand-mark">FF</div>
+              <Upload {...shopImageUploadProps}>
+                <button className={`brand-mark${shopImageUrl ? " has-image" : ""}`} type="button" aria-label="เลือกรูปร้าน">
+                  {shopImageUrl ? (
+                    <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
+                  ) : (
+                    "FF"
+                  )}
+                  <span className="brand-mark-edit" aria-hidden="true">
+                    <EditOutlined />
+                  </span>
+                </button>
+              </Upload>
               <div className="brand-text">
                 <h1>Fang Fang Shop</h1>
                 <p>สต็อกร้านของชำสำหรับเจ้าของร้านและพนักงาน</p>
@@ -2263,8 +2313,21 @@ export default function Home() {
 
         {category !== "ทั้งหมด" ? (
           <section
-            className={`category-banner${categoryBannerImage ? " has-image" : ""}`}
+            className={`category-banner${categoryBannerImage ? " has-image is-clickable" : ""}`}
             aria-label={`แบนเนอร์หมวด ${category}`}
+            role={categoryBannerImage ? "button" : undefined}
+            tabIndex={categoryBannerImage ? 0 : undefined}
+            onClick={categoryBannerImage ? openCategoryBannerPreview : undefined}
+            onKeyDown={
+              categoryBannerImage
+                ? (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openCategoryBannerPreview();
+                    }
+                  }
+                : undefined
+            }
           >
             {categoryBannerImage ? (
               <NextImage className="category-banner-image" src={categoryBannerImage} alt="" fill sizes="100vw" priority />
@@ -2517,6 +2580,29 @@ export default function Home() {
           หมวด
         </Button>
       </nav>
+
+      <Modal
+        centered
+        className="category-image-preview-modal"
+        footer={null}
+        open={Boolean(previewBanner)}
+        title={previewBanner?.title}
+        width="min(960px, calc(100vw - 28px))"
+        onCancel={() => setPreviewBanner(null)}
+      >
+        {previewBanner ? (
+          <div className="category-preview-frame">
+            <NextImage
+              alt={previewBanner.title}
+              className="category-preview-image"
+              height={500}
+              sizes="(max-width: 768px) 96vw, 960px"
+              src={previewBanner.imageUrl}
+              width={1600}
+            />
+          </div>
+        ) : null}
+      </Modal>
 
       <Modal
         centered

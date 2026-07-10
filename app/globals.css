@@ -94,8 +94,11 @@ select {
 }
 
 .brand-mark {
+  position: relative;
   width: 42px;
   height: 42px;
+  padding: 0;
+  border: 0;
   border-radius: 8px;
   display: grid;
   place-items: center;
@@ -103,6 +106,45 @@ select {
   background: linear-gradient(135deg, var(--teal), var(--blue));
   font-weight: 800;
   flex: 0 0 auto;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.brand-mark.has-image {
+  background: #f8fafc;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+}
+
+.brand-mark:focus-visible {
+  outline: 3px solid rgba(13, 132, 120, 0.35);
+  outline-offset: 3px;
+}
+
+.brand-mark-image {
+  object-fit: cover;
+}
+
+.brand-mark-edit {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.16);
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.brand-mark:hover .brand-mark-edit,
+.brand-mark:focus-visible .brand-mark-edit,
+.brand-mark.has-image .brand-mark-edit {
+  opacity: 1;
 }
 
 .brand-text h1 {
@@ -302,6 +344,15 @@ select {
   max-height: 260px;
   aspect-ratio: 16 / 5;
   background: #f8fafc;
+}
+
+.category-banner.is-clickable {
+  cursor: zoom-in;
+}
+
+.category-banner.is-clickable:focus-visible {
+  outline: 3px solid rgba(13, 132, 120, 0.35);
+  outline-offset: 3px;
 }
 
 .category-banner-image {
@@ -628,6 +679,31 @@ select {
 
 .product-preview-modal .ant-modal-content {
   overflow: hidden;
+}
+
+.category-image-preview-modal .ant-modal-content {
+  overflow: hidden;
+}
+
+.category-image-preview-modal .ant-modal-body {
+  padding: 12px;
+  background: #0f172a;
+}
+
+.category-preview-frame {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0f172a;
+}
+
+.category-preview-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(72vh, 620px);
+  object-fit: contain;
 }
 
 .bottom-tabs {
