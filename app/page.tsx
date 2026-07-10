@@ -1004,6 +1004,7 @@ const defaultCategories = [
   "ขนมและของกินเล่น",
   "สินค้าใหม่แกะกล่อง",
   "เนื้อสัตว์",
+  "ไข่",
   "ผลไม้",
   "แซนวิช",
   "เลย์",
@@ -1040,6 +1041,7 @@ const categoryEmoji: Record<string, string> = {
   ขนมและของกินเล่น: "🍿",
   สินค้าใหม่แกะกล่อง: "🆕",
   เนื้อสัตว์: "🥩",
+  ไข่: "🥚",
   ผลไม้: "🍎",
   แซนวิช: "🥪",
   เลย์: "🥔",
@@ -1069,7 +1071,11 @@ const categoryEmoji: Record<string, string> = {
 
 const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
-  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-banner.png"
+  ผลไม้: "/category-banners/fruit-banner.png",
+  เนื้อสัตว์: "/category-banners/meat-banner.png",
+  "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
+  น้ำแข็ง: "/category-banners/ice-banner.png",
+  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
@@ -1253,6 +1259,46 @@ function matchesCandySubcategory(product: Product, subcategory: CandySubcategory
   const searchableCandyText = `${product.name} ${product.shelf}`;
 
   return candySubcategoryKeywords[subcategory].some((keyword) => searchableCandyText.includes(keyword));
+}
+
+const meatCategory = "เนื้อสัตว์";
+const meatSubcategories = ["ทั้งหมด", "เนื้อหมู", "เนื้อไก่", "เนื้อปลา"] as const;
+type MeatSubcategory = (typeof meatSubcategories)[number];
+
+const meatSubcategoryEmoji: Record<MeatSubcategory, string> = {
+  ทั้งหมด: "🥩",
+  เนื้อหมู: "🐷",
+  เนื้อไก่: "🐔",
+  เนื้อปลา: "🐟"
+};
+
+function matchesMeatSubcategory(product: Product, subcategory: MeatSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  return product.name.includes(subcategory);
+}
+
+const eggCategory = "ไข่";
+const eggSubcategories = ["ทั้งหมด", "ไข่ไก่", "ไข่เป็ด", "ไข่นกกระทา", "ไข่เค็ม", "ไข่เยี่ยวม้า"] as const;
+type EggSubcategory = (typeof eggSubcategories)[number];
+
+const eggSubcategoryEmoji: Record<EggSubcategory, string> = {
+  ทั้งหมด: "🥚",
+  ไข่ไก่: "🐔",
+  ไข่เป็ด: "🦆",
+  ไข่นกกระทา: "🐣",
+  ไข่เค็ม: "🧂",
+  ไข่เยี่ยวม้า: "⚫"
+};
+
+function matchesEggSubcategory(product: Product, subcategory: EggSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  return product.name.includes(subcategory);
 }
 
 const productEmoji: Record<string, string> = {
@@ -1477,7 +1523,8 @@ const categorySearchAliases: Record<string, string[]> = {
   "สุขภาพ/ความงาม": ["beauty", "health"],
   ยาสามัญประจำบ้าน: ["medicine", "drug", "first aid"],
   น้ำแข็ง: ["ice"],
-  ขนมไทย: ["thai dessert", "dessert"]
+  ขนมไทย: ["thai dessert", "dessert"],
+  ไข่: ["egg", "eggs"]
 };
 
 const productSearchAliases: Record<string, string[]> = {
@@ -1958,6 +2005,8 @@ export default function Home() {
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
   const [instantNoodleSubcategory, setInstantNoodleSubcategory] = useState<InstantNoodleSubcategory>("ทั้งหมด");
   const [candySubcategory, setCandySubcategory] = useState<CandySubcategory>("ทั้งหมด");
+  const [meatSubcategory, setMeatSubcategory] = useState<MeatSubcategory>("ทั้งหมด");
+  const [eggSubcategory, setEggSubcategory] = useState<EggSubcategory>("ทั้งหมด");
   const [status, setStatus] = useState<"ทั้งหมด" | StockStatus>("ทั้งหมด");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -2047,12 +2096,16 @@ export default function Home() {
                     ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
                     : category === candyCategory
                       ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
-                      : item.category === category);
+                      : category === meatCategory
+                        ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
+                        : category === eggCategory
+                          ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
+                          : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, petSubcategory, products, query, status]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -2150,6 +2203,14 @@ export default function Home() {
 
     if (nextCategory !== candyCategory) {
       setCandySubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== meatCategory) {
+      setMeatSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== eggCategory) {
+      setEggSubcategory("ทั้งหมด");
     }
   }
 
@@ -2441,6 +2502,36 @@ export default function Home() {
                 onClick={() => setCandySubcategory(item)}
               >
                 {candySubcategoryEmoji[item]} {item}
+              </Button>
+            ))}
+          </div>
+        ) : null}
+
+        {category === meatCategory ? (
+          <div className="subcategory-row" aria-label="หัวข้อย่อยเนื้อสัตว์">
+            {meatSubcategories.map((item) => (
+              <Button
+                className="subcategory-chip"
+                key={item}
+                type={meatSubcategory === item ? "primary" : "default"}
+                onClick={() => setMeatSubcategory(item)}
+              >
+                {meatSubcategoryEmoji[item]} {item}
+              </Button>
+            ))}
+          </div>
+        ) : null}
+
+        {category === eggCategory ? (
+          <div className="subcategory-row" aria-label="หัวข้อย่อยไข่">
+            {eggSubcategories.map((item) => (
+              <Button
+                className="subcategory-chip"
+                key={item}
+                type={eggSubcategory === item ? "primary" : "default"}
+                onClick={() => setEggSubcategory(item)}
+              >
+                {eggSubcategoryEmoji[item]} {item}
               </Button>
             ))}
           </div>
