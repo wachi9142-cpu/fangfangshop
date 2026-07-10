@@ -24,6 +24,7 @@ import {
   WarningFilled
 } from "@ant-design/icons";
 import {
+  App,
   Badge,
   Button,
   Card,
@@ -32,7 +33,6 @@ import {
   Image,
   Input,
   InputNumber,
-  message,
   Modal,
   Progress,
   Select,
@@ -1653,6 +1653,7 @@ function statusStyle(status: StockStatus) {
 }
 
 export default function Home() {
+  const { message } = App.useApp();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [query, setQuery] = useState("");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
+import { App as AntdApp, ConfigProvider } from "antd";
+import AntdCompat from "./antd-compat";
 import "antd/dist/reset.css";
 import "./globals.css";
 
@@ -25,7 +26,8 @@ export default function RootLayout({
     <html lang="th">
       <body>
         <AntdRegistry>
-          <ConfigProvider
+          <AntdCompat>
+            <ConfigProvider
             theme={{
               token: {
                 colorPrimary: "#0f766e",
@@ -51,8 +53,9 @@ export default function RootLayout({
               }
             }}
           >
-            {children}
-          </ConfigProvider>
+              <AntdApp>{children}</AntdApp>
+            </ConfigProvider>
+          </AntdCompat>
         </AntdRegistry>
       </body>
     </html>
