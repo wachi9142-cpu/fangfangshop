@@ -1058,7 +1058,7 @@ const categoryEmoji: Record<string, string> = {
   ลูกอมและหมากฝรั่ง: "🍬",
   เครื่องปรุง: "🧂",
   ขนมไทย: "🍡",
-  ของใช้ในบ้าน: "🧺",
+  ของใช้ในบ้าน: "🧼",
   เครื่องดื่มแอลกอฮอล์: "🍺",
   "บุหรี่/ยาสูบ": "🚬",
   อาหารกระป๋อง: "🥫",
@@ -1071,12 +1071,14 @@ const categoryEmoji: Record<string, string> = {
 
 const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
+  ยาสามัญประจำบ้าน: "/category-banners/medicine-banner.png",
   ผลไม้: "/category-banners/fruit-banner.png",
   เนื้อสัตว์: "/category-banners/meat-banner.png",
   ไข่: "/category-banners/egg-banner.png",
   "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
+  อาหารแห้ง: "/category-banners/dry-food-banner.png",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
