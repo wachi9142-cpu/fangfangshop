@@ -194,11 +194,35 @@ select {
   border: 1px solid rgba(217, 226, 236, 0.9);
 }
 
+.stat-box-warning {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.stat-box-danger {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.stat-box-warning .stat-number {
+  color: #b45309;
+}
+
+.stat-box-danger .stat-number {
+  color: #b91c1c;
+}
+
 .stat-number {
   display: block;
   font-size: 24px;
   line-height: 1.1;
   font-weight: 800;
+}
+
+.login-hint {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .tiny-text {
@@ -293,8 +317,9 @@ select {
 
 .category-row {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
   grid-auto-columns: max-content;
   overflow-x: auto;
   padding-bottom: 2px;
@@ -840,7 +865,7 @@ select {
   }
 
   .filters {
-    grid-template-columns: minmax(0, 1fr) 180px;
+    grid-template-columns: 1fr;
     align-items: center;
   }
 
