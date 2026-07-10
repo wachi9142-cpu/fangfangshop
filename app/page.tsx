@@ -1073,8 +1073,10 @@ const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
   ผลไม้: "/category-banners/fruit-banner.png",
   เนื้อสัตว์: "/category-banners/meat-banner.png",
+  ไข่: "/category-banners/egg-banner.png",
   "นม/โยเกิร์ต": "/category-banners/milk-yogurt-banner.png",
   น้ำแข็ง: "/category-banners/ice-banner.png",
+  บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
