@@ -1078,6 +1078,27 @@ function matchesBeverageSubcategory(product: Product, subcategory: BeverageSubca
   return beverageSubcategoryKeywords[subcategory].some((keyword) => product.name.includes(keyword));
 }
 
+const supplementCategory = "อาหารเสริม/เวชสำอาง";
+const supplementSubcategories = ["ทั้งหมด", "วิตามิน/เกลือแร่", "กลูต้า", "ผิว/คอลลาเจน", "ไฟเบอร์/คุมน้ำหนัก"] as const;
+type SupplementSubcategory = (typeof supplementSubcategories)[number];
+
+const supplementSubcategoryKeywords: Record<Exclude<SupplementSubcategory, "ทั้งหมด">, string[]> = {
+  "วิตามิน/เกลือแร่": ["วิตามิน", "Vitamin", "Vit", "ซิงก์", "Zinc", "เกลือแร่", "Fish Oil", "น้ำมันปลา", "แร่ธาตุ"],
+  กลูต้า: ["กลูต้า", "Gluta", "Glutathione"],
+  "ผิว/คอลลาเจน": ["ผิว", "คอลลาเจน", "Collagen", "Peptide", "เซรั่ม", "ครีม", "เวชสำอาง", "กันแดด", "สกินแคร์"],
+  "ไฟเบอร์/คุมน้ำหนัก": ["ไฟเบอร์", "Fiber", "คุมน้ำหนัก", "ลดน้ำหนัก", "ควบคุมน้ำหนัก", "ดีท็อกซ์", "Detox"]
+};
+
+function matchesSupplementSubcategory(product: Product, subcategory: SupplementSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableSupplementText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return supplementSubcategoryKeywords[subcategory].some((keyword) => searchableSupplementText.includes(keyword));
+}
+
 const alcoholCategory = "เครื่องดื่มแอลกอฮอล์";
 const alcoholSubcategories = ["ทั้งหมด", "กระป๋อง", "ขวด", "แบน", "กลม"] as const;
 type AlcoholSubcategory = (typeof alcoholSubcategories)[number];
