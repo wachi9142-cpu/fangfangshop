@@ -73,6 +73,7 @@ type ProductFormValues = {
 const storageKey = "fangfangshop-products";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
+const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
 const authStorageKey = "fangfangshop-auth";
 
 // ล็อกอินแบบง่ายสำหรับพนักงาน/เจ้าของร้าน (ยังไม่ใช้ backend)
@@ -1546,7 +1547,7 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [previewBanner, setPreviewBanner] = useState<{ imageUrl: string; title: string } | null>(null);
   const [imageUrl, setImageUrl] = useState("");
-  const [shopImageUrl, setShopImageUrl] = useState("");
+  const [shopImageUrl, setShopImageUrl] = useState(defaultShopImageUrl);
   const [staffName, setStaffName] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginForm] = Form.useForm<{ username: string; password: string }>();
