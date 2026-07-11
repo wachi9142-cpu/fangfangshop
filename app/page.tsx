@@ -928,8 +928,8 @@ const initialProducts: Product[] = [
   { id: 11, name: "น้ำปลาแท้", category: "อาหารแห้ง", stock: 13, minStock: 8, unit: "ขวด", price: 28, updatedBy: "เจ้าของร้าน" },
   { id: 12, name: "รถของเล่นจิ๋ว", category: "แฟชั่น/ไลฟสไตล์", stock: 11, minStock: 8, unit: "ชิ้น", price: 15, updatedBy: "พนักงานขาย" },
   { id: 13, name: "ปากกาลูกลื่น", category: "อุปกรณ์เครื่องเขียน/สำนักงาน", stock: 35, minStock: 12, unit: "ด้าม", price: 7, updatedBy: "เจ้าของร้าน" },
-  { id: 14, name: "แชมพูถุงเติม", category: "สุขภาพ/ความงาม", stock: 6, minStock: 10, unit: "ถุง", price: 39, updatedBy: "พนักงานขาย" },
-  { id: 15, name: "แปรงสีฟันนุ่ม", category: "สุขภาพ/ความงาม", stock: 23, minStock: 8, unit: "ด้าม", price: 18, updatedBy: "เจ้าของร้าน" },
+  { id: 14, name: "แชมพูถุงเติม", category: "สุขภาพ/สวย", stock: 6, minStock: 10, unit: "ถุง", price: 39, updatedBy: "พนักงานขาย" },
+  { id: 15, name: "แปรงสีฟันนุ่ม", category: "สุขภาพ/สวย", stock: 23, minStock: 8, unit: "ด้าม", price: 18, updatedBy: "เจ้าของร้าน" },
   { id: 16, name: "SMS แดง", category: "บุหรี่/ยาสูบ", stock: 12, minStock: 5, unit: "ซอง", price: 70, updatedBy: "เจ้าของร้าน" },
   { id: 17, name: "SMS เขียว", category: "บุหรี่/ยาสูบ", stock: 10, minStock: 5, unit: "ซอง", price: 70, updatedBy: "เจ้าของร้าน" },
   { id: 18, name: "LM แดง", category: "บุหรี่/ยาสูบ", stock: 9, minStock: 5, unit: "ซอง", price: 72, updatedBy: "เจ้าของร้าน" },
@@ -978,7 +978,7 @@ const initialProducts: Product[] = [
 const defaultCategories = [
   "อุปกรณ์เครื่องเขียน/สำนักงาน",
   "ยาสามัญประจำบ้าน",
-  "สุขภาพ/ความงาม",
+  "สุขภาพ/สวย",
   "อาหารเสริม/เวชสำอาง",
   "ขนมและของกินเล่น",
   "สินค้าใหม่แกะกล่อง",
@@ -1015,7 +1015,7 @@ const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
   "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-banners/stationery-office-banner.png",
   ยาสามัญประจำบ้าน: "/category-banners/medicine-banner.png",
-  "สุขภาพ/ความงาม": "/category-banners/health-beauty-banner.png",
+  "สุขภาพ/สวย": "/category-banners/health-beauty-banner.png",
   "อาหารเสริม/เวชสำอาง": "/category-banners/supplement-cosmeceutical-banner.png",
   ขนมและของกินเล่น: "/category-banners/snacks-banner.png",
   สินค้าใหม่แกะกล่อง: "/category-banners/new-arrivals-banner.png",
@@ -1079,14 +1079,28 @@ function matchesBeverageSubcategory(product: Product, subcategory: BeverageSubca
 }
 
 const supplementCategory = "อาหารเสริม/เวชสำอาง";
-const supplementSubcategories = ["ทั้งหมด", "วิตามิน/เกลือแร่", "กลูต้า", "ผิว/คอลลาเจน", "ไฟเบอร์/คุมน้ำหนัก"] as const;
+const supplementSubcategories = [
+  "ทั้งหมด",
+  "💪 วิตามิน",
+  "🌿 อาหารเสริม",
+  "🧴 ดูแลผิวหน้า",
+  "☀️ กันแดด",
+  "🧼 ดูแลผิวกาย",
+  "👄 ดูแลริมฝีปาก",
+  "🩺 เวชสำอาง",
+  "💇 ดูแลเส้นผม"
+] as const;
 type SupplementSubcategory = (typeof supplementSubcategories)[number];
 
 const supplementSubcategoryKeywords: Record<Exclude<SupplementSubcategory, "ทั้งหมด">, string[]> = {
-  "วิตามิน/เกลือแร่": ["วิตามิน", "Vitamin", "Vit", "ซิงก์", "Zinc", "เกลือแร่", "Fish Oil", "น้ำมันปลา", "แร่ธาตุ"],
-  กลูต้า: ["กลูต้า", "Gluta", "Glutathione"],
-  "ผิว/คอลลาเจน": ["ผิว", "คอลลาเจน", "Collagen", "Peptide", "เซรั่ม", "ครีม", "เวชสำอาง", "กันแดด", "สกินแคร์"],
-  "ไฟเบอร์/คุมน้ำหนัก": ["ไฟเบอร์", "Fiber", "คุมน้ำหนัก", "ลดน้ำหนัก", "ควบคุมน้ำหนัก", "ดีท็อกซ์", "Detox"]
+  "💪 วิตามิน": ["วิตามิน", "Vitamin", "Vit", "ซิงก์", "Zinc", "เกลือแร่", "Fish Oil", "น้ำมันปลา", "แร่ธาตุ"],
+  "🌿 อาหารเสริม": ["อาหารเสริม", "Supplement", "โปรตีน", "Protein", "กลูต้า", "Gluta", "Collagen", "คอลลาเจน", "ไฟเบอร์", "Fiber"],
+  "🧴 ดูแลผิวหน้า": ["ผิวหน้า", "หน้า", "เซรั่ม", "Serum", "ครีมหน้า", "โฟม", "คลีนเซอร์", "ล้างหน้า", "สกินแคร์"],
+  "☀️ กันแดด": ["กันแดด", "Sun", "Sunscreen", "UV"],
+  "🧼 ดูแลผิวกาย": ["ผิวกาย", "โลชั่น", "บอดี้", "Body", "ครีมทาตัว", "สบู่", "อาบน้ำ"],
+  "👄 ดูแลริมฝีปาก": ["ริมฝีปาก", "ลิป", "Lip", "ปาก"],
+  "🩺 เวชสำอาง": ["เวชสำอาง", "Eucerin", "La Roche", "Cetaphil", "Smooth E", "Acne", "สิว", "Sensitive"],
+  "💇 ดูแลเส้นผม": ["เส้นผม", "ผม", "แชมพู", "ครีมนวด", "ทรีตเมนต์", "Hair"]
 };
 
 function matchesSupplementSubcategory(product: Product, subcategory: SupplementSubcategory) {
@@ -1097,6 +1111,39 @@ function matchesSupplementSubcategory(product: Product, subcategory: SupplementS
   const searchableSupplementText = `${product.name} ${product.sizeLabel ?? ""}`;
 
   return supplementSubcategoryKeywords[subcategory].some((keyword) => searchableSupplementText.includes(keyword));
+}
+
+const healthBeautyCategory = "สุขภาพ/สวย";
+const healthBeautySubcategories = [
+  "ทั้งหมด",
+  "💊 ยาและเวชภัณฑ์",
+  "🩹 ปฐมพยาบาล",
+  "🌡️ อุปกรณ์สุขภาพ",
+  "🧴 สุขอนามัย",
+  "🦟 ป้องกันแมลง",
+  "🦷 ดูแลช่องปาก",
+  "👶 แม่และเด็ก"
+] as const;
+type HealthBeautySubcategory = (typeof healthBeautySubcategories)[number];
+
+const healthBeautySubcategoryKeywords: Record<Exclude<HealthBeautySubcategory, "ทั้งหมด">, string[]> = {
+  "💊 ยาและเวชภัณฑ์": ["ยา", "เวชภัณฑ์", "พารา", "พาราเซตามอล", "แก้ปวด", "ลดไข้", "ยาแก้", "ยาหม่อง", "ยาดม"],
+  "🩹 ปฐมพยาบาล": ["ปฐมพยาบาล", "พลาสเตอร์", "ผ้าพันแผล", "ผ้าก๊อซ", "สำลี", "แอลกอฮอล์", "เบตาดีน", "แผล"],
+  "🌡️ อุปกรณ์สุขภาพ": ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
+  "🧴 สุขอนามัย": ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
+  "🦟 ป้องกันแมลง": ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
+  "🦷 ดูแลช่องปาก": ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก"],
+  "👶 แม่และเด็ก": ["แม่และเด็ก", "เด็ก", "ทารก", "แพมเพิร์ส", "ผ้าอ้อม", "ขวดนม", "จุกนม", "แป้งเด็ก"]
+};
+
+function matchesHealthBeautySubcategory(product: Product, subcategory: HealthBeautySubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableHealthBeautyText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return healthBeautySubcategoryKeywords[subcategory].some((keyword) => searchableHealthBeautyText.includes(keyword));
 }
 
 const alcoholCategory = "เครื่องดื่มแอลกอฮอล์";
@@ -1230,8 +1277,9 @@ const legacyCategoryMap: Record<string, string> = {
   เครื่องครัว: "ของใช้ในบ้าน",
   เครื่องปรุง: "เครื่องปรุง",
   ของเล่น: "แฟชั่น/ไลฟสไตล์",
-  "แชมพู ครีมนวด": "สุขภาพ/ความงาม",
-  แปรงสีฟัน: "สุขภาพ/ความงาม",
+  "สุขภาพ/ความงาม": healthBeautyCategory,
+  "แชมพู ครีมนวด": healthBeautyCategory,
+  แปรงสีฟัน: healthBeautyCategory,
   แซนวิช: "แซนวิช/ขนมปัง",
   ขนมปัง: "แซนวิช/ขนมปัง",
   เครื่องดื่ม: "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)",
@@ -1484,6 +1532,7 @@ export default function Home() {
   const [dryFoodSubcategory, setDryFoodSubcategory] = useState<DryFoodSubcategory>("ทั้งหมด");
   const [beverageSubcategory, setBeverageSubcategory] = useState<BeverageSubcategory>("ทั้งหมด");
   const [supplementSubcategory, setSupplementSubcategory] = useState<SupplementSubcategory>("ทั้งหมด");
+  const [healthBeautySubcategory, setHealthBeautySubcategory] = useState<HealthBeautySubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1582,26 +1631,28 @@ export default function Home() {
             ? item.category === beverageCategory && matchesBeverageSubcategory(item, beverageSubcategory)
             : category === supplementCategory
               ? item.category === supplementCategory && matchesSupplementSubcategory(item, supplementSubcategory)
-              : category === alcoholCategory
-                ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
-                : category === petCategory
-                  ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
-                  : category === herbalDrinkCategory
-                    ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
-                    : category === instantNoodleCategory
-                      ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
-                      : category === candyCategory
-                        ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
-                        : category === meatCategory
-                          ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
-                          : category === eggCategory
-                            ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
-                            : item.category === category);
+              : category === healthBeautyCategory
+                ? item.category === healthBeautyCategory && matchesHealthBeautySubcategory(item, healthBeautySubcategory)
+                : category === alcoholCategory
+                  ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
+                  : category === petCategory
+                    ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
+                    : category === herbalDrinkCategory
+                      ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
+                      : category === instantNoodleCategory
+                        ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
+                        : category === candyCategory
+                          ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
+                          : category === meatCategory
+                            ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
+                            : category === eggCategory
+                              ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
+                              : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -1703,6 +1754,10 @@ export default function Home() {
 
     if (nextCategory !== beverageCategory) {
       setBeverageSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== healthBeautyCategory) {
+      setHealthBeautySubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== alcoholCategory) {
