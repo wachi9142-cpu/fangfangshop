@@ -2043,6 +2043,10 @@ export default function Home() {
           renderSubcategoryScroller("หัวข้อย่อยอาหารเสริมและเวชสำอาง", supplementSubcategories, supplementSubcategory, setSupplementSubcategory)
         ) : null}
 
+        {category === healthBeautyCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยสุขภาพและสวย", healthBeautySubcategories, healthBeautySubcategory, setHealthBeautySubcategory)
+        ) : null}
+
         {category === alcoholCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่มแอลกอฮอล์", alcoholSubcategories, alcoholSubcategory, setAlcoholSubcategory)
         ) : null}
