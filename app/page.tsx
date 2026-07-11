@@ -1483,6 +1483,7 @@ export default function Home() {
   const [category, setCategory] = useState("ทั้งหมด");
   const [dryFoodSubcategory, setDryFoodSubcategory] = useState<DryFoodSubcategory>("ทั้งหมด");
   const [beverageSubcategory, setBeverageSubcategory] = useState<BeverageSubcategory>("ทั้งหมด");
+  const [supplementSubcategory, setSupplementSubcategory] = useState<SupplementSubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1579,26 +1580,28 @@ export default function Home() {
           ? dryFoodSubcategoryCategoryMap[dryFoodSubcategory].includes(item.category)
           : category === beverageCategory
             ? item.category === beverageCategory && matchesBeverageSubcategory(item, beverageSubcategory)
-            : category === alcoholCategory
-              ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
-              : category === petCategory
-                ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
-                : category === herbalDrinkCategory
-                  ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
-                  : category === instantNoodleCategory
-                    ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
-                    : category === candyCategory
-                      ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
-                      : category === meatCategory
-                        ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
-                        : category === eggCategory
-                          ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
-                          : item.category === category);
+            : category === supplementCategory
+              ? item.category === supplementCategory && matchesSupplementSubcategory(item, supplementSubcategory)
+              : category === alcoholCategory
+                ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
+                : category === petCategory
+                  ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
+                  : category === herbalDrinkCategory
+                    ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
+                    : category === instantNoodleCategory
+                      ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
+                      : category === candyCategory
+                        ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
+                        : category === meatCategory
+                          ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
+                          : category === eggCategory
+                            ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
+                            : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -1979,6 +1982,10 @@ export default function Home() {
 
         {category === beverageCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่ม", beverageSubcategories, beverageSubcategory, setBeverageSubcategory)
+        ) : null}
+
+        {category === supplementCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยอาหารเสริมและเวชสำอาง", supplementSubcategories, supplementSubcategory, setSupplementSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
