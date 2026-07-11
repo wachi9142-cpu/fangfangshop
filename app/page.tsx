@@ -1036,6 +1036,7 @@ const categoryBannerImages: Record<string, string> = {
   บะหมี่กึ่งสำเร็จรูป: "/category-banners/instant-noodle-banner.png",
   อาหารแห้ง: "/category-banners/dry-food-banner.png",
   ของใช้ในบ้าน: "/category-banners/household-banner.png",
+  "บุหรี่/ยาสูบ": "/category-banners/tobacco-banner.png",
   เครื่องดื่มแอลกอฮอล์: "/category-banners/alcohol-banner.png",
   อาหารกระป๋อง: "/category-banners/canned-food-banner.png",
   ช็อกโกแลต: "/category-banners/chocolate-banner.png",
