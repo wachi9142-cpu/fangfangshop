@@ -1853,12 +1853,12 @@ export default function Home() {
           </>
         ) : null}
 
-        <section className="filters" aria-label="ค้นหาและกรองสินค้า">
+        <section className="filters" aria-label="ค้นหาสินค้า">
           <div className="search-box">
             <Input
               allowClear
               prefix={<SearchOutlined />}
-              placeholder="ค้นหาชื่อสินค้า"
+              placeholder="ค้นหาสินค้า"
               size="large"
               value={query}
               onBlur={() => commitSearchHistory(query)}
