@@ -24,6 +24,7 @@ import {
   WarningFilled
 } from "@ant-design/icons";
 import {
+  App,
   Badge,
   Button,
   Card,
@@ -32,7 +33,6 @@ import {
   Image,
   Input,
   InputNumber,
-  message,
   Modal,
   Progress,
   Select,
@@ -362,36 +362,36 @@ const layLargeProductImageByName: Record<string, string> = {
 };
 
 const layFlavors = [
-  { name: "เลย์รสออริจินัล (มันฝรั่งแท้ แผ่นเรียบ/แผ่นหยัก)", emoji: "🥔" },
-  { name: "เลย์รสโนริสาหร่าย", emoji: "🌊" },
-  { name: "เลย์รสเอ็กซ์ตร้าบาร์บีคิว", emoji: "🍖" },
-  { name: "เลย์รสซาวครีมและหัวหอม", emoji: "🧅" },
-  { name: "เลย์รสเมี่ยงคำครบรส", emoji: "🍃" },
-  { name: "เลย์รสหมึกย่างฮอตชิลลี่", emoji: "🦑" },
-  { name: "เลย์รส 2 in 1 รสกุ้งเผา+น้ำจิ้มซีฟู้ด", emoji: "🦐" },
-  { name: "เลย์รสไข่เค็ม", emoji: "🥚" },
-  { name: "เลย์รสชีสและหัวหอม", emoji: "🧀" },
-  { name: "เลย์รสกะเพรากรอบ", emoji: "🌿" },
-  { name: "เลย์รสลาบทอด", emoji: "🌶️" },
-  { name: "เลย์รสต้มยำกุ้ง", emoji: "🍤" },
-  { name: "เลย์รสปูผัดผงกะหรี่", emoji: "🦀" },
-  { name: "เลย์รสลาบ", emoji: "🌶️" },
-  { name: "เลย์รสแกงเขียวหวาน", emoji: "🍛" },
-  { name: "เลย์รสมะนาวจี๊ดจ๊าด", emoji: "🍋" },
-  { name: "เลย์รสมะเขือเทศ", emoji: "🍅" },
-  { name: "เลย์กลิ่นบัตเตอร์คอร์น", emoji: "🌽" },
-  { name: "เลย์รสพริกปีศาจเอ็กซ์ตร้าชิลลี่", emoji: "🔥" },
-  { name: "เลย์รสบาร์บีคิวพริกพ่นไฟ", emoji: "🌶️" },
-  { name: "เลย์รสบิงซูเมลอน", emoji: "🍈" },
-  { name: "เลย์รสไอซ์ซี่เลมอน", emoji: "🍋" },
-  { name: "เลย์เพลย์รสบาร์บีคิว", emoji: "🍖" },
-  { name: "เลย์เพลย์รสสาหร่ายทรงเครื่อง", emoji: "🌊" },
-  { name: "เลย์กลิ่นชีสและเบคอน", emoji: "🧀" },
-  { name: "เลย์กลิ่นสโมคกี้บาร์บีคิว", emoji: "🍗" },
-  { name: "เลย์รสสไปซี่โคเรียนราเมน", emoji: "🍜" },
-  { name: "เลย์รสมะนาวพริกจี๊ดจ๊าด", emoji: "🍋" },
-  { name: "เลย์สแต็กซ์รสซาวครีมและหัวหอม", emoji: "🥔" },
-  { name: "เลย์รสหอยเชลล์อบเนยกระเทียม", emoji: "🧄" }
+  { name: "เลย์รสออริจินัล (มันฝรั่งแท้ แผ่นเรียบ/แผ่นหยัก)" },
+  { name: "เลย์รสโนริสาหร่าย" },
+  { name: "เลย์รสเอ็กซ์ตร้าบาร์บีคิว" },
+  { name: "เลย์รสซาวครีมและหัวหอม" },
+  { name: "เลย์รสเมี่ยงคำครบรส" },
+  { name: "เลย์รสหมึกย่างฮอตชิลลี่" },
+  { name: "เลย์รส 2 in 1 รสกุ้งเผา+น้ำจิ้มซีฟู้ด" },
+  { name: "เลย์รสไข่เค็ม" },
+  { name: "เลย์รสชีสและหัวหอม" },
+  { name: "เลย์รสกะเพรากรอบ" },
+  { name: "เลย์รสลาบทอด" },
+  { name: "เลย์รสต้มยำกุ้ง" },
+  { name: "เลย์รสปูผัดผงกะหรี่" },
+  { name: "เลย์รสลาบ" },
+  { name: "เลย์รสแกงเขียวหวาน" },
+  { name: "เลย์รสมะนาวจี๊ดจ๊าด" },
+  { name: "เลย์รสมะเขือเทศ" },
+  { name: "เลย์กลิ่นบัตเตอร์คอร์น" },
+  { name: "เลย์รสพริกปีศาจเอ็กซ์ตร้าชิลลี่" },
+  { name: "เลย์รสบาร์บีคิวพริกพ่นไฟ" },
+  { name: "เลย์รสบิงซูเมลอน" },
+  { name: "เลย์รสไอซ์ซี่เลมอน" },
+  { name: "เลย์เพลย์รสบาร์บีคิว" },
+  { name: "เลย์เพลย์รสสาหร่ายทรงเครื่อง" },
+  { name: "เลย์กลิ่นชีสและเบคอน" },
+  { name: "เลย์กลิ่นสโมคกี้บาร์บีคิว" },
+  { name: "เลย์รสสไปซี่โคเรียนราเมน" },
+  { name: "เลย์รสมะนาวพริกจี๊ดจ๊าด" },
+  { name: "เลย์สแต็กซ์รสซาวครีมและหัวหอม" },
+  { name: "เลย์รสหอยเชลล์อบเนยกระเทียม" }
 ];
 
 const layProducts: Product[] = layFlavors.flatMap((flavor, index) => [
@@ -1012,43 +1012,6 @@ const defaultCategories = [
   "สินค้าขายยกแพ็ก"
 ];
 
-const categoryEmoji: Record<string, string> = {
-  ทั้งหมด: "🛒",
-  "อุปกรณ์เครื่องเขียน/สำนักงาน": "✏️",
-  ยาสามัญประจำบ้าน: "💊",
-  "สุขภาพ/ความงาม": "✨",
-  "อาหารเสริม/เวชสำอาง": "🌸",
-  ขนมและของกินเล่น: "🍿",
-  สินค้าใหม่แกะกล่อง: "🆕",
-  เนื้อสัตว์: "🥩",
-  ไข่: "🥚",
-  ผลไม้: "🍎",
-  "แซนวิช/ขนมปัง": "🥪",
-  เลย์: "🥔",
-  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "🥤",
-  "นม/โยเกิร์ต": "🥛",
-  น้ำสมุนไพรโฮมเมด: "🌿",
-  เบเกอรี่: "🥐",
-  สินค้าสัตว์เลี้ยง: "🐾",
-  "แฟชั่น/ไลฟสไตล์": "🕶️",
-  อาหารแห้ง: "🍚",
-  ไอทีและมือถือ: "📱",
-  บะหมี่กึ่งสำเร็จรูป: "🍜",
-  ของสด: "🥬",
-  ลูกอมและหมากฝรั่ง: "🍬",
-  เครื่องปรุง: "🧂",
-  ขนมไทย: "🍡",
-  ของใช้ในบ้าน: "🧼",
-  เครื่องดื่มแอลกอฮอล์: "🍺",
-  "บุหรี่/ยาสูบ": "🚬",
-  อาหารกระป๋อง: "🥫",
-  ช็อกโกแลต: "🍫",
-  บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร: "📦",
-  น้ำแข็ง: "🧊",
-  ของแช่เย็น: "❄️",
-  สินค้าขายยกแพ็ก: "🛍️"
-};
-
 const categoryBannerImages: Record<string, string> = {
   เลย์: "/category-banners/lay-banner.png",
   "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-banners/stationery-office-banner.png",
@@ -1087,14 +1050,6 @@ const dryFoodCategory = "อาหารแห้ง";
 const dryFoodSubcategories = ["ทั้งหมด", "อาหารสำเร็จรูป", "อาหารแห้ง", "อาหารกระป๋อง", "ส่วนประกอบการชง"] as const;
 type DryFoodSubcategory = (typeof dryFoodSubcategories)[number];
 
-const dryFoodSubcategoryEmoji: Record<DryFoodSubcategory, string> = {
-  ทั้งหมด: "🍱",
-  อาหารสำเร็จรูป: "🍜",
-  อาหารแห้ง: "🍚",
-  อาหารกระป๋อง: "🥫",
-  ส่วนประกอบการชง: "☕"
-};
-
 const dryFoodSubcategoryCategoryMap: Record<DryFoodSubcategory, string[]> = {
   ทั้งหมด: ["บะหมี่กึ่งสำเร็จรูป", "อาหารแห้ง", "อาหารกระป๋อง", "ส่วนประกอบการชง"],
   อาหารสำเร็จรูป: ["บะหมี่กึ่งสำเร็จรูป"],
@@ -1106,16 +1061,6 @@ const dryFoodSubcategoryCategoryMap: Record<DryFoodSubcategory, string[]> = {
 const beverageCategory = "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)";
 const beverageSubcategories = ["ทั้งหมด", "น้ำดื่ม/น้ำแร่", "น้ำอัดลม/โซดา", "ชา", "กาแฟ", "สุขภาพ", "ชูกำลัง/เกลือแร่"] as const;
 type BeverageSubcategory = (typeof beverageSubcategories)[number];
-
-const beverageSubcategoryEmoji: Record<BeverageSubcategory, string> = {
-  ทั้งหมด: "🥤",
-  "น้ำดื่ม/น้ำแร่": "💧",
-  "น้ำอัดลม/โซดา": "🫧",
-  ชา: "🍵",
-  กาแฟ: "☕",
-  สุขภาพ: "✨",
-  "ชูกำลัง/เกลือแร่": "⚡"
-};
 
 const beverageSubcategoryKeywords: Record<Exclude<BeverageSubcategory, "ทั้งหมด">, string[]> = {
   "น้ำดื่ม/น้ำแร่": ["น้ำทิพย์", "น้ำวีด้า", "น้ำดื่ม", "คริสตัล"],
@@ -1138,14 +1083,6 @@ const alcoholCategory = "เครื่องดื่มแอลกอฮอ�
 const alcoholSubcategories = ["ทั้งหมด", "กระป๋อง", "ขวด", "แบน", "กลม"] as const;
 type AlcoholSubcategory = (typeof alcoholSubcategories)[number];
 
-const alcoholSubcategoryEmoji: Record<AlcoholSubcategory, string> = {
-  ทั้งหมด: "🍺",
-  กระป๋อง: "🥫",
-  ขวด: "🍾",
-  แบน: "🥃",
-  กลม: "🍶"
-};
-
 function matchesAlcoholSubcategory(product: Product, subcategory: AlcoholSubcategory) {
   if (subcategory === "ทั้งหมด") {
     return true;
@@ -1159,14 +1096,6 @@ function matchesAlcoholSubcategory(product: Product, subcategory: AlcoholSubcate
 const petCategory = "สินค้าสัตว์เลี้ยง";
 const petSubcategories = ["ทั้งหมด", "อาหารเม็ดสุนัข/หมา", "อาหารเม็ดแมว", "ขนมสุนัข/แมว", "ของเล่นสัตว์เลี้ยง"] as const;
 type PetSubcategory = (typeof petSubcategories)[number];
-
-const petSubcategoryEmoji: Record<PetSubcategory, string> = {
-  ทั้งหมด: "🐾",
-  "อาหารเม็ดสุนัข/หมา": "🐕",
-  อาหารเม็ดแมว: "🐱",
-  "ขนมสุนัข/แมว": "🍖",
-  ของเล่นสัตว์เลี้ยง: "🧸"
-};
 
 const petSubcategoryKeywords: Record<Exclude<PetSubcategory, "ทั้งหมด">, string[]> = {
   "อาหารเม็ดสุนัข/หมา": ["อาหารเม็ดสุนัข", "อาหารเม็ดหมา"],
@@ -1189,12 +1118,6 @@ const herbalDrinkCategory = "น้ำสมุนไพรโฮมเมด";
 const herbalDrinkSubcategories = ["ทั้งหมด", "น้ำสมุนไพรมีน้ำตาล", "น้ำสมุนไพรไม่มีน้ำตาล"] as const;
 type HerbalDrinkSubcategory = (typeof herbalDrinkSubcategories)[number];
 
-const herbalDrinkSubcategoryEmoji: Record<HerbalDrinkSubcategory, string> = {
-  ทั้งหมด: "🌿",
-  น้ำสมุนไพรมีน้ำตาล: "🍯",
-  น้ำสมุนไพรไม่มีน้ำตาล: "🌱"
-};
-
 function matchesHerbalDrinkSubcategory(product: Product, subcategory: HerbalDrinkSubcategory) {
   if (subcategory === "ทั้งหมด") {
     return true;
@@ -1209,17 +1132,6 @@ function matchesHerbalDrinkSubcategory(product: Product, subcategory: HerbalDrin
 const instantNoodleCategory = "บะหมี่กึ่งสำเร็จรูป";
 const instantNoodleSubcategories = ["ทั้งหมด", "มาม่า", "มาม่า OK", "ไวไว (Wai Wai)", "ยำยำ (Yum Yum)", "นิสชิน (Nissin)", "ซัมยัง (Samyang)", "มาม่าเกาหลี"] as const;
 type InstantNoodleSubcategory = (typeof instantNoodleSubcategories)[number];
-
-const instantNoodleSubcategoryEmoji: Record<InstantNoodleSubcategory, string> = {
-  ทั้งหมด: "🍜",
-  มาม่า: "🍜",
-  "มาม่า OK": "🥢",
-  "ไวไว (Wai Wai)": "🍜",
-  "ยำยำ (Yum Yum)": "🥣",
-  "นิสชิน (Nissin)": "🍥",
-  "ซัมยัง (Samyang)": "🌶️",
-  มาม่าเกาหลี: "🇰🇷"
-};
 
 const instantNoodleSubcategoryKeywords: Record<Exclude<InstantNoodleSubcategory, "ทั้งหมด">, string[]> = {
   มาม่า: ["มาม่า"],
@@ -1245,12 +1157,6 @@ const candyCategory = "ลูกอมและหมากฝรั่ง";
 const candySubcategories = ["ทั้งหมด", "ลูกอม", "หมากฝรั่ง"] as const;
 type CandySubcategory = (typeof candySubcategories)[number];
 
-const candySubcategoryEmoji: Record<CandySubcategory, string> = {
-  ทั้งหมด: "🍬",
-  ลูกอม: "🍭",
-  หมากฝรั่ง: "🫧"
-};
-
 const candySubcategoryKeywords: Record<Exclude<CandySubcategory, "ทั้งหมด">, string[]> = {
   ลูกอม: ["ลูกอม", "อมยิ้ม", "candy", "lollipop"],
   หมากฝรั่ง: ["หมากฝรั่ง", "gum", "chewing gum"]
@@ -1270,13 +1176,6 @@ const meatCategory = "เนื้อสัตว์";
 const meatSubcategories = ["ทั้งหมด", "เนื้อหมู", "เนื้อไก่", "เนื้อปลา"] as const;
 type MeatSubcategory = (typeof meatSubcategories)[number];
 
-const meatSubcategoryEmoji: Record<MeatSubcategory, string> = {
-  ทั้งหมด: "🥩",
-  เนื้อหมู: "🐷",
-  เนื้อไก่: "🐔",
-  เนื้อปลา: "🐟"
-};
-
 function matchesMeatSubcategory(product: Product, subcategory: MeatSubcategory) {
   if (subcategory === "ทั้งหมด") {
     return true;
@@ -1289,15 +1188,6 @@ const eggCategory = "ไข่";
 const eggSubcategories = ["ทั้งหมด", "ไข่ไก่", "ไข่เป็ด", "ไข่นกกระทา", "ไข่เค็ม", "ไข่เยี่ยวม้า"] as const;
 type EggSubcategory = (typeof eggSubcategories)[number];
 
-const eggSubcategoryEmoji: Record<EggSubcategory, string> = {
-  ทั้งหมด: "🥚",
-  ไข่ไก่: "🐔",
-  ไข่เป็ด: "🦆",
-  ไข่นกกระทา: "🐣",
-  ไข่เค็ม: "🧂",
-  ไข่เยี่ยวม้า: "⚫"
-};
-
 function matchesEggSubcategory(product: Product, subcategory: EggSubcategory) {
   if (subcategory === "ทั้งหมด") {
     return true;
@@ -1305,175 +1195,6 @@ function matchesEggSubcategory(product: Product, subcategory: EggSubcategory) {
 
   return product.name.includes(subcategory);
 }
-
-const productEmoji: Record<string, string> = {
-  ...Object.fromEntries(layFlavors.map((flavor) => [flavor.name, flavor.emoji])),
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รส ออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รสปูอัด": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รส ออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รสปูอัด&ออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด&ออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 300 กรัม รสออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 80 กรัม รสออริจินอล": "🐾",
-  "Okashi โอคาชิ ปลาเส้นเล็ก 300 กรัม รสปูอัด": "🐾",
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 300 กรัม รสปูอัด": "🐾",
-  "Okashi โอคาชิ ปลาเส้นใหญ่ 300 กรัม รสปูอัด&ออริจินอล": "🐾",
-  "Okashi โอคาชิ ไก่พันปลาเส้น 17 ชิ้น": "🐾",
-  น้ำแตงโม: "🍉",
-  น้ำเก๊กฮวย: "🌼",
-  น้ำเฉาก๊วย: "🖤",
-  น้ำตะไคร้ใบเตย: "🌿",
-  น้ำทับทิม: "❤️",
-  น้ำกระเจี๊ยบ: "🌺",
-  น้ำข้าวโพด: "🌽",
-  น้ำขิง: "🫚",
-  "น้ำถั่ว 5 สี": "🫘",
-  น้ำเตยหอม: "🌱",
-  น้ำใบบัวบก: "🍃",
-  น้ำมะนาว: "🍋",
-  น้ำมะพร้าว: "🥥",
-  น้ำส้ม: "🍊",
-  น้ำเสาวรส: "💜",
-  น้ำฟักทอง: "🎃",
-  น้ำมะม่วงหาวมะนาวโห่: "🍒",
-  น้ำองุ่น: "🍇",
-  น้ำอัญชันมะนาว: "🦋",
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสปลาหิมะ โซเดียมต่ำ": "🐱",
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสแซลมอน โซเดียมต่ำ": "🐱",
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสทูน่า โซเดียมต่ำ": "🐱",
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสเนื้อวัว โซเดียมต่ำ": "🐱",
-  "ทิงเกอร์เบลล์ (Tinkerbell) รสเนื้อวัวผสมเนื้อแกะ โซเดียมต่ำ": "🐱",
-  สิงห์โซดาวันเวย์: "💧",
-  "สิงห์ เลมอน โซดา": "🍋",
-  "สิงห์ เลมอน&บ๊วย โซดา": "🍋",
-  "สิงห์ แดงเลมอน โซดา": "🍋",
-  "สิงห์ พิงค์เลมอน โซดา": "🍋",
-  "สิงห์ ยูซุเลมอน โซดา": "🍋",
-  "สิงห์ เมล่อนเลมอน โซดา": "🍈",
-  "สิงห์ เลมอนครีม โซดา": "🍋",
-  สไปรท์: "🥤",
-  "สไปรท์ กระป๋อง": "🥤",
-  "สไปรท์ สูตรไม่มีน้ำตาล (ฝาดำ)": "🥤",
-  "แฟนต้า น้ำแดง 15 บาท": "🔴",
-  "แฟนต้า น้ำแดง 10 บาท": "🔴",
-  "แฟนต้า น้ำแดงกระป๋อง": "🔴",
-  "แฟนต้า น้ำแดงขวดลิตร": "🔴",
-  เป๊บซี่กระป๋อง: "🥤",
-  "แฟนต้า น้ำเขียวขวดเล็ก": "🟢",
-  "แฟนต้า น้ำเขียวขวดลิตร": "🟢",
-  "แฟนต้า น้ำเขียวกระป๋อง": "🟢",
-  "แฟนต้า น้ำส้มกระป๋อง": "🟠",
-  "แฟนต้า น้ำส้มขวดเล็ก": "🟠",
-  น้ำทิพย์ขวดเล็ก: "💧",
-  น้ำทิพย์ขวดใหญ่: "💧",
-  น้ำวีด้าขวดเล็ก: "💧",
-  น้ำวีด้าขวดใหญ่: "💧",
-  น้ำคริสตัลขวดจิ๋ว: "💎",
-  "น้ำดื่มยันฮี ฝาเหลือง": "💛",
-  "น้ำดื่มยันฮี ฝาขาว": "🤍",
-  น้ำดื่มคริสตัลขวดเล็ก: "💎",
-  น้ำดื่มคริสตัลขวดใหญ่: "💎",
-  น้ำวีด้าขวดเล็กยกแพ็ก: "💧",
-  น้ำทิพย์ขวดเล็กยกแพ็ก: "💧",
-  น้ำทิพย์ขวดใหญ่ยกแพ็ก: "💧",
-  น้ำคริสตัลจิ๋วยกแพ็ก: "💎",
-  น้ำคริสตัลขวดใหญ่ยกแพ็ก: "💎",
-  น้ำคริสตัลขวดเล็กยกแพ็ก: "💎",
-  น้ำจับใจ: "🌿",
-  "เย็นเย็น เก๊กฮวยน้ำผึ้ง": "🌼",
-  "เย็นเย็น จับเลี้ยง น้ำตาล 2%": "🍵",
-  "เย็นเย็น รสสละพุทราจีน": "🌺",
-  "โออิชิ กรีนทีชาเขียว รสต้นตำรับ": "🍵",
-  "โออิชิ กรีนที รสแตงโม": "🍉",
-  "อิชิตัน กรีนที รสต้นตำรับ": "🍵",
-  "อิชิตัน กรีนที รสน้ำผึ้งผสมมะนาว": "🍯",
-  "อิชิตัน กรีนที รสจมูกข้าวญี่ปุ่น": "🌾",
-  "น้ำตาลทรายขาวมิตรผล 1 กิโลกรัม": "🧂",
-  "น้ำตาลทรายแดงมิตรผล 1 กิโลกรัม": "🧂",
-  "น้ำปลาแท้ตราทิพรส ขวดเล็ก": "🐟",
-  "น้ำปลาแท้ตราทิพรส ขวดเล็ก ทรงสูง": "🐟",
-  "น้ำปลาร้าแซ่บไมค์": "🧡",
-  "กะทิชาวเกาะ 500ml": "🥥",
-  "เนสกาแฟกระป๋องเขียว เอสเปรสโซ โรสต์": "☕",
-  "เนสกาแฟซองเขียว Blend & Brew 3 in 1": "☕",
-  "เนสกาแฟซองแดง Blend & Brew Rich Aroma": "☕",
-  "กาแฟเบอร์ดี้แดง โรบัสต้า กระป๋อง": "☕",
-  "กาแฟเบอร์ดี้ ลาเต้ สูตรน้ำตาลน้อย กระป๋อง": "☕",
-  "กาแฟเบอร์ดี้ เอสเปรสโซ สูตรน้ำตาลน้อย กระป๋อง": "☕",
-  "กาแฟเบอร์ดี้ แบล็ค สูตรน้ำตาลน้อย กระป๋อง": "☕",
-  "กาแฟเบอร์ดี้ แบล็ค ซีโร่ กระป๋อง": "☕",
-  "กาแฟเบอร์ดี้ โรบัสต้า ซีโร่ กระป๋อง": "☕",
-  M150: "⚡",
-  ลิโพ: "⚡",
-  กระทิงแดง: "🐂",
-  คาราบาว: "🐃",
-  โสมเกาหลี: "🌿",
-  "แบรนด์ซุปไก่ ขวดใหญ่": "🐔",
-  "แบรนด์ซุปไก่ ขวดเล็ก": "🐔",
-  "แบรนด์วีด้า ขวดใหญ่": "✨",
-  "แบรนด์วีด้า ขวดเล็ก": "✨",
-  สปอนเซอร์: "⚡",
-  มิรินด้าขวดเล็ก: "🥤",
-  มิรินด้าขวดใหญ่: "🥤",
-  โค้กขวดใหญ่: "🥤",
-  โค้กขวดเล็ก: "🥤",
-  โค้กกระป๋อง: "🥤",
-  เป๊บซี่ขวดใหญ่: "🥤",
-  "เป๊บซี่ขวด 10 บาท": "🥤",
-  "เป๊บซี่ขวด 13 บาท": "🥤",
-  แฟนต้าสีส้มขวดใหญ่: "🟠",
-  แฟนต้าสีเขียวไม่มีน้ำตาล: "🟢",
-  แฟนต้าสีแดงไม่มีน้ำตาล: "🔴",
-  แฟนต้าสีส้มไม่มีน้ำตาล: "🟠",
-  เซเว่นอัป: "🥤",
-  "โค้กไม่มีน้ำตาล ขวดใหญ่": "🥤",
-  นมไวตามินขวด: "🥛",
-  "ขนมไทย ตะโก้กะทิ": "🥥",
-  "ขนมไทย บัวลอย": "🍡",
-  สิงห์ขวด: "🍺",
-  สิงห์กระป๋องยาว: "🍺",
-  สิงห์กระป๋องสั้น: "🍺",
-  ลีโอขวด: "🍺",
-  ลีโอกระป๋องยาว: "🍺",
-  ลีโอกระป๋องสั้น: "🍺",
-  ช้างขวด: "🍺",
-  ช้างกระป๋องยาว: "🍺",
-  ช้างกระป๋องสั้น: "🍺",
-  หงส์ทองกลม: "🥃",
-  หงส์ทองแบน: "🥃",
-  เสือดำเล็ก: "🥃",
-  เสือดำขวดแบน: "🥃",
-  เหล้าขาว: "🥃",
-  รีเจนซี่กลม: "🥃",
-  รีเจนซี่แบน: "🥃",
-  "ฟลูมูน Full Moon": "🍾",
-  สปาย: "🍾",
-  "สปาย Classic": "🍾",
-  "สปาย Butterfly Kiss": "🍾",
-  "สปาย High Strawberry Daiquiri": "🍾",
-  "สปาย Black": "🍾",
-  "สปาย Red": "🍾",
-  "สปาย Moscato Gold": "🍾",
-  "สปาย Sparkling Gold": "🍾",
-  "สปาย Melon Sparkle": "🍾",
-  "สปาย Angel Kiss": "🍾",
-  "สปาย White": "🍾",
-  "สปาย Blue": "🍾",
-  "สปาย Kamikaze": "🍾",
-  "สปาย Candy Kiss": "🍾",
-  "สปาย Lollipop Kiss": "🍾",
-  "สปาย High Lime": "🍾",
-  นิยมไทยขวดเล็ก: "🥃",
-  สุรานิยมไทยขวดใหญ่: "🥃",
-  "285 กลม": "🥃",
-  น้ำแข็งก้อน: "🧊",
-  น้ำแข็งป่น: "🥶",
-  น้ำแข็งก้อนเล็ก: "🧊",
-  "น้ำแข็ง 5 บาท": "🧊",
-  "น้ำแข็ง 10 บาท": "🧊",
-  "น้ำแข็ง 20 บาท": "🧊"
-};
 
 const legacyCategoryMap: Record<string, string> = {
   เครื่องเขียน: "อุปกรณ์เครื่องเขียน/สำนักงาน",
@@ -1625,15 +1346,11 @@ function mergeSavedProducts(savedProducts: Product[]) {
 }
 
 function getCategoryLabel(category: string) {
-  return `${categoryEmoji[category] ?? "📦"} ${category}`;
+  return category;
 }
 
 function getProductCategoryLabel(product: Product) {
-  if (productEmoji[product.name]) {
-    return `${productEmoji[product.name]} ${product.category}`;
-  }
-
-  return getCategoryLabel(product.category);
+  return product.category;
 }
 
 function getPriceBadgeClass(product: Product) {
@@ -1668,7 +1385,38 @@ function statusStyle(status: StockStatus) {
   return { color: "success" as const, icon: <CheckCircleFilled /> };
 }
 
+// โลโก้แมวโทนครีมชานม ใช้เป็นสัญลักษณ์ร้าน
+function CatMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg
+      className="cat-mark"
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="#96653b" strokeWidth={2.4} strokeLinejoin="round" strokeLinecap="round">
+        <path d="M13 21 L17 7 L27 17 Z" fill="#fffdf8" />
+        <path d="M35 21 L31 7 L21 17 Z" fill="#fffdf8" />
+        <circle cx="24" cy="28" r="12" fill="#fffdf8" />
+      </g>
+      <g fill="#5b4636">
+        <circle cx="19.5" cy="27" r="1.9" />
+        <circle cx="28.5" cy="27" r="1.9" />
+        <path d="M24 33 l-2.6 -2.4 h5.2 Z" />
+      </g>
+      <g stroke="#96653b" strokeWidth={1.5} strokeLinecap="round">
+        <path d="M13.5 27 L7 25.5 M13.5 30 L7.5 31.5" />
+        <path d="M34.5 27 L41 25.5 M34.5 30 L40.5 31.5" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Home() {
+  const { message } = App.useApp();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [query, setQuery] = useState("");
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
@@ -1941,8 +1689,7 @@ export default function Home() {
     label: string,
     items: readonly T[],
     activeItem: T,
-    setActiveItem: (item: T) => void,
-    emojiByItem: Record<T, string>
+    setActiveItem: (item: T) => void
   ) {
     return (
       <div className="subcategory-scroller">
@@ -1960,7 +1707,7 @@ export default function Home() {
               type={activeItem === item ? "primary" : "default"}
               onClick={() => setActiveItem(item)}
             >
-              {emojiByItem[item]} {item}
+              {item}
             </Button>
           ))}
         </div>
@@ -1986,7 +1733,7 @@ export default function Home() {
                     {shopImageUrl ? (
                       <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
                     ) : (
-                      "FF"
+                      <CatMark />
                     )}
                     <span className="brand-mark-edit" aria-hidden="true">
                       <EditOutlined />
@@ -1998,7 +1745,7 @@ export default function Home() {
                   {shopImageUrl ? (
                     <NextImage alt="รูปร้าน Fang Fang Shop" className="brand-mark-image" fill sizes="42px" src={shopImageUrl} />
                   ) : (
-                    "FF"
+                    <CatMark />
                   )}
                 </div>
               )}
@@ -2167,39 +1914,39 @@ export default function Home() {
         ) : null}
 
         {category === dryFoodCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory, dryFoodSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory)
         ) : null}
 
         {category === beverageCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่ม", beverageSubcategories, beverageSubcategory, setBeverageSubcategory, beverageSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่ม", beverageSubcategories, beverageSubcategory, setBeverageSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่มแอลกอฮอล์", alcoholSubcategories, alcoholSubcategory, setAlcoholSubcategory, alcoholSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยเครื่องดื่มแอลกอฮอล์", alcoholSubcategories, alcoholSubcategory, setAlcoholSubcategory)
         ) : null}
 
         {category === petCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยสินค้าสัตว์เลี้ยง", petSubcategories, petSubcategory, setPetSubcategory, petSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยสินค้าสัตว์เลี้ยง", petSubcategories, petSubcategory, setPetSubcategory)
         ) : null}
 
         {category === herbalDrinkCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยน้ำสมุนไพรโฮมเมด", herbalDrinkSubcategories, herbalDrinkSubcategory, setHerbalDrinkSubcategory, herbalDrinkSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยน้ำสมุนไพรโฮมเมด", herbalDrinkSubcategories, herbalDrinkSubcategory, setHerbalDrinkSubcategory)
         ) : null}
 
         {category === instantNoodleCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป", instantNoodleSubcategories, instantNoodleSubcategory, setInstantNoodleSubcategory, instantNoodleSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยบะหมี่กึ่งสำเร็จรูป", instantNoodleSubcategories, instantNoodleSubcategory, setInstantNoodleSubcategory)
         ) : null}
 
         {category === candyCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยลูกอมและหมากฝรั่ง", candySubcategories, candySubcategory, setCandySubcategory, candySubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยลูกอมและหมากฝรั่ง", candySubcategories, candySubcategory, setCandySubcategory)
         ) : null}
 
         {category === meatCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยเนื้อสัตว์", meatSubcategories, meatSubcategory, setMeatSubcategory, meatSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยเนื้อสัตว์", meatSubcategories, meatSubcategory, setMeatSubcategory)
         ) : null}
 
         {category === eggCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยไข่", eggSubcategories, eggSubcategory, setEggSubcategory, eggSubcategoryEmoji)
+          renderSubcategoryScroller("หัวข้อย่อยไข่", eggSubcategories, eggSubcategory, setEggSubcategory)
         ) : null}
 
         <section>
@@ -2495,6 +2242,9 @@ export default function Home() {
         }}
         onOk={() => loginForm.submit()}
       >
+        <div className="login-cat">
+          <CatMark size={56} />
+        </div>
         <p className="login-hint">เข้าสู่ระบบเพื่อจัดการสต็อกและเพิ่มสินค้า (สำหรับพนักงานเท่านั้น)</p>
         <Form form={loginForm} layout="vertical" onFinish={handleLogin}>
           <Form.Item label="ชื่อผู้ใช้" name="username" rules={[{ required: true, message: "กรอกชื่อผู้ใช้" }]}>

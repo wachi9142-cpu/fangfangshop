@@ -68,11 +68,17 @@
 | ส่วน | เทคโนโลยี |
 |------|-----------|
 | Framework | Next.js 15 (App Router) |
-| UI Library | React 18 |
-| Component Kit | Ant Design 5 (`antd`) + `@ant-design/icons` |
+| UI Library | React 19 |
+| Component Kit | Ant Design 5 (`antd`) + `@ant-design/icons` + `@ant-design/v5-patch-for-react-19` |
 | ภาษา | TypeScript |
 | การจัดเก็บข้อมูล | `localStorage` (ยังไม่มี backend) |
 | Styling | `app/globals.css` + inline/AntD |
+
+> ⚠️ **React 19 + Ant Design 5:** Next.js 15 ใช้ React 19 ส่วน antd v5 รองรับ React 16–18
+> โดยตรง จึงต้องมี patch `@ant-design/v5-patch-for-react-19` (import ที่ `app/antd-compat.tsx`)
+> และห่อแอปด้วย antd `<App>` ใน `app/layout.tsx` เพื่อใช้ `message`/`Modal` แบบ context ผ่าน
+> `App.useApp()` (อย่าใช้ static `message.xxx` ตรงๆ — จะขึ้น warning). **อย่า downgrade กลับไป
+> React 18 และอย่าลบ patch/`<App>` ออก** ไม่งั้น warning เรื่อง version จะกลับมา
 
 ---
 
