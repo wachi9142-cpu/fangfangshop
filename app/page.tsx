@@ -1080,7 +1080,19 @@ const categoryIconImages: Record<string, string> = {
   ของใช้ในบ้าน: "/category-icons/household.png",
   อาหารกระป๋อง: "/category-icons/canned-food.png",
   ช็อกโกแลต: "/category-icons/chocolate.png",
-  น้ำแข็ง: "/category-icons/ice.png"
+  น้ำแข็ง: "/category-icons/ice.png",
+  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-icons/beverage.png",
+  เครื่องดื่มแอลกอฮอล์: "/category-icons/alcohol.png",
+  "แซนวิช/ขนมปัง": "/category-icons/sandwich-bread.png",
+  เบเกอรี่: "/category-icons/bakery.png",
+  อาหารแห้ง: "/category-icons/dry-food.png",
+  ไอทีและมือถือ: "/category-icons/it-mobile.png",
+  บะหมี่กึ่งสำเร็จรูป: "/category-icons/instant-noodle.png",
+  ลูกอมและหมากฝรั่ง: "/category-icons/candy-gum.png",
+  เครื่องปรุง: "/category-icons/seasoning.png",
+  "บุหรี่/ยาสูบ": "/category-icons/tobacco.png",
+  ของแช่เย็น: "/category-icons/chilled-food.png",
+  สินค้าขายยกแพ็ก: "/category-icons/wholesale-pack.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
