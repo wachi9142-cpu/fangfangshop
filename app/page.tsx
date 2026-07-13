@@ -1059,6 +1059,30 @@ const categoryBannerImages: Record<string, string> = {
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
 };
 
+// ไอคอนประจำหมวด (รูปแมวโทนครีมตามธีมร้าน) แสดงหน้าชื่อหมวดในแถบเลือกหมวด
+const categoryIconImages: Record<string, string> = {
+  ทั้งหมด: "/category-icons/all.png",
+  "อุปกรณ์เครื่องเขียน/สำนักงาน": "/category-icons/stationery.png",
+  ยาสามัญประจำบ้าน: "/category-icons/medicine.png",
+  "สุขภาพ/สวย": "/category-icons/health-beauty.png",
+  "อาหารเสริม/เวชสำอาง": "/category-icons/supplement.png",
+  ขนมและของกินเล่น: "/category-icons/snacks.png",
+  สินค้าใหม่แกะกล่อง: "/category-icons/new-arrivals.png",
+  เนื้อสัตว์: "/category-icons/meat.png",
+  ไข่: "/category-icons/egg.png",
+  ผลไม้: "/category-icons/fruit.png",
+  เลย์: "/category-icons/lay.png",
+  "นม/โยเกิร์ต": "/category-icons/milk-yogurt.png",
+  น้ำสมุนไพรโฮมเมด: "/category-icons/herbal-drink.png",
+  สินค้าสัตว์เลี้ยง: "/category-icons/pet.png",
+  "แฟชั่น/ไลฟสไตล์": "/category-icons/fashion-lifestyle.png",
+  ของสด: "/category-icons/fresh-food.png",
+  ของใช้ในบ้าน: "/category-icons/household.png",
+  อาหารกระป๋อง: "/category-icons/canned-food.png",
+  ช็อกโกแลต: "/category-icons/chocolate.png",
+  น้ำแข็ง: "/category-icons/ice.png"
+};
+
 const dryFoodCategory = "อาหารแห้ง";
 const dryFoodSubcategories = ["ทั้งหมด", "อาหารสำเร็จรูป", "อาหารแห้ง", "อาหารกระป๋อง", "ส่วนประกอบการชง"] as const;
 type DryFoodSubcategory = (typeof dryFoodSubcategories)[number];
@@ -1195,6 +1219,24 @@ function matchesMedicineSubcategory(product: Product, subcategory: MedicineSubca
   const searchableMedicineText = `${product.name} ${product.sizeLabel ?? ""}`;
 
   return medicineSubcategoryKeywords[subcategory].some((keyword) => searchableMedicineText.includes(keyword));
+}
+
+const householdCategory = "ของใช้ในบ้าน";
+const householdSubcategories = ["ทั้งหมด", "ธูป เทียน และอุปกรณ์จุดไฟ"] as const;
+type HouseholdSubcategory = (typeof householdSubcategories)[number];
+
+const householdSubcategoryKeywords: Record<Exclude<HouseholdSubcategory, "ทั้งหมด">, string[]> = {
+  "ธูป เทียน และอุปกรณ์จุดไฟ": ["ธูป", "เทียน", "ไฟแช็ค", "ไฟแช็ก", "ไม้ขีด", "จุดไฟ", "เชื้อเพลิง", "แก๊สกระป๋อง", "แก๊สปิกนิก", "น้ำมันก๊าด", "ตะเกียง", "ก้อนจุดไฟ"]
+};
+
+function matchesHouseholdSubcategory(product: Product, subcategory: HouseholdSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableHouseholdText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return householdSubcategoryKeywords[subcategory].some((keyword) => searchableHouseholdText.includes(keyword));
 }
 
 const alcoholCategory = "เครื่องดื่มแอลกอฮอล์";
@@ -1585,6 +1627,7 @@ export default function Home() {
   const [supplementSubcategory, setSupplementSubcategory] = useState<SupplementSubcategory>("ทั้งหมด");
   const [healthBeautySubcategory, setHealthBeautySubcategory] = useState<HealthBeautySubcategory>("ทั้งหมด");
   const [medicineSubcategory, setMedicineSubcategory] = useState<MedicineSubcategory>("ทั้งหมด");
+  const [householdSubcategory, setHouseholdSubcategory] = useState<HouseholdSubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1701,12 +1744,14 @@ export default function Home() {
                               ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
                               : category === eggCategory
                                 ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
-                                : item.category === category);
+                                : category === householdCategory
+                                  ? item.category === householdCategory && matchesHouseholdSubcategory(item, householdSubcategory)
+                                  : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -1816,6 +1861,10 @@ export default function Home() {
 
     if (nextCategory !== medicineCategory) {
       setMedicineSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== householdCategory) {
+      setHouseholdSubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== alcoholCategory) {
@@ -2040,16 +2089,30 @@ export default function Home() {
             onClick={() => scrollCategories("left")}
           />
           <div className="category-row" aria-label="หมวดหมู่สินค้า" ref={categoryRowRef}>
-            {categories.map((item) => (
-              <Button
-                className="category-chip"
-                key={item}
-                type={category === item ? "primary" : "default"}
-                onClick={() => selectCategory(item)}
-              >
-                {getCategoryLabel(item)}
-              </Button>
-            ))}
+            {categories.map((item) => {
+              const categoryIcon = categoryIconImages[item];
+
+              return (
+                <Button
+                  className={`category-chip${categoryIcon ? " has-icon" : ""}`}
+                  key={item}
+                  type={category === item ? "primary" : "default"}
+                  onClick={() => selectCategory(item)}
+                >
+                  {categoryIcon ? (
+                    <NextImage
+                      className="category-chip-icon"
+                      src={categoryIcon}
+                      alt=""
+                      width={22}
+                      height={22}
+                      loading="eager"
+                    />
+                  ) : null}
+                  {getCategoryLabel(item)}
+                </Button>
+              );
+            })}
           </div>
           <Button
             aria-label="เลื่อนหมวดหมู่ไปทางขวา"
@@ -2107,6 +2170,10 @@ export default function Home() {
 
         {category === medicineCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยยาสามัญประจำบ้าน", medicineSubcategories, medicineSubcategory, setMedicineSubcategory)
+        ) : null}
+
+        {category === householdCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยของใช้ในบ้าน", householdSubcategories, householdSubcategory, setHouseholdSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
