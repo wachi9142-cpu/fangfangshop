@@ -938,7 +938,7 @@ const initialProducts: Product[] = [
   { id: 8, name: "ไฟแช็คคละสี", category: "ของใช้ในบ้าน", stock: 4, minStock: 8, unit: "ชิ้น", price: 10, updatedBy: "พนักงานขาย", imageUrl: "/product-images/lighter-mixed-color.png" },
   { id: 9, name: "น้ำยาล้างจาน", category: "ของใช้ในบ้าน", stock: 16, minStock: 6, unit: "ขวด", price: 35, updatedBy: "เจ้าของร้าน" },
   { id: 10, name: "ตะหลิวสแตนเลส", category: "ของใช้ในบ้าน", stock: 5, minStock: 4, unit: "อัน", price: 49, updatedBy: "พนักงานขาย" },
-  { id: 11, name: "น้ำปลาแท้", category: "อาหารแห้ง", stock: 13, minStock: 8, unit: "ขวด", price: 28, updatedBy: "เจ้าของร้าน" },
+  { id: 11, name: "น้ำปลาแท้", category: "เครื่องปรุง", stock: 13, minStock: 8, unit: "ขวด", price: 28, updatedBy: "เจ้าของร้าน" },
   { id: 12, name: "รถของเล่นจิ๋ว", category: "แฟชั่น/ไลฟสไตล์", stock: 11, minStock: 8, unit: "ชิ้น", price: 15, updatedBy: "พนักงานขาย" },
   { id: 13, name: "ปากกาลูกลื่น", category: "อุปกรณ์เครื่องเขียน/สำนักงาน", stock: 35, minStock: 12, unit: "ด้าม", price: 7, updatedBy: "เจ้าของร้าน" },
   { id: 14, name: "แชมพูถุงเติม", category: "สุขภาพ/สวย", stock: 6, minStock: 10, unit: "ถุง", price: 39, updatedBy: "พนักงานขาย" },
@@ -1096,16 +1096,55 @@ const categoryIconImages: Record<string, string> = {
 };
 
 const dryFoodCategory = "อาหารแห้ง";
-const dryFoodSubcategories = ["ทั้งหมด", "อาหารสำเร็จรูป", "อาหารแห้ง", "อาหารกระป๋อง", "ส่วนประกอบการชง"] as const;
+const dryFoodSubcategories = [
+  "ทั้งหมด",
+  "อาหารสำเร็จรูป",
+  "อาหารแห้ง",
+  "อาหารกระป๋อง",
+  "ส่วนประกอบการชง",
+  "ธัญพืช",
+  "เส้น",
+  "เนื้อสัตว์และอาหารทะเลแปรรูป"
+] as const;
 type DryFoodSubcategory = (typeof dryFoodSubcategories)[number];
 
-const dryFoodSubcategoryCategoryMap: Record<DryFoodSubcategory, string[]> = {
+// หัวข้อย่อยที่กรองด้วย "หมวดของสินค้า" (อาหารแห้งเป็นหมวดรวมของหลายหมวดย่อย)
+const dryFoodSubcategoryCategoryMap: Record<string, string[]> = {
   ทั้งหมด: ["บะหมี่กึ่งสำเร็จรูป", "อาหารแห้ง", "อาหารกระป๋อง", "ส่วนประกอบการชง"],
   อาหารสำเร็จรูป: ["บะหมี่กึ่งสำเร็จรูป"],
   อาหารแห้ง: ["อาหารแห้ง"],
   อาหารกระป๋อง: ["อาหารกระป๋อง"],
   ส่วนประกอบการชง: ["ส่วนประกอบการชง"]
 };
+
+// ทุกหมวดที่นับว่าเป็นสินค้าในกลุ่ม "อาหารแห้ง"
+const dryFoodGroupCategories = dryFoodSubcategoryCategoryMap["ทั้งหมด"];
+
+// หัวข้อย่อยที่กรองด้วย "คีย์เวิร์ดชื่อสินค้า" (จำกัดเฉพาะสินค้าในกลุ่มอาหารแห้ง)
+const dryFoodKeywordSubcategories: Record<string, string[]> = {
+  ธัญพืช: ["ธัญพืช", "ถั่ว", "งา", "ลูกเดือย", "ข้าวสาร", "ข้าวเหนียว", "ข้าวกล้อง", "ข้าวหอมมะลิ", "ควินัว", "คีนัว", "ข้าวโอ๊ต", "เมล็ดทานตะวัน", "เม็ดมะม่วง", "อัลมอนด์", "แมคคาเดเมีย", "เมล็ดฟักทอง"],
+  เส้น: ["เส้น", "วุ้นเส้น", "เส้นหมี่", "เส้นเล็ก", "เส้นใหญ่", "เส้นจันท์", "ก๋วยเตี๋ยว", "ก๋วยจั๊บ", "สปาเก็ตตี้", "สปาเกตตี", "พาสต้า", "มักกะโรนี", "เกี๊ยมอี๋", "เส้นบุก"],
+  "เนื้อสัตว์และอาหารทะเลแปรรูป": ["กุ้งแห้ง", "กุ้งฝอย", "กุ้งแก้ว", "ปลาแห้ง", "ปลาเค็ม", "ปลากรอบ", "ปลาป่น", "ปลาเส้น", "ปลาสวรรค์", "ปลาหมึกแห้ง", "หมึกแห้ง", "หมูหยอง", "หมูแผ่น", "หมูเส้น", "หมูทุบ", "หมูยอ", "เนื้อเค็ม", "เนื้อสวรรค์", "กุนเชียง", "ไส้กรอกอีสาน", "แหนม", "แปรรูป"]
+};
+
+function matchesDryFoodSubcategory(product: Product, subcategory: DryFoodSubcategory) {
+  const groupCategories = dryFoodSubcategoryCategoryMap[subcategory];
+
+  if (groupCategories) {
+    return groupCategories.includes(product.category);
+  }
+
+  // หัวข้อแบบคีย์เวิร์ด: ต้องอยู่ในกลุ่มอาหารแห้งก่อน แล้วค่อยเทียบชื่อสินค้า
+  if (!dryFoodGroupCategories.includes(product.category)) {
+    return false;
+  }
+
+  const searchableDryFoodText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return (dryFoodKeywordSubcategories[subcategory] ?? []).some((keyword) =>
+    searchableDryFoodText.includes(keyword)
+  );
+}
 
 const beverageCategory = "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)";
 const beverageSubcategories = ["ทั้งหมด", "น้ำดื่ม/น้ำแร่", "น้ำอัดลม/โซดา", "ชา", "กาแฟ", "สุขภาพ", "ชูกำลัง/เกลือแร่"] as const;
@@ -1405,6 +1444,11 @@ function normalizeCategory(category: string) {
   return legacyCategoryMap[category] ?? category;
 }
 
+// ย้ายหมวดของสินค้าเดิมที่บันทึกไว้ใน localStorage ให้ตรงกับหมวดปัจจุบัน
+const legacyProductCategoryMap: Record<string, string> = {
+  น้ำปลาแท้: "เครื่องปรุง"
+};
+
 function normalizeSearchText(value: string) {
   return value
     .toLowerCase()
@@ -1417,7 +1461,7 @@ function hydrateProduct(product: Product): Product {
   const name = legacyProductNameMap[product.name] ?? product.name;
   const sizeLabel =
     product.name !== name && name.includes("กระป๋องยาว") ? "กระป๋องยาว" : product.sizeLabel;
-  const normalizedCategory = normalizeCategory(product.category);
+  const normalizedCategory = legacyProductCategoryMap[name] ?? normalizeCategory(product.category);
   const shouldMoveFromAlcoholToBeverage =
     normalizedCategory === "เครื่องดื่มแอลกอฮอล์" && !alcoholProductNames.has(name);
   const category = alcoholProductNames.has(name)
@@ -1733,7 +1777,7 @@ export default function Home() {
       const matchesCategory =
         category === "ทั้งหมด" ||
         (category === dryFoodCategory
-          ? dryFoodSubcategoryCategoryMap[dryFoodSubcategory].includes(item.category)
+          ? matchesDryFoodSubcategory(item, dryFoodSubcategory)
           : category === beverageCategory
             ? item.category === beverageCategory && matchesBeverageSubcategory(item, beverageSubcategory)
             : category === supplementCategory
