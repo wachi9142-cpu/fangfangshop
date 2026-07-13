@@ -1160,6 +1160,43 @@ function matchesHealthBeautySubcategory(product: Product, subcategory: HealthBea
   return healthBeautySubcategoryKeywords[subcategory].some((keyword) => searchableHealthBeautyText.includes(keyword));
 }
 
+const medicineCategory = "ยาสามัญประจำบ้าน";
+const medicineSubcategories = [
+  "ทั้งหมด",
+  "แก้ปวด / ลดไข้",
+  "หวัด / ไอ / เจ็บคอ",
+  "ระบบทางเดินอาหาร",
+  "ภูมิแพ้",
+  "ผิวหนัง / แมลงกัดต่อย",
+  "ปวดเมื่อย",
+  "ยาสมุนไพร / บรรเทาอาการ",
+  "ยาดม / ยาหม่อง",
+  "ตา / หู / จมูก"
+] as const;
+type MedicineSubcategory = (typeof medicineSubcategories)[number];
+
+const medicineSubcategoryKeywords: Record<Exclude<MedicineSubcategory, "ทั้งหมด">, string[]> = {
+  "แก้ปวด / ลดไข้": ["แก้ปวด", "ลดไข้", "ไข้", "ปวดหัว", "ปวดศีรษะ", "พารา", "พาราเซตามอล", "ไทลินอล", "Tylenol", "ซาร่า", "Sara", "ทัมใจ", "บวดหาย", "แอสไพริน", "Aspirin", "ไอบูโพรเฟน", "Ibuprofen"],
+  "หวัด / ไอ / เจ็บคอ": ["หวัด", "แก้หวัด", "ไอ", "แก้ไอ", "เจ็บคอ", "เสมหะ", "ละลายเสมหะ", "น้ำมูก", "คัดจมูก", "ทิฟฟี่", "Tiffy", "ดีคอลเจน", "Decolgen", "ยาอม", "สเตร็ปซิล", "Strepsils", "ฟิชเชอร์แมน", "มายบาซิน", "กษัยการ"],
+  "ระบบทางเดินอาหาร": ["ท้องเสีย", "ท้องเดิน", "ท้องอืด", "ท้องเฟ้อ", "อาหารไม่ย่อย", "ยาธาตุ", "ขับลม", "ผงถ่าน", "คาร์บอน", "เกลือแร่", "ORS", "โออาร์เอส", "อีโน", "Eno", "ยาลดกรด", "กรดไหลย้อน", "แอนตาซิล", "Antacid", "ท้องผูก", "ยาระบาย", "ถ่ายพยาธิ", "พยาธิ"],
+  "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ"],
+  "ผิวหนัง / แมลงกัดต่อย": ["ผิวหนัง", "แมลงกัด", "แมลงสัตว์กัดต่อย", "ยุงกัด", "ทาแก้คัน", "แก้คัน", "คาลาไมน์", "Calamine", "ผื่น", "เชื้อรา", "กลาก", "เกลื้อน", "เบตาดีน", "Betadine", "ยาแดง", "ยาม่วง", "เจนเชียน", "ใส่แผล", "ครีมทาแผล", "ยากันยุง", "กันยุง"],
+  "ปวดเมื่อย": ["ปวดเมื่อย", "ปวดกล้ามเนื้อ", "ปวดข้อ", "ปวดหลัง", "ปวดเอว", "เคาน์เตอร์เพน", "Counterpain", "ยานวด", "เจลนวด", "แผ่นแปะ", "แปะแก้ปวด", "ซาลอนพาส", "Salonpas"],
+  "ยาสมุนไพร / บรรเทาอาการ": ["สมุนไพร", "ฟ้าทะลายโจร", "ขมิ้นชัน", "ขิง", "กระชาย", "ยาเขียว", "ยาหอม", "ประสะ", "ยาลม", "ยาต้ม", "ยาผง", "มะขามแขก", "ชาสมุนไพร"],
+  "ยาดม / ยาหม่อง": ["ยาดม", "ยาหม่อง", "ยาน้ำมัน", "แอมโมเนียหอม", "เซียงเพียว", "Siang Pure", "โป๊ยเซียน", "เพพเพอร์มินต์", "หม่องน้ำ", "หม่องขาว", "หม่องเหลือง", "ตราถ้วยทอง", "โพยไซอัน"],
+  "ตา / หู / จมูก": ["หยอดตา", "ล้างตา", "น้ำตาเทียม", "ยาป้ายตา", "ตาแดง", "หยอดหู", "ยาหู", "หยอดจมูก", "พ่นจมูก", "สเปรย์จมูก", "ล้างจมูก", "น้ำเกลือ", "โรฮ์โต", "Rohto", "วิสิน", "Visine"]
+};
+
+function matchesMedicineSubcategory(product: Product, subcategory: MedicineSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableMedicineText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return medicineSubcategoryKeywords[subcategory].some((keyword) => searchableMedicineText.includes(keyword));
+}
+
 const alcoholCategory = "เครื่องดื่มแอลกอฮอล์";
 const alcoholSubcategories = ["ทั้งหมด", "กระป๋อง", "ขวด", "แบน", "กลม"] as const;
 type AlcoholSubcategory = (typeof alcoholSubcategories)[number];
@@ -1547,6 +1584,7 @@ export default function Home() {
   const [beverageSubcategory, setBeverageSubcategory] = useState<BeverageSubcategory>("ทั้งหมด");
   const [supplementSubcategory, setSupplementSubcategory] = useState<SupplementSubcategory>("ทั้งหมด");
   const [healthBeautySubcategory, setHealthBeautySubcategory] = useState<HealthBeautySubcategory>("ทั้งหมด");
+  const [medicineSubcategory, setMedicineSubcategory] = useState<MedicineSubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1647,26 +1685,28 @@ export default function Home() {
               ? item.category === supplementCategory && matchesSupplementSubcategory(item, supplementSubcategory)
               : category === healthBeautyCategory
                 ? item.category === healthBeautyCategory && matchesHealthBeautySubcategory(item, healthBeautySubcategory)
-                : category === alcoholCategory
-                  ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
-                  : category === petCategory
-                    ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
-                    : category === herbalDrinkCategory
-                      ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
-                      : category === instantNoodleCategory
-                        ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
-                        : category === candyCategory
-                          ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
-                          : category === meatCategory
-                            ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
-                            : category === eggCategory
-                              ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
-                              : item.category === category);
+                : category === medicineCategory
+                  ? item.category === medicineCategory && matchesMedicineSubcategory(item, medicineSubcategory)
+                  : category === alcoholCategory
+                    ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
+                    : category === petCategory
+                      ? item.category === petCategory && matchesPetSubcategory(item, petSubcategory)
+                      : category === herbalDrinkCategory
+                        ? item.category === herbalDrinkCategory && matchesHerbalDrinkSubcategory(item, herbalDrinkSubcategory)
+                        : category === instantNoodleCategory
+                          ? item.category === instantNoodleCategory && matchesInstantNoodleSubcategory(item, instantNoodleSubcategory)
+                          : category === candyCategory
+                            ? item.category === candyCategory && matchesCandySubcategory(item, candySubcategory)
+                            : category === meatCategory
+                              ? item.category === meatCategory && matchesMeatSubcategory(item, meatSubcategory)
+                              : category === eggCategory
+                                ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
+                                : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -1772,6 +1812,10 @@ export default function Home() {
 
     if (nextCategory !== healthBeautyCategory) {
       setHealthBeautySubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== medicineCategory) {
+      setMedicineSubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== alcoholCategory) {
@@ -2059,6 +2103,10 @@ export default function Home() {
 
         {category === healthBeautyCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยสุขภาพและสวย", healthBeautySubcategories, healthBeautySubcategory, setHealthBeautySubcategory)
+        ) : null}
+
+        {category === medicineCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยยาสามัญประจำบ้าน", medicineSubcategories, medicineSubcategory, setMedicineSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
