@@ -584,6 +584,23 @@ select {
   white-space: nowrap;
 }
 
+.subcategory-chip.has-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline-start: 12px;
+}
+
+.subcategory-chip-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(74, 58, 43, 0.12);
+}
+
 .section-head {
   justify-content: space-between;
   flex-wrap: wrap;

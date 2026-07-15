@@ -1056,7 +1056,8 @@ const categoryBannerImages: Record<string, string> = {
   "บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร": "/category-banners/packaging-banner.png",
   ของแช่เย็น: "/category-banners/chilled-food-banner.png",
   สินค้าขายยกแพ็ก: "/category-banners/wholesale-pack-banner.png",
-  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png"
+  "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png",
+  เครื่องปรุง: "/category-banners/seasoning-banner.png"
 };
 
 // ไอคอนประจำหมวด (รูปแมวโทนครีมตามธีมร้าน) แสดงหน้าชื่อหมวดในแถบเลือกหมวด
@@ -1092,7 +1093,8 @@ const categoryIconImages: Record<string, string> = {
   เครื่องปรุง: "/category-icons/seasoning.png",
   "บุหรี่/ยาสูบ": "/category-icons/tobacco.png",
   ของแช่เย็น: "/category-icons/chilled-food.png",
-  สินค้าขายยกแพ็ก: "/category-icons/wholesale-pack.png"
+  สินค้าขายยกแพ็ก: "/category-icons/wholesale-pack.png",
+  ขนมไทย: "/category-icons/thai-dessert.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
@@ -1119,6 +1121,11 @@ const dryFoodSubcategoryCategoryMap: Record<string, string[]> = {
 
 // ทุกหมวดที่นับว่าเป็นสินค้าในกลุ่ม "อาหารแห้ง"
 const dryFoodGroupCategories = dryFoodSubcategoryCategoryMap["ทั้งหมด"];
+
+// ไอคอนของหัวข้อย่อย แยก map ตามหมวด เพราะชื่อหัวข้อย่อยซ้ำกันข้ามหมวดได้ (เช่น "ทั้งหมด")
+const dryFoodSubcategoryIcons: Record<string, string> = {
+  ธัญพืช: "/subcategory-icons/dry-food-grain.png"
+};
 
 // หัวข้อย่อยที่กรองด้วย "คีย์เวิร์ดชื่อสินค้า" (จำกัดเฉพาะสินค้าในกลุ่มอาหารแห้ง)
 const dryFoodKeywordSubcategories: Record<string, string[]> = {
@@ -1170,26 +1177,26 @@ function matchesBeverageSubcategory(product: Product, subcategory: BeverageSubca
 const supplementCategory = "อาหารเสริม/เวชสำอาง";
 const supplementSubcategories = [
   "ทั้งหมด",
-  "💪 วิตามิน",
-  "🌿 อาหารเสริม",
-  "🧴 ดูแลผิวหน้า",
-  "☀️ กันแดด",
-  "🧼 ดูแลผิวกาย",
-  "👄 ดูแลริมฝีปาก",
-  "🩺 เวชสำอาง",
-  "💇 ดูแลเส้นผม"
+  "วิตามิน",
+  "อาหารเสริม",
+  "ดูแลผิวหน้า",
+  "กันแดด",
+  "ดูแลผิวกาย",
+  "ดูแลริมฝีปาก",
+  "เวชสำอาง",
+  "ดูแลเส้นผม"
 ] as const;
 type SupplementSubcategory = (typeof supplementSubcategories)[number];
 
 const supplementSubcategoryKeywords: Record<Exclude<SupplementSubcategory, "ทั้งหมด">, string[]> = {
-  "💪 วิตามิน": ["วิตามิน", "Vitamin", "Vit", "ซิงก์", "Zinc", "เกลือแร่", "Fish Oil", "น้ำมันปลา", "แร่ธาตุ"],
-  "🌿 อาหารเสริม": ["อาหารเสริม", "Supplement", "โปรตีน", "Protein", "กลูต้า", "Gluta", "Collagen", "คอลลาเจน", "ไฟเบอร์", "Fiber"],
-  "🧴 ดูแลผิวหน้า": ["ผิวหน้า", "หน้า", "เซรั่ม", "Serum", "ครีมหน้า", "โฟม", "คลีนเซอร์", "ล้างหน้า", "สกินแคร์"],
-  "☀️ กันแดด": ["กันแดด", "Sun", "Sunscreen", "UV"],
-  "🧼 ดูแลผิวกาย": ["ผิวกาย", "โลชั่น", "บอดี้", "Body", "ครีมทาตัว", "สบู่", "อาบน้ำ"],
-  "👄 ดูแลริมฝีปาก": ["ริมฝีปาก", "ลิป", "Lip", "ปาก"],
-  "🩺 เวชสำอาง": ["เวชสำอาง", "Eucerin", "La Roche", "Cetaphil", "Smooth E", "Acne", "สิว", "Sensitive"],
-  "💇 ดูแลเส้นผม": ["เส้นผม", "ผม", "แชมพู", "ครีมนวด", "ทรีตเมนต์", "Hair"]
+  วิตามิน: ["วิตามิน", "Vitamin", "Vit", "ซิงก์", "Zinc", "เกลือแร่", "Fish Oil", "น้ำมันปลา", "แร่ธาตุ"],
+  อาหารเสริม: ["อาหารเสริม", "Supplement", "โปรตีน", "Protein", "กลูต้า", "Gluta", "Collagen", "คอลลาเจน", "ไฟเบอร์", "Fiber"],
+  ดูแลผิวหน้า: ["ผิวหน้า", "หน้า", "เซรั่ม", "Serum", "ครีมหน้า", "โฟม", "คลีนเซอร์", "ล้างหน้า", "สกินแคร์"],
+  กันแดด: ["กันแดด", "Sun", "Sunscreen", "UV"],
+  ดูแลผิวกาย: ["ผิวกาย", "โลชั่น", "บอดี้", "Body", "ครีมทาตัว", "สบู่", "อาบน้ำ"],
+  ดูแลริมฝีปาก: ["ริมฝีปาก", "ลิป", "Lip", "ปาก"],
+  เวชสำอาง: ["เวชสำอาง", "Eucerin", "La Roche", "Cetaphil", "Smooth E", "Acne", "สิว", "Sensitive"],
+  ดูแลเส้นผม: ["เส้นผม", "ผม", "แชมพู", "ครีมนวด", "ทรีตเมนต์", "Hair"]
 };
 
 function matchesSupplementSubcategory(product: Product, subcategory: SupplementSubcategory) {
@@ -1205,24 +1212,24 @@ function matchesSupplementSubcategory(product: Product, subcategory: SupplementS
 const healthBeautyCategory = "สุขภาพ/สวย";
 const healthBeautySubcategories = [
   "ทั้งหมด",
-  "💊 ยาและเวชภัณฑ์",
-  "🩹 ปฐมพยาบาล",
-  "🌡️ อุปกรณ์สุขภาพ",
-  "🧴 สุขอนามัย",
-  "🦟 ป้องกันแมลง",
-  "🦷 ดูแลช่องปาก",
-  "👶 แม่และเด็ก"
+  "ยาและเวชภัณฑ์",
+  "ปฐมพยาบาล",
+  "อุปกรณ์สุขภาพ",
+  "สุขอนามัย",
+  "ป้องกันแมลง",
+  "ดูแลช่องปาก",
+  "แม่และเด็ก"
 ] as const;
 type HealthBeautySubcategory = (typeof healthBeautySubcategories)[number];
 
 const healthBeautySubcategoryKeywords: Record<Exclude<HealthBeautySubcategory, "ทั้งหมด">, string[]> = {
-  "💊 ยาและเวชภัณฑ์": ["ยา", "เวชภัณฑ์", "พารา", "พาราเซตามอล", "แก้ปวด", "ลดไข้", "ยาแก้", "ยาหม่อง", "ยาดม"],
-  "🩹 ปฐมพยาบาล": ["ปฐมพยาบาล", "พลาสเตอร์", "ผ้าพันแผล", "ผ้าก๊อซ", "สำลี", "แอลกอฮอล์", "เบตาดีน", "แผล"],
-  "🌡️ อุปกรณ์สุขภาพ": ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
-  "🧴 สุขอนามัย": ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
-  "🦟 ป้องกันแมลง": ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
-  "🦷 ดูแลช่องปาก": ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก"],
-  "👶 แม่และเด็ก": ["แม่และเด็ก", "เด็ก", "ทารก", "แพมเพิร์ส", "ผ้าอ้อม", "ขวดนม", "จุกนม", "แป้งเด็ก"]
+  ยาและเวชภัณฑ์: ["ยา", "เวชภัณฑ์", "พารา", "พาราเซตามอล", "แก้ปวด", "ลดไข้", "ยาแก้", "ยาหม่อง", "ยาดม"],
+  ปฐมพยาบาล: ["ปฐมพยาบาล", "พลาสเตอร์", "ผ้าพันแผล", "ผ้าก๊อซ", "สำลี", "แอลกอฮอล์", "เบตาดีน", "แผล"],
+  อุปกรณ์สุขภาพ: ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
+  สุขอนามัย: ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
+  ป้องกันแมลง: ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
+  ดูแลช่องปาก: ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก"],
+  แม่และเด็ก: ["แม่และเด็ก", "เด็ก", "ทารก", "แพมเพิร์ส", "ผ้าอ้อม", "ขวดนม", "จุกนม", "แป้งเด็ก"]
 };
 
 function matchesHealthBeautySubcategory(product: Product, subcategory: HealthBeautySubcategory) {
@@ -1970,7 +1977,8 @@ export default function Home() {
     label: string,
     items: readonly T[],
     activeItem: T,
-    setActiveItem: (item: T) => void
+    setActiveItem: (item: T) => void,
+    iconMap?: Record<string, string>
   ) {
     return (
       <div className="subcategory-scroller">
@@ -1981,16 +1989,30 @@ export default function Home() {
           onClick={() => scrollSubcategories("left")}
         />
         <div className="subcategory-row" aria-label={label} ref={subcategoryRowRef}>
-          {items.map((item) => (
-            <Button
-              className="subcategory-chip"
-              key={item}
-              type={activeItem === item ? "primary" : "default"}
-              onClick={() => setActiveItem(item)}
-            >
-              {item}
-            </Button>
-          ))}
+          {items.map((item) => {
+            const subcategoryIcon = iconMap?.[item];
+
+            return (
+              <Button
+                className={`subcategory-chip${subcategoryIcon ? " has-icon" : ""}`}
+                key={item}
+                type={activeItem === item ? "primary" : "default"}
+                onClick={() => setActiveItem(item)}
+              >
+                {subcategoryIcon ? (
+                  <NextImage
+                    className="subcategory-chip-icon"
+                    src={subcategoryIcon}
+                    alt=""
+                    width={26}
+                    height={26}
+                    loading="eager"
+                  />
+                ) : null}
+                {item}
+              </Button>
+            );
+          })}
         </div>
         <Button
           aria-label="เลื่อนหัวข้อย่อยไปทางขวา"
@@ -2209,7 +2231,7 @@ export default function Home() {
         ) : null}
 
         {category === dryFoodCategory ? (
-          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory)
+          renderSubcategoryScroller("หัวข้อย่อยอาหารแห้ง", dryFoodSubcategories, dryFoodSubcategory, setDryFoodSubcategory, dryFoodSubcategoryIcons)
         ) : null}
 
         {category === beverageCategory ? (
