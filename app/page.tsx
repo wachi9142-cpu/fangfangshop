@@ -929,6 +929,33 @@ const alcoholProductNames = new Set([
   ...alcoholProducts.map((product) => product.name)
 ]);
 
+const instantNoodleProducts: Product[] = [
+  { name: "มาม่า รสต้มยำกุ้งน้ำข้น", unit: "ซอง" },
+  { name: "มาม่า รสเย็นตาโฟต้มยำหม้อไฟ", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "มาม่า รสหมูสับ", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "มาม่า เส้นหมี่ต้มยำกุ้ง", unit: "ซอง", sizeLabel: "55 กรัม" },
+  { name: "มาม่า รสเป็ดพะโล้", unit: "ซอง", sizeLabel: "55 กรัม" },
+  { name: "ไวไว ปรุงสำเร็จ", unit: "ซอง" },
+  { name: "ไวไว รสหมูสับ", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "ไวไว รสหมูสับต้มยำ", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "ไวไว รสหอยลายผัดฉ่า แห้ง", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "ไวไว เส้นหมี่ปรุงรส", unit: "ซอง", sizeLabel: "55 กรัม" },
+  { name: "ยำยำ คัพ รสต้มยำกุ้ง", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "ยำยำ คัพ รสหมี่กี้ทะเล", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "ยำยำ บิ๊กคัพ รสต้มยำกุ้งน้ำข้น", unit: "ถ้วย", sizeLabel: "บิ๊กคัพ" },
+  { name: "ยำยำ สูตรเด็ด รสสไปซี่ล็อบสเตอร์", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "ยำยำ สูตรเด็ด รสหมูสับโคชูจัง", unit: "ถ้วย", sizeLabel: "คัพ" }
+].map((product, index) => ({
+  id: 10000 + index,
+  category: "บะหมี่กึ่งสำเร็จรูป",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -977,6 +1004,7 @@ const initialProducts: Product[] = [
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
   ...seasoningProducts,
+  ...instantNoodleProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
@@ -1348,7 +1376,7 @@ function matchesHerbalDrinkSubcategory(product: Product, subcategory: HerbalDrin
 }
 
 const instantNoodleCategory = "บะหมี่กึ่งสำเร็จรูป";
-const instantNoodleSubcategories = ["ทั้งหมด", "มาม่า", "มาม่า OK", "ไวไว (Wai Wai)", "ยำยำ (Yum Yum)", "นิสชิน (Nissin)", "ซัมยัง (Samyang)", "มาม่าเกาหลี"] as const;
+const instantNoodleSubcategories = ["ทั้งหมด", "มาม่า", "มาม่า OK", "ไวไว (Wai Wai)", "ยำยำ (Yum Yum)", "ควิก", "นิสชิน (Nissin)", "ซัมยัง (Samyang)", "มาม่าเกาหลี"] as const;
 type InstantNoodleSubcategory = (typeof instantNoodleSubcategories)[number];
 
 const instantNoodleSubcategoryKeywords: Record<Exclude<InstantNoodleSubcategory, "ทั้งหมด">, string[]> = {
@@ -1356,6 +1384,7 @@ const instantNoodleSubcategoryKeywords: Record<Exclude<InstantNoodleSubcategory,
   "มาม่า OK": ["มาม่า OK", "มาม่าโอเค", "Mama OK", "MAMA OK"],
   "ไวไว (Wai Wai)": ["ไวไว", "Wai Wai", "WaiWai"],
   "ยำยำ (Yum Yum)": ["ยำยำ", "Yum Yum", "YumYum"],
+  ควิก: ["ควิก", "Quick", "QUICK"],
   "นิสชิน (Nissin)": ["นิสชิน", "Nissin"],
   "ซัมยัง (Samyang)": ["ซัมยัง", "Samyang"],
   มาม่าเกาหลี: ["มาม่าเกาหลี", "เกาหลี", "Korean"]
@@ -2005,8 +2034,8 @@ export default function Home() {
                     className="subcategory-chip-icon"
                     src={subcategoryIcon}
                     alt=""
-                    width={26}
-                    height={26}
+                    width={22}
+                    height={22}
                     loading="eager"
                   />
                 ) : null}

@@ -546,10 +546,12 @@ select {
   font-size: 34px;
 }
 
+/* จัดแถบหัวข้อย่อยให้เหมือนแถบหมวดหลัก (กริด 2 แถว) เพื่อให้เห็นหัวข้อพร้อมกันหลายอันและหาง่ายขึ้น */
 .subcategory-row {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
   grid-auto-columns: max-content;
   overflow-x: auto;
   padding: 8px 0 2px;
@@ -571,15 +573,13 @@ select {
 }
 
 .subcategory-scroll-button {
-  margin-top: 6px;
+  width: 38px;
+  height: 36px;
+  padding: 0;
 }
 
 .subcategory-chip {
-  height: 44px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 800;
-  padding-inline: 18px;
+  height: 36px;
   scroll-snap-align: start;
   white-space: nowrap;
 }
@@ -587,13 +587,12 @@ select {
 .subcategory-chip.has-icon {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding-inline-start: 12px;
+  gap: 7px;
 }
 
 .subcategory-chip-icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   object-fit: cover;
   flex: none;
