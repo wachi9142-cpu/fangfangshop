@@ -1094,7 +1094,8 @@ const categoryIconImages: Record<string, string> = {
   "บุหรี่/ยาสูบ": "/category-icons/tobacco.png",
   ของแช่เย็น: "/category-icons/chilled-food.png",
   สินค้าขายยกแพ็ก: "/category-icons/wholesale-pack.png",
-  ขนมไทย: "/category-icons/thai-dessert.png"
+  ขนมไทย: "/category-icons/thai-dessert.png",
+  บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร: "/category-icons/packaging.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
