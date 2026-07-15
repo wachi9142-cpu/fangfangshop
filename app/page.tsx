@@ -974,7 +974,6 @@ const initialProducts: Product[] = [
   { id: 3000, name: "น้ำแข็งก้อน", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
   { id: 3001, name: "น้ำแข็งป่น", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
   { id: 3002, name: "น้ำแข็งก้อนเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
-  { id: 3003, name: "น้ำแข็ง 5 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 5, sizeLabel: "ถุง 5 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
   ...seasoningProducts,
@@ -1551,6 +1550,7 @@ function mergeSavedProducts(savedProducts: Product[]) {
   const hydratedProducts = savedProducts
     .map((product) => hydrateProduct(product))
     .filter((product) => product.name !== "บุหรี่ซองแดง")
+    .filter((product) => product.name !== "น้ำแข็ง 5 บาท")
     .filter((product) => !(product.category === "สินค้าสัตว์เลี้ยง" && product.isPlaceholder))
     .filter((product) => !(product.category === "เลย์" && product.price !== 5 && product.price !== 20))
     .filter(
