@@ -958,10 +958,32 @@ const instantNoodleProducts: Product[] = [
   { name: "นิสชิน รสทงคตสึ", unit: "ซอง", sizeLabel: "60 กรัม" },
   { name: "นิสชิน รสไก่เผ็ดเกาหลีชีส (แบบแห้ง)", unit: "ซอง", sizeLabel: "60 กรัม" },
   { name: "นิสชิน รสฮอตชิลลี่ล็อบสเตอร์ (แบบแห้ง)", unit: "ซอง", sizeLabel: "60 กรัม" },
-  { name: "นิสชิน รสหมูสับ", unit: "ซอง", sizeLabel: "60 กรัม" }
+  { name: "นิสชิน รสหมูสับ", unit: "ซอง", sizeLabel: "60 กรัม" },
+  { name: "นิสชิน คัพ รสไก่เผ็ดเกาหลีชีส (แบบแห้ง)", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "นิสชิน คัพ รสสไปซี่ (แบบแห้ง)", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "นิสชิน คัพ รสสาหร่าย", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "นิสชิน คัพ รสไก่ข้าวโพด", unit: "ถ้วย", sizeLabel: "คัพ" },
+  { name: "นิสชิน คัพ รสไก่เห็ดหอม", unit: "ถ้วย", sizeLabel: "คัพ" }
 ].map((product, index) => ({
   id: 10000 + index,
   category: "บะหมี่กึ่งสำเร็จรูป",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
+const personalCareProducts: Product[] = [
+  { name: "โซฟี แบบกระชับ 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 6 ชิ้น" },
+  { name: "โซฟี Cooling Fresh มีปีก 23 ซม.", unit: "แพ็ก", sizeLabel: "23 ซม. 8 ชิ้น" },
+  { name: "โซฟี Charcoal Fresh กลางคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 14 ชิ้น" },
+  { name: "โซฟี หลับสนิทตลอดคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 12 ชิ้น" },
+  { name: "ลอรีเอะ Soft & Safe สลิม กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "4 ชิ้น" }
+].map((product, index) => ({
+  id: 11000 + index,
+  category: "ของใช้ส่วนตัว",
   stock: 20,
   minStock: 5,
   price: 0,
@@ -1055,6 +1077,7 @@ const defaultCategories = [
   "เครื่องปรุง",
   "ขนมไทย",
   "ของใช้ในบ้าน",
+  "ของใช้ส่วนตัว",
   "เครื่องดื่มแอลกอฮอล์",
   "บุหรี่/ยาสูบ",
   "อาหารกระป๋อง",
