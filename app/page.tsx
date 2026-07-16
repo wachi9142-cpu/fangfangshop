@@ -1413,6 +1413,46 @@ function matchesHerbalDrinkSubcategory(product: Product, subcategory: HerbalDrin
   return subcategory === "น้ำสมุนไพรไม่มีน้ำตาล" ? isNoSugar : !isNoSugar;
 }
 
+const personalCareCategory = "ของใช้ส่วนตัว";
+const personalCareSubcategories = [
+  "ทั้งหมด",
+  "ผ้าอนามัย",
+  "ผ้าอนามัยแบบกางเกงใน",
+  "ผลิตภัณฑ์ทำความสะอาดจุดซ่อนเร้น"
+] as const;
+type PersonalCareSubcategory = (typeof personalCareSubcategories)[number];
+
+function matchesPersonalCareSubcategory(product: Product, subcategory: PersonalCareSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchablePersonalCareText = `${product.name} ${product.sizeLabel ?? ""}`;
+  const isPants = searchablePersonalCareText.includes("กางเกง");
+  const isWash =
+    searchablePersonalCareText.includes("ทำความสะอาด") ||
+    searchablePersonalCareText.includes("จุดซ่อนเร้น") ||
+    searchablePersonalCareText.includes("เฟมินิน") ||
+    searchablePersonalCareText.includes("Feminine");
+
+  if (subcategory === "ผ้าอนามัยแบบกางเกงใน") {
+    return isPants;
+  }
+
+  if (subcategory === "ผลิตภัณฑ์ทำความสะอาดจุดซ่อนเร้น") {
+    return isWash;
+  }
+
+  // ผ้าอนามัย (แบบแผ่น) — ตัดชนิดกางเกงในและผลิตภัณฑ์ทำความสะอาดออก
+  if (isPants || isWash) {
+    return false;
+  }
+
+  return ["ผ้าอนามัย", "โซฟี", "SOFY", "Sofy", "ลอรีเอะ", "Laurier"].some((keyword) =>
+    searchablePersonalCareText.includes(keyword)
+  );
+}
+
 const instantNoodleCategory = "บะหมี่กึ่งสำเร็จรูป";
 const instantNoodleSubcategories = ["ทั้งหมด", "มาม่า", "มาม่า OK", "ไวไว (Wai Wai)", "ยำยำ (Yum Yum)", "ควิก", "นิสชิน (Nissin)", "ซัมยัง (Samyang)", "มาม่าเกาหลี"] as const;
 type InstantNoodleSubcategory = (typeof instantNoodleSubcategories)[number];
@@ -1759,6 +1799,7 @@ export default function Home() {
   const [healthBeautySubcategory, setHealthBeautySubcategory] = useState<HealthBeautySubcategory>("ทั้งหมด");
   const [medicineSubcategory, setMedicineSubcategory] = useState<MedicineSubcategory>("ทั้งหมด");
   const [householdSubcategory, setHouseholdSubcategory] = useState<HouseholdSubcategory>("ทั้งหมด");
+  const [personalCareSubcategory, setPersonalCareSubcategory] = useState<PersonalCareSubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1876,12 +1917,14 @@ export default function Home() {
                                 ? item.category === eggCategory && matchesEggSubcategory(item, eggSubcategory)
                                 : category === householdCategory
                                   ? item.category === householdCategory && matchesHouseholdSubcategory(item, householdSubcategory)
-                                  : item.category === category);
+                                  : category === personalCareCategory
+                                    ? item.category === personalCareCategory && matchesPersonalCareSubcategory(item, personalCareSubcategory)
+                                    : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -1995,6 +2038,10 @@ export default function Home() {
 
     if (nextCategory !== householdCategory) {
       setHouseholdSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== personalCareCategory) {
+      setPersonalCareSubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== alcoholCategory) {
@@ -2298,6 +2345,10 @@ export default function Home() {
 
         {category === householdCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยของใช้ในบ้าน", householdSubcategories, householdSubcategory, setHouseholdSubcategory)
+        ) : null}
+
+        {category === personalCareCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยของใช้ส่วนตัว", personalCareSubcategories, personalCareSubcategory, setPersonalCareSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
