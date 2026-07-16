@@ -1739,7 +1739,6 @@ export default function Home() {
   const [loginForm] = Form.useForm<{ username: string; password: string }>();
   const isStaff = staffName !== null;
   const categoryRowRef = useRef<HTMLDivElement>(null);
-  const subcategoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
 
   useEffect(() => {
@@ -1996,13 +1995,6 @@ export default function Home() {
     });
   }
 
-  function scrollSubcategories(direction: "left" | "right") {
-    subcategoryRowRef.current?.scrollBy({
-      behavior: "smooth",
-      left: direction === "left" ? -260 : 260
-    });
-  }
-
   function renderSubcategoryScroller<T extends string>(
     label: string,
     items: readonly T[],
@@ -2011,45 +2003,31 @@ export default function Home() {
     iconMap?: Record<string, string>
   ) {
     return (
-      <div className="subcategory-scroller">
-        <Button
-          aria-label="เลื่อนหัวข้อย่อยไปทางซ้าย"
-          className="category-scroll-button subcategory-scroll-button"
-          icon={<LeftOutlined />}
-          onClick={() => scrollSubcategories("left")}
-        />
-        <div className="subcategory-row" aria-label={label} ref={subcategoryRowRef}>
-          {items.map((item) => {
-            const subcategoryIcon = iconMap?.[item];
+      <div className="subcategory-row" aria-label={label}>
+        {items.map((item) => {
+          const subcategoryIcon = iconMap?.[item];
 
-            return (
-              <Button
-                className={`subcategory-chip${subcategoryIcon ? " has-icon" : ""}`}
-                key={item}
-                type={activeItem === item ? "primary" : "default"}
-                onClick={() => setActiveItem(item)}
-              >
-                {subcategoryIcon ? (
-                  <NextImage
-                    className="subcategory-chip-icon"
-                    src={subcategoryIcon}
-                    alt=""
-                    width={22}
-                    height={22}
-                    loading="eager"
-                  />
-                ) : null}
-                {item}
-              </Button>
-            );
-          })}
-        </div>
-        <Button
-          aria-label="เลื่อนหัวข้อย่อยไปทางขวา"
-          className="category-scroll-button subcategory-scroll-button"
-          icon={<RightOutlined />}
-          onClick={() => scrollSubcategories("right")}
-        />
+          return (
+            <Button
+              className={`subcategory-chip${subcategoryIcon ? " has-icon" : ""}`}
+              key={item}
+              type={activeItem === item ? "primary" : "default"}
+              onClick={() => setActiveItem(item)}
+            >
+              {subcategoryIcon ? (
+                <NextImage
+                  className="subcategory-chip-icon"
+                  src={subcategoryIcon}
+                  alt=""
+                  width={22}
+                  height={22}
+                  loading="eager"
+                />
+              ) : null}
+              {item}
+            </Button>
+          );
+        })}
       </div>
     );
   }

@@ -546,41 +546,17 @@ select {
   font-size: 34px;
 }
 
-/* จัดแถบหัวข้อย่อยให้เหมือนแถบหมวดหลัก (กริด 2 แถว) เพื่อให้เห็นหัวข้อพร้อมกันหลายอันและหาง่ายขึ้น */
+/* แถบหัวข้อย่อย: ตัดปุ่มเลื่อนซ้าย-ขวาออก แล้วให้ชิปห่อบรรทัดเต็มความกว้าง (เห็นครบทุกอันในครั้งเดียว) */
 .subcategory-row {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(2, auto);
-  grid-auto-columns: max-content;
-  overflow-x: auto;
-  padding: 8px 0 2px;
-  scroll-behavior: smooth;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-}
-
-.subcategory-row::-webkit-scrollbar {
-  display: none;
-}
-
-.subcategory-scroller {
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) 38px;
-  align-items: center;
-  gap: 8px;
-  margin: 2px 0 4px;
-}
-
-.subcategory-scroll-button {
-  width: 38px;
-  height: 36px;
+  margin: 6px 0 4px;
   padding: 0;
 }
 
 .subcategory-chip {
   height: 36px;
-  scroll-snap-align: start;
   white-space: nowrap;
 }
 
