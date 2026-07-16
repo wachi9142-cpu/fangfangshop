@@ -1041,6 +1041,7 @@ const initialProducts: Product[] = [
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
   ...seasoningProducts,
   ...instantNoodleProducts,
+  ...personalCareProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
