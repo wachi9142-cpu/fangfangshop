@@ -1079,6 +1079,8 @@ const defaultCategories = [
   "ขนมไทย",
   "ของใช้ในบ้าน",
   "ของใช้ส่วนตัว",
+  "ของเล่น",
+  "กิ๊ฟช็อป",
   "เครื่องดื่มแอลกอฮอล์",
   "บุหรี่/ยาสูบ",
   "อาหารกระป๋อง",
@@ -1122,7 +1124,10 @@ const categoryBannerImages: Record<string, string> = {
   ของแช่เย็น: "/category-banners/chilled-food-banner.png",
   สินค้าขายยกแพ็ก: "/category-banners/wholesale-pack-banner.png",
   "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)": "/category-banners/beverage-cute-banner.png",
-  เครื่องปรุง: "/category-banners/seasoning-banner.png"
+  เครื่องปรุง: "/category-banners/seasoning-banner.png",
+  ของใช้ส่วนตัว: "/category-banners/personal-care-banner.png",
+  ของเล่น: "/category-banners/toys-banner.png",
+  กิ๊ฟช็อป: "/category-banners/gift-shop-banner.png"
 };
 
 // ไอคอนประจำหมวด (รูปแมวโทนครีมตามธีมร้าน) แสดงหน้าชื่อหมวดในแถบเลือกหมวด
@@ -1160,7 +1165,10 @@ const categoryIconImages: Record<string, string> = {
   ของแช่เย็น: "/category-icons/chilled-food.png",
   สินค้าขายยกแพ็ก: "/category-icons/wholesale-pack.png",
   ขนมไทย: "/category-icons/thai-dessert.png",
-  บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร: "/category-icons/packaging.png"
+  บรรจุภัณฑ์และอุปกรณ์แพ็กอาหาร: "/category-icons/packaging.png",
+  ของใช้ส่วนตัว: "/category-icons/personal-care.png",
+  ของเล่น: "/category-icons/toys.png",
+  กิ๊ฟช็อป: "/category-icons/gift-shop.png"
 };
 
 const dryFoodCategory = "อาหารแห้ง";
