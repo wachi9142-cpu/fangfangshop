@@ -980,7 +980,12 @@ const personalCareProducts: Product[] = [
   { name: "โซฟี Cooling Fresh มีปีก 23 ซม.", unit: "แพ็ก", sizeLabel: "23 ซม. 8 ชิ้น" },
   { name: "โซฟี Charcoal Fresh กลางคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 14 ชิ้น" },
   { name: "โซฟี หลับสนิทตลอดคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 12 ชิ้น" },
-  { name: "ลอรีเอะ Soft & Safe สลิม กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "4 ชิ้น" }
+  { name: "ลอรีเอะ Soft & Safe สลิม กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "4 ชิ้น" },
+  { name: "เอลิส Fairy Wings 30 ซม. กลางวัน-กลางคืน", unit: "แพ็ก", sizeLabel: "30 ซม. 12 ชิ้น" },
+  { name: "เอลิส Fairy Wings 22.5 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "22.5 ซม. 16 ชิ้น" },
+  { name: "เอลิส Fairy Wings 25 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "25 ซม. 14 ชิ้น" },
+  { name: "เอลิส Fairy Wings 35 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "35 ซม. 10 ชิ้น" },
+  { name: "เอลิส Fairy Wings 42 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "42 ซม. 6 ชิ้น" }
 ].map((product, index) => ({
   id: 11000 + index,
   category: "ของใช้ส่วนตัว",
@@ -1456,7 +1461,7 @@ function matchesPersonalCareSubcategory(product: Product, subcategory: PersonalC
     return false;
   }
 
-  return ["ผ้าอนามัย", "โซฟี", "SOFY", "Sofy", "ลอรีเอะ", "Laurier"].some((keyword) =>
+  return ["ผ้าอนามัย", "โซฟี", "SOFY", "Sofy", "ลอรีเอะ", "Laurier", "เอลิส", "elis", "Elis"].some((keyword) =>
     searchablePersonalCareText.includes(keyword)
   );
 }
