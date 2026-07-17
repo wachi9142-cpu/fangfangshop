@@ -198,6 +198,7 @@ const legacyProductNameMap: Record<string, string> = {
 };
 
 const productImageByName: Record<string, string> = {
+  "ซีอิ๊วขาว ตราเด็กสมบูรณ์ 150 มล.": "/product-images/seasoning/dek-somboon-light-soy-sauce-150ml.png",
   "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รส ออริจินอล": "/product-images/okashi-pet-snack-original.png",
   "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด": "/product-images/okashi-pet-snack-crab-stick.png",
   "Okashi โอคาชิ ปลาเส้นเล็ก 150 กรัม รสปูอัด": "/product-images/okashi-pet-snack-small-crab-stick.png",
@@ -801,6 +802,21 @@ const bulkPackProducts: Product[] = [
 }));
 
 const seasoningProducts: Product[] = [
+  {
+    id: "seasoning-dek-somboon-light-soy-sauce-150ml",
+    name: "ซีอิ๊วขาว ตราเด็กสมบูรณ์ 150 มล.",
+    category: "เครื่องปรุง",
+    subcategory: "เครื่องปรุง",
+    stock: 20,
+    minStock: 5,
+    unit: "ขวด",
+    shelf: "ชั้นเครื่องปรุง",
+    price: 0,
+    updatedBy: "เจ้าของร้าน",
+    imageUrl: "/product-images/seasoning/dek-somboon-light-soy-sauce-150ml.png",
+  },
+
+
   {
     id: 8000,
     name: "น้ำตาลทรายขาวมิตรผล 1 กิโลกรัม",
