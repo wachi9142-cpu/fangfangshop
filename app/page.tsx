@@ -803,20 +803,17 @@ const bulkPackProducts: Product[] = [
 
 const seasoningProducts: Product[] = [
   {
-    id: "seasoning-dek-somboon-light-soy-sauce-150ml",
+    id: 8006,
     name: "ซีอิ๊วขาว ตราเด็กสมบูรณ์ 150 มล.",
     category: "เครื่องปรุง",
-    subcategory: "เครื่องปรุง",
     stock: 20,
     minStock: 5,
     unit: "ขวด",
-    shelf: "ชั้นเครื่องปรุง",
+    sizeLabel: "150 มล.",
     price: 0,
     updatedBy: "เจ้าของร้าน",
-    imageUrl: "/product-images/seasoning/dek-somboon-light-soy-sauce-150ml.png",
+    imageUrl: "/product-images/seasoning/dek-somboon-light-soy-sauce-150ml.png"
   },
-
-
   {
     id: 8000,
     name: "น้ำตาลทรายขาวมิตรผล 1 กิโลกรัม",
@@ -1268,6 +1265,52 @@ function matchesBeverageSubcategory(product: Product, subcategory: BeverageSubca
   }
 
   return beverageSubcategoryKeywords[subcategory].some((keyword) => product.name.includes(keyword));
+}
+
+const milkCategory = "นม/โยเกิร์ต";
+const milkSubcategories = [
+  "ทั้งหมด",
+  "นม",
+  "โยเกิร์ต",
+  "นมถั่วเหลือง / น้ำเต้าหู้",
+  "นมเปรี้ยว"
+] as const;
+type MilkSubcategory = (typeof milkSubcategories)[number];
+
+function matchesMilkSubcategory(product: Product, subcategory: MilkSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableMilkText = `${product.name} ${product.sizeLabel ?? ""}`;
+  const isSoy = ["ถั่วเหลือง", "น้ำเต้าหู้", "นมถั่ว", "แลคตาซอย", "Lactasoy", "ไวตามิลค์", "ไวตามิ้ลค์", "วีซอย", "V-Soy", "ดีน่า"].some(
+    (keyword) => searchableMilkText.includes(keyword)
+  );
+  const isSour = ["นมเปรี้ยว", "เปรี้ยว", "ยาคูลท์", "Yakult", "ดัชชี่", "Dutchie", "บีทาเก้น", "Betagen", "ดีไลท์"].some((keyword) =>
+    searchableMilkText.includes(keyword)
+  );
+  const isYogurt = ["โยเกิร์ต", "Yogurt", "โยเกิ"].some((keyword) => searchableMilkText.includes(keyword));
+
+  if (subcategory === "นมถั่วเหลือง / น้ำเต้าหู้") {
+    return isSoy;
+  }
+
+  if (subcategory === "นมเปรี้ยว") {
+    return isSour;
+  }
+
+  if (subcategory === "โยเกิร์ต") {
+    return isYogurt;
+  }
+
+  // นม (นมจืด/นมรสต่างๆ) — ตัดถั่วเหลือง/นมเปรี้ยว/โยเกิร์ตออก
+  if (isSoy || isSour || isYogurt) {
+    return false;
+  }
+
+  return ["นม", "Milk", "เมจิ", "meiji", "โฟร์โมสต์", "Foremost", "ดัชมิลล์", "Dutch Mill", "หนองโพ", "โชคชัย", "แมกโนเลีย"].some(
+    (keyword) => searchableMilkText.includes(keyword)
+  );
 }
 
 const supplementCategory = "อาหารเสริม/เวชสำอาง";
@@ -1830,6 +1873,7 @@ export default function Home() {
   const [medicineSubcategory, setMedicineSubcategory] = useState<MedicineSubcategory>("ทั้งหมด");
   const [householdSubcategory, setHouseholdSubcategory] = useState<HouseholdSubcategory>("ทั้งหมด");
   const [personalCareSubcategory, setPersonalCareSubcategory] = useState<PersonalCareSubcategory>("ทั้งหมด");
+  const [milkSubcategory, setMilkSubcategory] = useState<MilkSubcategory>("ทั้งหมด");
   const [alcoholSubcategory, setAlcoholSubcategory] = useState<AlcoholSubcategory>("ทั้งหมด");
   const [petSubcategory, setPetSubcategory] = useState<PetSubcategory>("ทั้งหมด");
   const [herbalDrinkSubcategory, setHerbalDrinkSubcategory] = useState<HerbalDrinkSubcategory>("ทั้งหมด");
@@ -1949,12 +1993,14 @@ export default function Home() {
                                   ? item.category === householdCategory && matchesHouseholdSubcategory(item, householdSubcategory)
                                   : category === personalCareCategory
                                     ? item.category === personalCareCategory && matchesPersonalCareSubcategory(item, personalCareSubcategory)
-                                    : item.category === category);
+                                    : category === milkCategory
+                                      ? item.category === milkCategory && matchesMilkSubcategory(item, milkSubcategory)
+                                      : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, milkSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -2072,6 +2118,10 @@ export default function Home() {
 
     if (nextCategory !== personalCareCategory) {
       setPersonalCareSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== milkCategory) {
+      setMilkSubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== alcoholCategory) {
@@ -2379,6 +2429,10 @@ export default function Home() {
 
         {category === personalCareCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยของใช้ส่วนตัว", personalCareSubcategories, personalCareSubcategory, setPersonalCareSubcategory)
+        ) : null}
+
+        {category === milkCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยนม/โยเกิร์ต", milkSubcategories, milkSubcategory, setMilkSubcategory)
         ) : null}
 
         {category === alcoholCategory ? (
