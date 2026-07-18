@@ -1028,7 +1028,12 @@ const snackProducts: Product[] = (
     { name: "ตาวัน รสสาหร่ายทรงเครื่อง", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
     { name: "ตาวัน รสลาบแซ่บ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
     { name: "ตาวัน รสต้นตำรับ", price: 20, sizeLabel: "ซองใหญ่" },
-    { name: "ตาวัน จัมโบ้แพ็ค รสหมึกสามรส", price: 20, sizeLabel: "จัมโบ้แพ็ค 96 กรัม" }
+    { name: "ตาวัน จัมโบ้แพ็ค รสหมึกสามรส", price: 20, sizeLabel: "จัมโบ้แพ็ค 96 กรัม" },
+    { name: "ตาวัน รสไก่เว้งซี่จี๊ด", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    // PR Big Bag ซองใหญ่ 20 บาท
+    { name: "PR Big Bag รสสาหร่าย", price: 20, sizeLabel: "80 กรัม" },
+    { name: "PR Big Bag รสมะเขือเทศ", price: 20, sizeLabel: "80 กรัม" },
+    { name: "PR Big Bag รสกุ้งสไปซี่", price: 20, sizeLabel: "80 กรัม" }
   ] as { name: string; price?: number; sizeLabel?: string; unit?: string }[]
 ).map((product, index) => ({
   id: 12000 + index,
