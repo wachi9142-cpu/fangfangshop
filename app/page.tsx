@@ -127,6 +127,7 @@ const productStockByName: Record<string, number> = {
 };
 
 const legacyProductNameMap: Record<string, string> = {
+  "ตะวัน รสไก่เว้งซี่จี๊ด": "ตะวัน รสไก่วิงค์ซี๊ด",
   สิงห์กระป๋อง: "สิงห์กระป๋องยาว",
   เป็ปซี่กระป๋อง: "เป๊บซี่กระป๋อง",
   มิริด้าขวดเล็ก: "มิรินด้าขวดเล็ก",
@@ -411,7 +412,8 @@ const layProducts: Product[] = layFlavors.flatMap((flavor, index) => [
     unit: "ซองเล็ก",
     price: 5,
     sizeLabel: "ซองเล็ก",
-    updatedBy: "เจ้าของร้าน"
+    updatedBy: "เจ้าของร้าน",
+    imageUrl: layLargeProductImageByName[flavor.name]
   },
   {
     id: 1001 + index * 2,
@@ -1017,19 +1019,19 @@ const snackProducts: Product[] = (
     { name: "ปูไทย รสปลาหมึก" },
     { name: "แคมปัส รสช็อกโกแลต", sizeLabel: "30 กรัม" },
     { name: "ทวิสโก้ รสบาร์บีคิว" },
-    // ตาวัน ซองเล็ก 5 บาท
-    { name: "ตาวัน รสกุ้งกรอบ", sizeLabel: "ซองเล็ก 16 กรัม" },
-    { name: "ตาวัน รสหมึกสามรส", sizeLabel: "ซองเล็ก 16 กรัม" },
-    { name: "ตาวัน รสลาบแซ่บ", sizeLabel: "ซองเล็ก 16 กรัม" },
-    { name: "ตาวัน รสสาหร่ายทรงเครื่อง", sizeLabel: "ซองเล็ก" },
-    { name: "ตาวัน รสต้นตำรับ", sizeLabel: "ซองเล็ก" },
-    // ตาวัน ซองใหญ่ 20 บาท
-    { name: "ตาวัน รสกุ้งกรอบ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
-    { name: "ตาวัน รสสาหร่ายทรงเครื่อง", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
-    { name: "ตาวัน รสลาบแซ่บ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
-    { name: "ตาวัน รสต้นตำรับ", price: 20, sizeLabel: "ซองใหญ่" },
-    { name: "ตาวัน จัมโบ้แพ็ค รสหมึกสามรส", price: 20, sizeLabel: "จัมโบ้แพ็ค 96 กรัม" },
-    { name: "ตาวัน รสไก่เว้งซี่จี๊ด", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    // ตะวัน ซองเล็ก 5 บาท
+    { name: "ตะวัน รสกุ้งกรอบ", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตะวัน รสหมึกสามรส", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตะวัน รสลาบแซ่บ", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตะวัน รสสาหร่ายทรงเครื่อง", sizeLabel: "ซองเล็ก" },
+    { name: "ตะวัน รสต้นตำรับ", sizeLabel: "ซองเล็ก" },
+    // ตะวัน ซองใหญ่ 20 บาท
+    { name: "ตะวัน รสกุ้งกรอบ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตะวัน รสสาหร่ายทรงเครื่อง", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตะวัน รสลาบแซ่บ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตะวัน รสต้นตำรับ", price: 20, sizeLabel: "ซองใหญ่" },
+    { name: "ตะวัน จัมโบ้แพ็ค รสหมึกสามรส", price: 20, sizeLabel: "จัมโบ้แพ็ค 96 กรัม" },
+    { name: "ตะวัน รสไก่วิงค์ซี๊ด", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
     // PR Big Bag ซองใหญ่ 20 บาท
     { name: "PR Big Bag รสสาหร่าย", price: 20, sizeLabel: "80 กรัม" },
     { name: "PR Big Bag รสมะเขือเทศ", price: 20, sizeLabel: "80 กรัม" },
@@ -1724,7 +1726,7 @@ function hydrateProduct(product: Product): Product {
       ? "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)"
       : normalizedCategory;
   const imageUrl =
-    category === "เลย์" && product.price === 20 ? layLargeProductImageByName[name] : productImageByName[name];
+    category === "เลย์" ? layLargeProductImageByName[name] : productImageByName[name];
   const price = productPriceByName[name] ?? product.price;
   const stock = productStockByName[name] ?? product.stock;
 
@@ -1799,6 +1801,7 @@ function mergeSavedProducts(savedProducts: Product[]) {
     .map((product) => hydrateProduct(product))
     .filter((product) => product.name !== "บุหรี่ซองแดง")
     .filter((product) => product.name !== "น้ำแข็ง 5 บาท")
+    .filter((product) => !product.name.startsWith("ตาวัน"))
     .filter((product) => !(product.category === "สินค้าสัตว์เลี้ยง" && product.isPlaceholder))
     .filter((product) => !(product.category === "เลย์" && product.price !== 5 && product.price !== 20))
     .filter(
