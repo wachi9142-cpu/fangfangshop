@@ -1010,6 +1010,38 @@ const personalCareProducts: Product[] = [
   ...product
 }));
 
+const snackProducts: Product[] = (
+  [
+    { name: "เจ็ดซ์ รสซอสมะเขือเทศ", sizeLabel: "12 กรัม" },
+    { name: "เจ็ดซ์ รสซอสพริก", sizeLabel: "12 กรัม" },
+    { name: "ปูไทย รสปลาหมึก" },
+    { name: "แคมปัส รสช็อกโกแลต", sizeLabel: "30 กรัม" },
+    { name: "ทวิสโก้ รสบาร์บีคิว" },
+    // ตาวัน ซองเล็ก 5 บาท
+    { name: "ตาวัน รสกุ้งกรอบ", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตาวัน รสหมึกสามรส", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตาวัน รสลาบแซ่บ", sizeLabel: "ซองเล็ก 16 กรัม" },
+    { name: "ตาวัน รสสาหร่ายทรงเครื่อง", sizeLabel: "ซองเล็ก" },
+    { name: "ตาวัน รสต้นตำรับ", sizeLabel: "ซองเล็ก" },
+    // ตาวัน ซองใหญ่ 20 บาท
+    { name: "ตาวัน รสกุ้งกรอบ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตาวัน รสสาหร่ายทรงเครื่อง", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตาวัน รสลาบแซ่บ", price: 20, sizeLabel: "ซองใหญ่ 67 กรัม" },
+    { name: "ตาวัน รสต้นตำรับ", price: 20, sizeLabel: "ซองใหญ่" },
+    { name: "ตาวัน จัมโบ้แพ็ค รสหมึกสามรส", price: 20, sizeLabel: "จัมโบ้แพ็ค 96 กรัม" }
+  ] as { name: string; price?: number; sizeLabel?: string; unit?: string }[]
+).map((product, index) => ({
+  id: 12000 + index,
+  category: "ขนมและของกินเล่น",
+  stock: 20,
+  minStock: 5,
+  unit: "ซอง",
+  price: 5,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -1060,6 +1092,7 @@ const initialProducts: Product[] = [
   ...seasoningProducts,
   ...instantNoodleProducts,
   ...personalCareProducts,
+  ...snackProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
@@ -1073,6 +1106,7 @@ const initialProducts: Product[] = [
 const defaultCategories = [
   "อุปกรณ์เครื่องเขียน/สำนักงาน",
   "ยาสามัญประจำบ้าน",
+  "ปฐมพยาบาล",
   "สุขภาพ/สวย",
   "อาหารเสริม/เวชสำอาง",
   "ขนมและของกินเล่น",
@@ -1418,6 +1452,35 @@ function matchesMedicineSubcategory(product: Product, subcategory: MedicineSubca
   return medicineSubcategoryKeywords[subcategory].some((keyword) => searchableMedicineText.includes(keyword));
 }
 
+const firstAidCategory = "ปฐมพยาบาล";
+const firstAidSubcategories = [
+  "ทั้งหมด",
+  "พลาสเตอร์และผ้าปิดแผล",
+  "ผ้าก๊อซและอุปกรณ์พันแผล",
+  "น้ำยาทำแผล",
+  "ดูแลแผลไฟไหม้และแมลงกัดต่อย",
+  "ประคบร้อน-เย็น"
+] as const;
+type FirstAidSubcategory = (typeof firstAidSubcategories)[number];
+
+const firstAidSubcategoryKeywords: Record<Exclude<FirstAidSubcategory, "ทั้งหมด">, string[]> = {
+  พลาสเตอร์และผ้าปิดแผล: ["พลาสเตอร์", "ปิดแผล", "ผ้าปิดแผล", "แผ่นปิดแผล", "เทปปิดแผล", "แฮนซาพลาส", "Hansaplast"],
+  ผ้าก๊อซและอุปกรณ์พันแผล: ["ผ้าก๊อซ", "ก๊อซ", "ผ้าพันแผล", "ผ้าพัน", "ผ้ายืดพันแผล", "สำลี", "ก้านสำลี", "คอตตอนบัด", "เทปพันแผล", "เทปเยื่อกระดาษ"],
+  น้ำยาทำแผล: ["น้ำยาทำแผล", "ทำแผล", "เบตาดีน", "Betadine", "โพวิโดน", "แอลกอฮอล์", "ไฮโดรเจนเปอร์ออกไซด์", "น้ำเกลือล้างแผล", "ทิงเจอร์", "ยาแดง", "ยาม่วง", "เจนเชียน"],
+  ดูแลแผลไฟไหม้และแมลงกัดต่อย: ["ไฟไหม้", "น้ำร้อนลวก", "แผลไฟไหม้", "แมลงกัด", "แมลงสัตว์กัดต่อย", "ยุงกัด", "ทาแก้คัน", "แก้คัน", "คาลาไมน์", "Calamine", "ว่านหางจระเข้", "เจลว่านหางจระเข้", "บิวรี่"],
+  "ประคบร้อน-เย็น": ["ประคบ", "ประคบร้อน", "ประคบเย็น", "เจลประคบ", "แผ่นประคบ", "ถุงน้ำร้อน", "ไอซ์แพ็ค", "Ice Pack", "โคลด์แพ็ค", "แผ่นแปะลดไข้", "เจลลดไข้"]
+};
+
+function matchesFirstAidSubcategory(product: Product, subcategory: FirstAidSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableFirstAidText = `${product.name} ${product.sizeLabel ?? ""}`;
+
+  return firstAidSubcategoryKeywords[subcategory].some((keyword) => searchableFirstAidText.includes(keyword));
+}
+
 const householdCategory = "ของใช้ในบ้าน";
 const householdSubcategories = ["ทั้งหมด", "ธูป เทียน และอุปกรณ์จุดไฟ"] as const;
 type HouseholdSubcategory = (typeof householdSubcategories)[number];
@@ -1607,7 +1670,6 @@ const legacyCategoryMap: Record<string, string> = {
   ของใช้: "ของใช้ในบ้าน",
   เครื่องครัว: "ของใช้ในบ้าน",
   เครื่องปรุง: "เครื่องปรุง",
-  ของเล่น: "แฟชั่น/ไลฟสไตล์",
   "สุขภาพ/ความงาม": healthBeautyCategory,
   "แชมพู ครีมนวด": healthBeautyCategory,
   แปรงสีฟัน: healthBeautyCategory,
@@ -1728,6 +1790,7 @@ function sortProducts(productA: Product, productB: Product) {
 
 function mergeSavedProducts(savedProducts: Product[]) {
   const hydratedProducts = savedProducts
+    .filter((product) => typeof product.id === "number")
     .map((product) => hydrateProduct(product))
     .filter((product) => product.name !== "บุหรี่ซองแดง")
     .filter((product) => product.name !== "น้ำแข็ง 5 บาท")
@@ -1871,6 +1934,7 @@ export default function Home() {
   const [supplementSubcategory, setSupplementSubcategory] = useState<SupplementSubcategory>("ทั้งหมด");
   const [healthBeautySubcategory, setHealthBeautySubcategory] = useState<HealthBeautySubcategory>("ทั้งหมด");
   const [medicineSubcategory, setMedicineSubcategory] = useState<MedicineSubcategory>("ทั้งหมด");
+  const [firstAidSubcategory, setFirstAidSubcategory] = useState<FirstAidSubcategory>("ทั้งหมด");
   const [householdSubcategory, setHouseholdSubcategory] = useState<HouseholdSubcategory>("ทั้งหมด");
   const [personalCareSubcategory, setPersonalCareSubcategory] = useState<PersonalCareSubcategory>("ทั้งหมด");
   const [milkSubcategory, setMilkSubcategory] = useState<MilkSubcategory>("ทั้งหมด");
@@ -1973,7 +2037,9 @@ export default function Home() {
               ? item.category === supplementCategory && matchesSupplementSubcategory(item, supplementSubcategory)
               : category === healthBeautyCategory
                 ? item.category === healthBeautyCategory && matchesHealthBeautySubcategory(item, healthBeautySubcategory)
-                : category === medicineCategory
+                : category === firstAidCategory
+                  ? item.category === firstAidCategory && matchesFirstAidSubcategory(item, firstAidSubcategory)
+                  : category === medicineCategory
                   ? item.category === medicineCategory && matchesMedicineSubcategory(item, medicineSubcategory)
                   : category === alcoholCategory
                     ? item.category === alcoholCategory && matchesAlcoholSubcategory(item, alcoholSubcategory)
@@ -2000,7 +2066,7 @@ export default function Home() {
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, milkSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, firstAidSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, milkSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -2110,6 +2176,10 @@ export default function Home() {
 
     if (nextCategory !== medicineCategory) {
       setMedicineSubcategory("ทั้งหมด");
+    }
+
+    if (nextCategory !== firstAidCategory) {
+      setFirstAidSubcategory("ทั้งหมด");
     }
 
     if (nextCategory !== householdCategory) {
@@ -2421,6 +2491,10 @@ export default function Home() {
 
         {category === medicineCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยยาสามัญประจำบ้าน", medicineSubcategories, medicineSubcategory, setMedicineSubcategory)
+        ) : null}
+
+        {category === firstAidCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยปฐมพยาบาล", firstAidSubcategories, firstAidSubcategory, setFirstAidSubcategory)
         ) : null}
 
         {category === householdCategory ? (
