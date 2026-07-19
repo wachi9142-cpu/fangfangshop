@@ -1049,6 +1049,29 @@ const snackProducts: Product[] = (
   ...product
 }));
 
+const chocolateProducts: Product[] = [
+  { name: "ทิวลี่ ทวิน จัมโบ้", sizeLabel: "ซองแดง (ช็อกโกแลต)" },
+  { name: "ทิวลี่ ทวิน จัมโบ้", sizeLabel: "ซองน้ำเงิน (นม)" },
+  { name: "มอลกิสต์ รสช็อกโกแลต", sizeLabel: "42 กรัม" },
+  { name: "คริโก้ เวเฟอร์รสช็อกโกแลต" },
+  { name: "ทิวลี่ คลาสสิก", sizeLabel: "ซองแดง" },
+  { name: "ทิวลี่ คลาสสิก", sizeLabel: "ซองน้ำเงิน" },
+  { name: "ทิวลี่ Select อัลมอนด์และช็อกโกแลต" },
+  { name: "ทิวลี่ Big Bang ช็อกโกแลตคาราเมลข้าวพอง" },
+  { name: "เบ้งเบ้ง (beng-beng)" },
+  { name: "ทิวลี่ โอวัลติน ช็อกมอลต์และเฟลค" }
+].map((product, index) => ({
+  id: 13000 + index,
+  category: "ช็อกโกแลต",
+  stock: 20,
+  minStock: 5,
+  unit: "ซอง",
+  price: 5,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -1100,6 +1123,7 @@ const initialProducts: Product[] = [
   ...instantNoodleProducts,
   ...personalCareProducts,
   ...snackProducts,
+  ...chocolateProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
@@ -1393,7 +1417,6 @@ const healthBeautyCategory = "สุขภาพ/สวย";
 const healthBeautySubcategories = [
   "ทั้งหมด",
   "ยาและเวชภัณฑ์",
-  "ปฐมพยาบาล",
   "อุปกรณ์สุขภาพ",
   "สุขอนามัย",
   "ป้องกันแมลง",
@@ -1404,7 +1427,6 @@ type HealthBeautySubcategory = (typeof healthBeautySubcategories)[number];
 
 const healthBeautySubcategoryKeywords: Record<Exclude<HealthBeautySubcategory, "ทั้งหมด">, string[]> = {
   ยาและเวชภัณฑ์: ["ยา", "เวชภัณฑ์", "พารา", "พาราเซตามอล", "แก้ปวด", "ลดไข้", "ยาแก้", "ยาหม่อง", "ยาดม"],
-  ปฐมพยาบาล: ["ปฐมพยาบาล", "พลาสเตอร์", "ผ้าพันแผล", "ผ้าก๊อซ", "สำลี", "แอลกอฮอล์", "เบตาดีน", "แผล"],
   อุปกรณ์สุขภาพ: ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
   สุขอนามัย: ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
   ป้องกันแมลง: ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
