@@ -1072,6 +1072,24 @@ const chocolateProducts: Product[] = [
   ...product
 }));
 
+const medicineProducts: Product[] = [
+  { name: "ยาดมแบบขวด ขวดแดง", unit: "ขวด" },
+  { name: "ยาดมตราเสือ (Tiger Balm Inhaler)" },
+  { name: "ยาดมโป๊ยเซียน มาร์คทู", sizeLabel: "คละสี" },
+  { name: "ยาดมเป๊ปเปอร์มินท์ฟิลด์", sizeLabel: "คละสี" },
+  { name: "ยาดมตราถ้วยทอง กลิ่นเลมอน" }
+].map((product, index) => ({
+  id: 14000 + index,
+  category: "ยาสามัญประจำบ้าน",
+  stock: 20,
+  minStock: 5,
+  unit: "หลอด",
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -1124,6 +1142,7 @@ const initialProducts: Product[] = [
   ...personalCareProducts,
   ...snackProducts,
   ...chocolateProducts,
+  ...medicineProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
