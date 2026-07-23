@@ -199,6 +199,9 @@ const legacyProductNameMap: Record<string, string> = {
 };
 
 const productImageByName: Record<string, string> = {
+  น้ำแข็งก้อน: "/product-images/ice/ice-cube.png",
+  น้ำแข็งหลอดใหญ่: "/product-images/ice/ice-tube-large.png",
+  น้ำแข็งหลอดเล็ก: "/product-images/ice/ice-tube-small.png",
   "ซีอิ๊วขาว ตราเด็กสมบูรณ์ 150 มล.": "/product-images/seasoning/dek-somboon-light-soy-sauce-150ml.png",
   "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รส ออริจินอล": "/product-images/okashi-pet-snack-original.png",
   "Okashi โอคาชิ ปลาเส้นใหญ่ 150 กรัม รสปูอัด": "/product-images/okashi-pet-snack-crab-stick.png",
@@ -1184,6 +1187,8 @@ const initialProducts: Product[] = [
   { id: 3000, name: "น้ำแข็งก้อน", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
   { id: 3001, name: "น้ำแข็งป่น", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
   { id: 3002, name: "น้ำแข็งก้อนเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
+  { id: 3006, name: "น้ำแข็งหลอดใหญ่", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 0, updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/ice/ice-tube-large.png" },
+  { id: 3007, name: "น้ำแข็งหลอดเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 0, updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/ice/ice-tube-small.png" },
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
   ...seasoningProducts,
