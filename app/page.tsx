@@ -199,6 +199,29 @@ const legacyProductNameMap: Record<string, string> = {
 };
 
 const productImageByName: Record<string, string> = {
+  // บะหมี่กึ่งสำเร็จรูป
+  "มาม่า รสหมูสับ": "/product-images/noodles/mama-moo-sap.png",
+  "มาม่า รสเย็นตาโฟต้มยำหม้อไฟ": "/product-images/noodles/mama-yentafo.png",
+  "มาม่า รสต้มยำกุ้งน้ำข้น": "/product-images/noodles/mama-tomyum-nam-khon.png",
+  "ไวไว ปรุงสำเร็จ": "/product-images/noodles/waiwai-prung-samret.png",
+  "ไวไว รสหมูสับ": "/product-images/noodles/waiwai-moo-sap.png",
+  "ไวไว รสหมูสับต้มยำ": "/product-images/noodles/waiwai-moo-sap-tomyum.png",
+  "ไวไว รสหอยลายผัดฉ่า แห้ง": "/product-images/noodles/waiwai-hoi-lai-pad-cha.png",
+  "ไวไว เส้นหมี่ปรุงรส": "/product-images/noodles/waiwai-sen-mee-prung-rot.png",
+  "ควิกแซ่บ คัพ รสต้มยำพริกเผา": "/product-images/noodles/quick-cup-tomyum-prik-pao.png",
+  "ควิกแซ่บ คัพ รสต้มโคล้ง": "/product-images/noodles/quick-cup-tom-klong.png",
+  "ควิกแซ่บ คัพ รสต้มยำมันกุ้ง": "/product-images/noodles/quick-cup-tomyum-man-kung.png",
+  "ควิกแซ่บ คัพ รสกุ้งนึ่งมะนาว": "/product-images/noodles/quick-cup-kung-nueng-manao.png",
+  "ควิกแซ่บ รสต้มโคล้ง": "/product-images/noodles/quick-tom-klong.png",
+  "ควิกแซ่บ รสกุ้งนึ่งมะนาว": "/product-images/noodles/quick-kung-nueng-manao.png",
+  "ควิกแซ่บ รสต้มยำมันกุ้ง": "/product-images/noodles/quick-tomyum-man-kung.png",
+  "นิสชิน คัพ รสสไปซี่ (แบบแห้ง)": "/product-images/noodles/nissin-cup-spicy.png",
+  "นิสชิน คัพ รสไก่เผ็ดเกาหลีชีส (แบบแห้ง)": "/product-images/noodles/nissin-cup-cheese.png",
+  "นิสชิน คัพ รสไก่ข้าวโพด": "/product-images/noodles/nissin-cup-chicken-corn.png",
+  // ปฐมพยาบาล
+  สำลีก้อน: "/product-images/first-aid/cotton-ball.png",
+  "คอตตอนบัด ตราไวท์แรบบิท": "/product-images/first-aid/cotton-bud-white-rabbit.png",
+  "สำลีก้าน ตรารถพยาบาล": "/product-images/first-aid/cotton-bud-ambulance.png",
   น้ำแข็งก้อน: "/product-images/ice/ice-cube.png",
   น้ำแข็งหลอดใหญ่: "/product-images/ice/ice-tube-large.png",
   น้ำแข็งหลอดเล็ก: "/product-images/ice/ice-tube-small.png",
@@ -963,6 +986,11 @@ const instantNoodleProducts: Product[] = [
   { name: "ยำยำ บิ๊กคัพ รสต้มยำกุ้งน้ำข้น", unit: "ถ้วย", sizeLabel: "บิ๊กคัพ" },
   { name: "ยำยำ สูตรเด็ด รสสไปซี่ล็อบสเตอร์", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ยำยำ สูตรเด็ด รสหมูสับโคชูจัง", unit: "ถ้วย", sizeLabel: "คัพ" },
+  // ยำยำ ช้างน้อย ซองเล็ก 20 กรัม
+  { name: "ยำยำ ช้างน้อย รสซุปเปอร์เลมอน", unit: "ซอง", sizeLabel: "20 กรัม" },
+  { name: "ยำยำ ช้างน้อย รสบาร์บีคิว", unit: "ซอง", sizeLabel: "20 กรัม" },
+  { name: "ยำยำ ช้างน้อย รสข้าวโพด", unit: "ซอง", sizeLabel: "20 กรัม" },
+  { name: "ยำยำ ช้างน้อย รสต้มยำกุ้ง", unit: "ซอง", sizeLabel: "20 กรัม" },
   { name: "ควิกแซ่บ คัพ รสต้มยำกุ้ง", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ควิกแซ่บ คัพ รสต้มยำพริกเผา", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ควิกแซ่บ คัพ รสต้มโคล้ง", unit: "ถ้วย", sizeLabel: "คัพ" },
@@ -1142,6 +1170,21 @@ const medicineProducts: Product[] = [
   ...product
 }));
 
+const firstAidProducts: Product[] = [
+  { name: "สำลีก้อน", unit: "ถุง", sizeLabel: "ใช้ทำความสะอาดแผล" },
+  { name: "คอตตอนบัด ตราไวท์แรบบิท", unit: "ถุง", sizeLabel: "ก้านสำลี 100 ก้าน" },
+  { name: "สำลีก้าน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "ก้านสำลี 200 ก้าน x3" }
+].map((product, index) => ({
+  id: 15000 + index,
+  category: "ปฐมพยาบาล",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -1197,6 +1240,7 @@ const initialProducts: Product[] = [
   ...snackProducts,
   ...chocolateProducts,
   ...medicineProducts,
+  ...firstAidProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
