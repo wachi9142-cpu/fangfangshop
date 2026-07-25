@@ -246,7 +246,7 @@ const productImageByName: Record<string, string> = {
   ยาหม่องตราวังว่าน: "/product-images/medicine/wangwan-balm.png",
   "ยาหม่องเสลดพังพอน ตราหมอเอี้ยง": "/product-images/medicine/saledphangphon-balm.png",
   "ยาหม่องไพล (Compound Phlai Balm)": "/product-images/medicine/phlai-balm-mor-iang.png",
-  "พิมเสนน้ำ ตราโป๊ยเซียน": "/product-images/medicine/pimsen-nam-poysian.png",
+  "ดาเนสเทน ยาครีมฆ่าเชื้อรา (Danesten)": "/product-images/medicine/danesten.png",
   "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร": "/product-images/medicine/fathalaichon-abhaibhubejhr.png",
   // ขนม - ยำยำ ช้างน้อย
   "ยำยำ ช้างน้อย รสบาร์บีคิว": "/product-images/snack/yumyum-changnoi-bbq.png",
@@ -402,6 +402,16 @@ const productImageByName: Record<string, string> = {
   สุรานิยมไทยขวดใหญ่: "/product-images/alcohol/niyomthai-large-bottle.png",
   "285 กลม": "/product-images/alcohol/blend-285-round.png"
 };
+
+// รูปแยกตาม "แบบ" ของสินค้า (สำหรับสินค้าที่ชื่อซ้ำกันแต่คนละแบบ) — คีย์ = `ชื่อ | sizeLabel`
+// ถ้ามีคีย์ตรงนี้ จะใช้อันนี้ก่อน productImageByName ทำให้แต่ละแบบมีรูปของตัวเอง
+const productImageByKey: Record<string, string> = {
+  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png"
+};
+
+// ชื่อสินค้าที่ "รูปต้องมาจาก productImageByKey เท่านั้น" (ชื่อซ้ำหลายแบบ) — แบบที่ไม่มีรูปให้เว้นว่าง
+// hydrateProduct จะยึดค่านี้เป็นหลัก ล้างรูปเก่าที่ค้างใน localStorage ทิ้ง
+const perVariantOnlyNames = new Set<string>(["พิมเสนน้ำ ตราโป๊ยเซียน"]);
 
 const layLargeProductImageByName: Record<string, string> = {
   "เลย์รสออริจินัล (มันฝรั่งแท้ แผ่นเรียบ/แผ่นหยัก)": "/product-images/lay-large/lay-original.png",
@@ -1165,6 +1175,7 @@ const medicineProducts: Product[] = [
   { name: "คาลาไมน์ โลชั่น (Calamine Lotion)", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน" },
   { name: "คาลาไมน์พญายอ", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน แมลงกัด" },
   { name: "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 10 กรัม" },
+  { name: "ดาเนสเทน ยาครีมฆ่าเชื้อรา (Danesten)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 10 กรัม" },
   { name: "ไลมาริน ครีม (Lymarin Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา/แบคทีเรีย · 15 กรัม" },
   { name: "คีล่า โลชั่น (Kela Lotion)", unit: "ขวด", sizeLabel: "แก้ผื่นแพ้ผิวหนัง" },
   { name: "เบต้า-ไดโป ครีม (Beta-Dipo Cream)", unit: "หลอด", sizeLabel: "แก้ผื่นแพ้อักเสบ · 10 กรัม" },
@@ -1894,12 +1905,28 @@ function hydrateProduct(product: Product): Product {
     : beverageProductNames.has(name) || shouldMoveFromAlcoholToBeverage
       ? "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)"
       : normalizedCategory;
+  const perVariantImage = productImageByKey[`${name} | ${sizeLabel ?? ""}`];
   const imageUrl =
-    category === "เลย์" ? layLargeProductImageByName[name] : productImageByName[name];
+    category === "เลย์"
+      ? layLargeProductImageByName[name]
+      : perVariantImage ?? productImageByName[name];
   const price = productPriceByName[name] ?? product.price;
   const stock = productStockByName[name] ?? product.stock;
 
   if (imageUrl && product.imageUrl !== imageUrl) {
+    return {
+      ...product,
+      name,
+      category,
+      price,
+      stock,
+      sizeLabel,
+      imageUrl
+    };
+  }
+
+  // สินค้าชื่อซ้ำหลายแบบ: ยึดรูปตามแบบ (perVariantImage) เป็นหลัก — แบบที่ไม่มีรูปให้ล้างของเก่าออก
+  if (perVariantOnlyNames.has(name) && product.imageUrl !== imageUrl) {
     return {
       ...product,
       name,
