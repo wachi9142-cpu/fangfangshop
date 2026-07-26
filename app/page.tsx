@@ -128,6 +128,8 @@ const productStockByName: Record<string, number> = {
 
 const legacyProductNameMap: Record<string, string> = {
   "ตะวัน รสไก่เว้งซี่จี๊ด": "ตะวัน รสไก่วิงค์ซี๊ด",
+  "ยาแก้ตัวร้อน ตราเขากวาง": "ยาแก้ท้องเสีย ตราเขากวาง",
+  "ยาหม่องเสลดพังพอน ตราหมอเอี้ยง": "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)",
   สิงห์กระป๋อง: "สิงห์กระป๋องยาว",
   เป็ปซี่กระป๋อง: "เป๊บซี่กระป๋อง",
   มิริด้าขวดเล็ก: "มิรินด้าขวดเล็ก",
@@ -236,15 +238,13 @@ const productImageByName: Record<string, string> = {
   "แฟงโก้-บี ครีม (Fango-B Cream)": "/product-images/medicine/fango-b.png",
   "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)": "/product-images/medicine/betadine-antiseptic.png",
   "ยากษัยเส้น ตราเด็กในพานทอง": "/product-images/medicine/kasaisen-dek-nai-phan-thong.png",
-  "ยาแก้ตัวร้อน ตราเขากวาง": "/product-images/medicine/kaokwang-fever.png",
-  "ยาน้ำเขากุ้ย (Kao-Kui Water)": "/product-images/medicine/kao-kui-water.png",
+  "ยาแก้ท้องเสีย ตราเขากวาง": "/product-images/medicine/kaokwang-fever.png",
   "ยาหอม ตรา 5 เจดีย์": "/product-images/medicine/yahom-5-chedi.png",
   "ขมิ้นชัน แคปซูล ตราอภัยภูเบศร": "/product-images/medicine/turmeric-abhaibhubejhr.png",
   "วิกส์ วาโปรับ (Vicks VapoRub)": "/product-images/medicine/vicks-vaporub.png",
-  "ยาหม่องตราถ้วยทอง 2493": "/product-images/medicine/golden-cup-2493.png",
   "ยาหม่องตราเสือ (Tiger Balm HR)": "/product-images/medicine/tiger-balm-hr.png",
   ยาหม่องตราวังว่าน: "/product-images/medicine/wangwan-balm.png",
-  "ยาหม่องเสลดพังพอน ตราหมอเอี้ยง": "/product-images/medicine/saledphangphon-balm.png",
+  "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)": "/product-images/medicine/mybacin-throat.png",
   "ยาหม่องไพล (Compound Phlai Balm)": "/product-images/medicine/phlai-balm-mor-iang.png",
   "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)": "/product-images/medicine/canesten.png",
   "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร": "/product-images/medicine/fathalaichon-abhaibhubejhr.png",
@@ -406,12 +406,14 @@ const productImageByName: Record<string, string> = {
 // รูปแยกตาม "แบบ" ของสินค้า (สำหรับสินค้าที่ชื่อซ้ำกันแต่คนละแบบ) — คีย์ = `ชื่อ | sizeLabel`
 // ถ้ามีคีย์ตรงนี้ จะใช้อันนี้ก่อน productImageByName ทำให้แต่ละแบบมีรูปของตัวเอง
 const productImageByKey: Record<string, string> = {
-  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png"
+  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png",
+  "ยาหม่องตราถ้วยทอง 2493 | กระปุก 50 กรัม": "/product-images/medicine/thuai-thong-balm-50g.png",
+  "ยาหม่องตราถ้วยทอง 2493 | ตลับเล็ก 8 กรัม": "/product-images/medicine/thuai-thong-balm-8g.png"
 };
 
 // ชื่อสินค้าที่ "รูปต้องมาจาก productImageByKey เท่านั้น" (ชื่อซ้ำหลายแบบ) — แบบที่ไม่มีรูปให้เว้นว่าง
 // hydrateProduct จะยึดค่านี้เป็นหลัก ล้างรูปเก่าที่ค้างใน localStorage ทิ้ง
-const perVariantOnlyNames = new Set<string>(["พิมเสนน้ำ ตราโป๊ยเซียน"]);
+const perVariantOnlyNames = new Set<string>(["พิมเสนน้ำ ตราโป๊ยเซียน", "ยาหม่องตราถ้วยทอง 2493"]);
 
 const layLargeProductImageByName: Record<string, string> = {
   "เลย์รสออริจินัล (มันฝรั่งแท้ แผ่นเรียบ/แผ่นหยัก)": "/product-images/lay-large/lay-original.png",
@@ -1157,14 +1159,14 @@ const medicineProducts: Product[] = [
   { name: "พิมเสนน้ำ ตราโป๊ยเซียน", unit: "ขวด", sizeLabel: "แบบขวด" },
   { name: "พิมเสนน้ำ ตราโป๊ยเซียน", unit: "กระปุก", sizeLabel: "แบบตลับ" },
   // ยาหม่อง
-  { name: "ยาหม่องตราถ้วยทอง 2493", unit: "กระปุก" },
+  { name: "ยาหม่องตราถ้วยทอง 2493", unit: "กระปุก", sizeLabel: "กระปุก 50 กรัม" },
   { name: "ยาหม่องตราเสือ (Tiger Balm HR)", unit: "กระปุก" },
   { name: "น้ำมันโอสถทิพย์", unit: "กระปุก", sizeLabel: "สีเขียว" },
   { name: "ยาหม่องตราวังว่าน", unit: "กระปุก", sizeLabel: "100 กรัม" },
   { name: "ยาหม่องโอสถ ตรารำม้า", unit: "กระปุก", sizeLabel: "200 กรัม" },
   { name: "ยาหม่องตราถ้วยทอง 2493", unit: "ตลับ", sizeLabel: "ตลับเล็ก 8 กรัม" },
   { name: "ยาหม่องสำเภาทอง สูตรไพล", unit: "กระปุก" },
-  { name: "ยาหม่องเสลดพังพอน ตราหมอเอี้ยง", unit: "กระปุก" },
+  { name: "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)", unit: "ซอง", sizeLabel: "บรรเทาระคายคอ · 10 เม็ด" },
   { name: "ยาหม่องไพล (Compound Phlai Balm)", unit: "กระปุก" },
   { name: "วิกส์ วาโปรับ (Vicks VapoRub)", unit: "ตลับ" },
   { name: "ยาน้ำสเปรย์ ตรานำมวย", unit: "ขวด", sizeLabel: "สเปรย์ 40 มล." },
@@ -1271,6 +1273,8 @@ const initialProducts: Product[] = [
   { id: 3007, name: "น้ำแข็งหลอดเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 0, updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/ice/ice-tube-small.png" },
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
+  { id: 15000, name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "ขวด", price: 0, sizeLabel: "ฆ่าเชื้อ ใส่แผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/betadine-antiseptic.png" },
+  { id: 15001, name: "ไทเกอร์พลาส พลาสเตอร์ใส (Tigerplast Clear)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "กล่อง", price: 0, sizeLabel: "พลาสเตอร์ปิดแผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/tigerplast-clear.png" },
   ...seasoningProducts,
   ...instantNoodleProducts,
   ...personalCareProducts,
@@ -1622,7 +1626,7 @@ const medicineSubcategoryKeywords: Record<Exclude<MedicineSubcategory, "ทั�
   "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ"],
   "ผิวหนัง / แมลงกัดต่อย": ["ผิวหนัง", "แมลงกัด", "แมลงสัตว์กัดต่อย", "ยุงกัด", "ทาแก้คัน", "แก้คัน", "คาลาไมน์", "Calamine", "ผื่น", "เชื้อรา", "กลาก", "เกลื้อน", "เบตาดีน", "Betadine", "ยาแดง", "ยาม่วง", "เจนเชียน", "ใส่แผล", "ครีมทาแผล", "ยากันยุง", "กันยุง", "เสลดพังพอน", "พญายอ", "คาดรามีน", "Cadramine", "คาเนสเทน", "Canesten", "ไลมาริน", "Lymarin", "คีล่า", "Kela", "ไดโป", "Dipo", "ฟังจิเดอร์ม", "Fungiderm", "ซีมา", "Zema", "ฮ่องกงฟุต", "โทนาฟ", "TONAF", "ไมโครัล", "โคลไทรมาโซล", "Clotrimazole", "แฟงโก้", "Fango", "เดอร์มาติกซ์", "Dermatix", "แผลเป็น"],
   "ปวดเมื่อย": ["ปวดเมื่อย", "ปวดกล้ามเนื้อ", "ปวดข้อ", "ปวดหลัง", "ปวดเอว", "เคาน์เตอร์เพน", "Counterpain", "ยานวด", "เจลนวด", "แผ่นแปะ", "แปะแก้ปวด", "ซาลอนพาส", "Salonpas"],
-  "ยาสมุนไพร / บรรเทาอาการ": ["สมุนไพร", "ฟ้าทะลายโจร", "ขมิ้นชัน", "ขิง", "กระชาย", "ยาเขียว", "ยาหอม", "ประสะ", "ยาลม", "ยาต้ม", "ยาผง", "มะขามแขก", "ชาสมุนไพร", "กษัยเส้น", "เขากวาง", "เขากุ้ย", "Kao-Kui", "อภัยภูเบศร", "ตัวร้อน"],
+  "ยาสมุนไพร / บรรเทาอาการ": ["สมุนไพร", "ฟ้าทะลายโจร", "ขิง", "กระชาย", "ยาเขียว", "ยาหอม", "ประสะ", "ยาลม", "ยาต้ม", "ยาผง", "มะขามแขก", "ชาสมุนไพร", "กษัยเส้น", "เขากุ้ย", "Kao-Kui", "อภัยภูเบศร"],
   "ยาดม / ยาหม่อง": ["ยาดม", "ยาหม่อง", "ยาน้ำมัน", "แอมโมเนียหอม", "เซียงเพียว", "Siang Pure", "โป๊ยเซียน", "เพพเพอร์มินต์", "หม่องน้ำ", "หม่องขาว", "หม่องเหลือง", "ตราถ้วยทอง", "โพยไซอัน", "พิมเสน", "โอสถทิพย์", "น้ำมันเขียว", "น้ำมันมวย", "มวย", "วิกส์", "Vicks", "วาโปรับ"],
   "ตา / หู / จมูก": ["หยอดตา", "ล้างตา", "น้ำตาเทียม", "ยาป้ายตา", "ตาแดง", "หยอดหู", "ยาหู", "หยอดจมูก", "พ่นจมูก", "สเปรย์จมูก", "ล้างจมูก", "น้ำเกลือ", "โรฮ์โต", "Rohto", "วิสิน", "Visine"]
 };
@@ -1996,6 +2000,10 @@ function mergeSavedProducts(savedProducts: Product[]) {
     .filter((product) => product.name !== "บุหรี่ซองแดง")
     .filter((product) => product.name !== "น้ำแข็ง 5 บาท")
     .filter((product) => !product.name.startsWith("ตาวัน"))
+    .filter(
+      (product) =>
+        !(product.name === "ยากษัยเส้น ตราเด็กในพานทอง" && (product.sizeLabel ?? "").includes("ซอง"))
+    )
     .filter((product) => !(product.category === "สินค้าสัตว์เลี้ยง" && product.isPlaceholder))
     .filter((product) => !(product.category === "เลย์" && product.price !== 5 && product.price !== 20))
     .filter(
