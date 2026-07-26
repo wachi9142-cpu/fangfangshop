@@ -74,7 +74,7 @@ const storageKey = "fangfangshop-products";
 // เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
 // ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
 const productsDataVersionKey = "fangfangshop-products-version";
-const productsDataVersion = "2026-07-24-catalog-2";
+const productsDataVersion = "2026-07-24-catalog-4";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -251,6 +251,25 @@ const productImageByName: Record<string, string> = {
   "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)": "/product-images/medicine/mybacin-throat.png",
   "ยาหม่องไพล (Compound Phlai Balm)": "/product-images/medicine/phlai-balm-mor-iang.png",
   "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)": "/product-images/medicine/canesten.png",
+  // ดูแลช่องปาก
+  "ศิริราช น้ำยาบ้วนปาก (สีชมพู)": "/product-images/oral-care/siriraj-mouthwash-pink.png",
+  "ศิริราช น้ำยาบ้วนปาก รสมิ้นต์ (สีเขียว)": "/product-images/oral-care/siriraj-mouthwash-mint.png",
+  "ยาสีฟัน Colgate ผสมสมุนไพร": "/product-images/oral-care/colgate-herbal-blue.png",
+  "ยาสีฟัน Colgate สูตรสมุนไพร (กล่องเขียว)": "/product-images/oral-care/colgate-herbal-green.png",
+  "ยาสีฟันสมุนไพร ตราหมอจุฬา": "/product-images/oral-care/mochula-toothpaste.png",
+  "ยาสีฟันสมุนไพร เทพไทย": "/product-images/oral-care/tepthai-toothpaste.png",
+  "ยาสีฟันสมุนไพร เทพไทย รสมิกซ์ฟรุ๊ต": "/product-images/oral-care/tepthai-mixed-fruit.png",
+  "น้ำยาบ้วนปาก Colgate Plax": "/product-images/oral-care/colgate-plax-mouthwash.png",
+  "น้ำยาบ้วนปาก Listerine Kids": "/product-images/oral-care/listerine-kids.png",
+  "น้ำยาบ้วนปาก Listerine Total Care": "/product-images/oral-care/listerine-total-care.png",
+  "น้ำยาบ้วนปาก Mybacin สูตรฟลูออไรด์": "/product-images/oral-care/mybacin-fluoride.png",
+  "น้ำยาบ้วนปาก Mybacin สูตรออริจินัล": "/product-images/oral-care/mybacin-original.png",
+  "น้ำยาบ้วนปาก Mybacin สูตรไวท์ โพรเทค": "/product-images/oral-care/mybacin-white.png",
+  "น้ำยาบ้วนปาก Oral-B 3D White": "/product-images/oral-care/oralb-3dwhite.png",
+  "น้ำยาบ้วนปาก MONDAHMIN Advanced Care (สีม่วง)": "/product-images/oral-care/mondahmin-advanced.png",
+  "น้ำยาบ้วนปาก MONDAHMIN Freshmint (สีเขียว)": "/product-images/oral-care/mondahmin-freshmint.png",
+  "ยาป้ายปาก คาโนโลน แผลในปาก (Kanolone)": "/product-images/oral-care/oral-paste-kanolone.png",
+  "ยาป้ายปาก ไตรโนโลน แก้ร้อนใน (Trinolone)": "/product-images/oral-care/oral-paste-trinolone.png",
   "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร": "/product-images/medicine/fathalaichon-abhaibhubejhr.png",
   // ขนม - ยำยำ ช้างน้อย
   "ยำยำ ช้างน้อย รสบาร์บีคิว": "/product-images/snack/yumyum-changnoi-bbq.png",
@@ -1229,6 +1248,36 @@ const firstAidProducts: Product[] = [
   ...product
 }));
 
+const oralCareProducts: Product[] = [
+  { name: "ยาสีฟัน Colgate ผสมสมุนไพร", unit: "หลอด" },
+  { name: "ยาสีฟัน Colgate สูตรสมุนไพร (กล่องเขียว)", unit: "หลอด" },
+  { name: "ยาสีฟันสมุนไพร ตราหมอจุฬา", unit: "หลอด" },
+  { name: "ยาสีฟันสมุนไพร เทพไทย", unit: "หลอด" },
+  { name: "ยาสีฟันสมุนไพร เทพไทย รสมิกซ์ฟรุ๊ต", unit: "หลอด" },
+  { name: "น้ำยาบ้วนปาก Colgate Plax", unit: "ขวด" },
+  { name: "น้ำยาบ้วนปาก Listerine Kids", unit: "ขวด" },
+  { name: "น้ำยาบ้วนปาก Listerine Total Care", unit: "ขวด" },
+  { name: "น้ำยาบ้วนปาก Mybacin สูตรฟลูออไรด์", unit: "ขวด", sizeLabel: "250 มล." },
+  { name: "น้ำยาบ้วนปาก Mybacin สูตรออริจินัล", unit: "ขวด", sizeLabel: "750 มล." },
+  { name: "น้ำยาบ้วนปาก Mybacin สูตรไวท์ โพรเทค", unit: "ขวด", sizeLabel: "250 มล." },
+  { name: "น้ำยาบ้วนปาก Oral-B 3D White", unit: "ขวด" },
+  { name: "น้ำยาบ้วนปาก MONDAHMIN Advanced Care (สีม่วง)", unit: "ขวด", sizeLabel: "550 มล." },
+  { name: "น้ำยาบ้วนปาก MONDAHMIN Freshmint (สีเขียว)", unit: "ขวด", sizeLabel: "550 มล." },
+  { name: "ศิริราช น้ำยาบ้วนปาก (สีชมพู)", unit: "ขวด" },
+  { name: "ศิริราช น้ำยาบ้วนปาก รสมิ้นต์ (สีเขียว)", unit: "ขวด" },
+  { name: "ยาป้ายปาก คาโนโลน แผลในปาก (Kanolone)", unit: "หลอด", sizeLabel: "แผลในปาก · 1 กรัม" },
+  { name: "ยาป้ายปาก ไตรโนโลน แก้ร้อนใน (Trinolone)", unit: "หลอด", sizeLabel: "แผลในปาก ร้อนใน" }
+].map((product, index) => ({
+  id: 16000 + index,
+  category: "สุขภาพ/สวย",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  imageUrl: productImageByName[product.name],
+  ...product
+}));
+
 const initialProducts: Product[] = [
   { id: 1, name: "ลูกอมรสนม", category: "ลูกอมและหมากฝรั่ง", stock: 48, minStock: 12, unit: "ซอง", price: 5, updatedBy: "พนักงานขาย" },
   { id: 2, name: "เยลลี่ผลไม้รวม", category: "ขนมและของกินเล่น", stock: 9, minStock: 10, unit: "ถุง", price: 10, updatedBy: "เจ้าของร้าน" },
@@ -1278,8 +1327,7 @@ const initialProducts: Product[] = [
   { id: 3007, name: "น้ำแข็งหลอดเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 0, updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/ice/ice-tube-small.png" },
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
-  { id: 15000, name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "ขวด", price: 0, sizeLabel: "ฆ่าเชื้อ ใส่แผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/betadine-antiseptic.png" },
-  { id: 15001, name: "ไทเกอร์พลาส พลาสเตอร์ใส (Tigerplast Clear)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "กล่อง", price: 0, sizeLabel: "พลาสเตอร์ปิดแผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/tigerplast-clear.png" },
+  { id: 15100, name: "ไทเกอร์พลาส พลาสเตอร์ใส (Tigerplast Clear)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "กล่อง", price: 0, sizeLabel: "พลาสเตอร์ปิดแผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/tigerplast-clear.png" },
   ...seasoningProducts,
   ...instantNoodleProducts,
   ...personalCareProducts,
@@ -1287,6 +1335,7 @@ const initialProducts: Product[] = [
   ...chocolateProducts,
   ...medicineProducts,
   ...firstAidProducts,
+  ...oralCareProducts,
   ...beverageProducts,
   ...milkProducts,
   ...bulkPackProducts,
@@ -1595,7 +1644,7 @@ const healthBeautySubcategoryKeywords: Record<Exclude<HealthBeautySubcategory, "
   อุปกรณ์สุขภาพ: ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
   สุขอนามัย: ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
   ป้องกันแมลง: ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
-  ดูแลช่องปาก: ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก"],
+  ดูแลช่องปาก: ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก", "ป้ายปาก", "แผลในปาก"],
   แม่และเด็ก: ["แม่และเด็ก", "เด็ก", "ทารก", "แพมเพิร์ส", "ผ้าอ้อม", "ขวดนม", "จุกนม", "แป้งเด็ก"]
 };
 
