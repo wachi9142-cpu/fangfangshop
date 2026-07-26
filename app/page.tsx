@@ -71,6 +71,10 @@ type ProductFormValues = {
 };
 
 const storageKey = "fangfangshop-products";
+// เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
+// ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
+const productsDataVersionKey = "fangfangshop-products-version";
+const productsDataVersion = "2026-07-24-catalog-2";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -1212,7 +1216,8 @@ const medicineProducts: Product[] = [
 const firstAidProducts: Product[] = [
   { name: "สำลีก้อน", unit: "ถุง", sizeLabel: "ใช้ทำความสะอาดแผล" },
   { name: "คอตตอนบัด ตราไวท์แรบบิท", unit: "ถุง", sizeLabel: "ก้านสำลี 100 ก้าน" },
-  { name: "สำลีก้าน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "ก้านสำลี 200 ก้าน x3" }
+  { name: "สำลีก้าน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "ก้านสำลี 200 ก้าน x3" },
+  { name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", unit: "ขวด", sizeLabel: "ฆ่าเชื้อ ใส่แผล" }
 ].map((product, index) => ({
   id: 15000 + index,
   category: "ปฐมพยาบาล",
@@ -2169,13 +2174,17 @@ export default function Home() {
   const [form] = Form.useForm<ProductFormValues>();
 
   useEffect(() => {
+    const savedVersion = window.localStorage.getItem(productsDataVersionKey);
     const savedProducts = window.localStorage.getItem(storageKey);
 
-    if (savedProducts) {
+    if (savedProducts && savedVersion === productsDataVersion) {
       const parsedProducts = JSON.parse(savedProducts) as Product[];
 
       setProducts(mergeSavedProducts(parsedProducts));
     }
+
+    // เวอร์ชันไม่ตรง = ล้างของเก่า ใช้ catalog ใหม่จากโค้ด แล้วบันทึกเวอร์ชันปัจจุบัน
+    window.localStorage.setItem(productsDataVersionKey, productsDataVersion);
 
     const savedSearchHistory = window.localStorage.getItem(searchHistoryStorageKey);
 
