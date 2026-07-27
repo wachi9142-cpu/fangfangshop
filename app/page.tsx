@@ -74,7 +74,7 @@ const storageKey = "fangfangshop-products";
 // เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
 // ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
 const productsDataVersionKey = "fangfangshop-products-version";
-const productsDataVersion = "2026-07-24-catalog-4";
+const productsDataVersion = "2026-07-24-catalog-5";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -251,6 +251,12 @@ const productImageByName: Record<string, string> = {
   "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)": "/product-images/medicine/mybacin-throat.png",
   "ยาหม่องไพล (Compound Phlai Balm)": "/product-images/medicine/phlai-balm-mor-iang.png",
   "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)": "/product-images/medicine/canesten.png",
+  "ยาน้ำเขากุ้ย (Kao-Kui Water)": "/product-images/medicine/kao-kui-water.png",
+  น้ำมันโอสถทิพย์: "/product-images/medicine/osotthip-green-oil.png",
+  ยาดมเป๊ปเปอร์มินท์ฟิลด์: "/product-images/medicine/peppermint-field-inhaler.png",
+  "ยาดมตราถ้วยทอง กลิ่นเลมอน": "/product-images/medicine/thuai-thong-lemon-inhaler.png",
+  "ยาดมสมุนไพร ตราวังว่าน": "/product-images/medicine/wangwan-herbal-inhaler.png",
+  "ยาดมโป๊ยเซียน มาร์คทู": "/product-images/medicine/poy-sian-inhaler.png",
   // ดูแลช่องปาก
   "ศิริราช น้ำยาบ้วนปาก (สีชมพู)": "/product-images/oral-care/siriraj-mouthwash-pink.png",
   "ศิริราช น้ำยาบ้วนปาก รสมิ้นต์ (สีเขียว)": "/product-images/oral-care/siriraj-mouthwash-mint.png",
@@ -431,12 +437,14 @@ const productImageByName: Record<string, string> = {
 const productImageByKey: Record<string, string> = {
   "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png",
   "ยาหม่องตราถ้วยทอง 2493 | กระปุก 50 กรัม": "/product-images/medicine/thuai-thong-balm-50g.png",
-  "ยาหม่องตราถ้วยทอง 2493 | ตลับเล็ก 8 กรัม": "/product-images/medicine/thuai-thong-balm-8g.png"
+  "ยาหม่องตราถ้วยทอง 2493 | ตลับเล็ก 8 กรัม": "/product-images/medicine/thuai-thong-balm-8g.png",
+  "ยาดมสมุนไพร ตราหงส์ไทย | สีเหลือง": "/product-images/medicine/hong-thai-yellow-herbal-inhaler.png",
+  "ยาดมสมุนไพร ตราหงส์ไทย | สีเขียว": "/product-images/medicine/hong-thai-blue-herbal-inhaler.png"
 };
 
 // ชื่อสินค้าที่ "รูปต้องมาจาก productImageByKey เท่านั้น" (ชื่อซ้ำหลายแบบ) — แบบที่ไม่มีรูปให้เว้นว่าง
 // hydrateProduct จะยึดค่านี้เป็นหลัก ล้างรูปเก่าที่ค้างใน localStorage ทิ้ง
-const perVariantOnlyNames = new Set<string>(["พิมเสนน้ำ ตราโป๊ยเซียน", "ยาหม่องตราถ้วยทอง 2493"]);
+const perVariantOnlyNames = new Set<string>(["พิมเสนน้ำ ตราโป๊ยเซียน", "ยาหม่องตราถ้วยทอง 2493", "ยาดมสมุนไพร ตราหงส์ไทย"]);
 
 const layLargeProductImageByName: Record<string, string> = {
   "เลย์รสออริจินัล (มันฝรั่งแท้ แผ่นเรียบ/แผ่นหยัก)": "/product-images/lay-large/lay-original.png",
