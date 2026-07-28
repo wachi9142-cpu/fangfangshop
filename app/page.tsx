@@ -74,7 +74,7 @@ const storageKey = "fangfangshop-products";
 // เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
 // ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
 const productsDataVersionKey = "fangfangshop-products-version";
-const productsDataVersion = "2026-07-24-catalog-6";
+const productsDataVersion = "2026-07-24-catalog-7";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -1239,7 +1239,7 @@ const medicineProducts: Product[] = [
   // ยาสมุนไพร / บรรเทาอาการ
   { name: "ฟ้าทะลายโจร แคปซูล (Phyto Care)", unit: "กล่อง", sizeLabel: "บรรเทาเจ็บคอ · 100 แคปซูล" },
   { name: "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร", unit: "กล่อง", sizeLabel: "แก้ไข้" },
-  { name: "ยากษัยเส้น ตราเด็กในพานทอง", unit: "กล่อง", sizeLabel: "แก้ปวดเมื่อย/ยาระบาย · 10 แคปซูล" },
+  { name: "ยากษัยเส้น ตราเด็กในพานทอง", unit: "กล่อง", sizeLabel: "คลายปวดเมื่อย/ยาระบาย · 10 แคปซูล" },
   { name: "ยาแก้ท้องเสีย ตราเขากวาง", unit: "ขวด", sizeLabel: "แก้ท้องเสีย ท้องร่วง" },
   { name: "ยาน้ำเขากุ้ย (Kao-Kui Water)", unit: "ขวด", sizeLabel: "แก้ไข้ ร้อนใน กระหายน้ำ" },
   { name: "ยาหอม ตรา 5 เจดีย์", unit: "ซอง", sizeLabel: "แก้วิงเวียน บำรุงหัวใจ" },
@@ -1257,9 +1257,9 @@ const medicineProducts: Product[] = [
   // ภูมิแพ้
   { name: "อัลเลอร์นิค เซทิริซีน (Allernix)", unit: "กล่อง", sizeLabel: "แก้ภูมิแพ้ · 1 เม็ด/วัน" },
   // ปวดเมื่อย
-  { name: "เคาน์เตอร์เพน (Counterpain)", unit: "หลอด", sizeLabel: "ยานวดแก้ปวดเมื่อย" },
+  { name: "เคาน์เตอร์เพน (Counterpain)", unit: "หลอด", sizeLabel: "ยานวดคลายกล้ามเนื้อ" },
   { name: "เคาน์เตอร์เพน คูล (Counterpain Cool)", unit: "หลอด", sizeLabel: "เจลนวดสูตรเย็น" },
-  { name: "ซาลอนพาส แผ่นแปะ (Salonpas)", unit: "ซอง", sizeLabel: "แผ่นแปะแก้ปวด" },
+  { name: "ซาลอนพาส แผ่นแปะ (Salonpas)", unit: "ซอง", sizeLabel: "แผ่นแปะคลายปวดเมื่อย" },
   // ระบบทางเดินอาหาร
   { name: "ผงถ่าน มายคาร์บอน (Activated Charcoal)", unit: "กล่อง", sizeLabel: "แก้ท้องเสีย ดูดสารพิษ" },
   { name: "ผงถ่าน คาร์บอน (Activated Charcoal)", unit: "แผง", sizeLabel: "แก้ท้องเสีย · แคปซูล" }
