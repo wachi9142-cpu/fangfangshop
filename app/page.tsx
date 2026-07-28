@@ -74,7 +74,7 @@ const storageKey = "fangfangshop-products";
 // เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
 // ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
 const productsDataVersionKey = "fangfangshop-products-version";
-const productsDataVersion = "2026-07-24-catalog-5";
+const productsDataVersion = "2026-07-24-catalog-6";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -257,6 +257,22 @@ const productImageByName: Record<string, string> = {
   "ยาดมตราถ้วยทอง กลิ่นเลมอน": "/product-images/medicine/thuai-thong-lemon-inhaler.png",
   "ยาดมสมุนไพร ตราวังว่าน": "/product-images/medicine/wangwan-herbal-inhaler.png",
   "ยาดมโป๊ยเซียน มาร์คทู": "/product-images/medicine/poy-sian-inhaler.png",
+  "ยาดมแบบขวด ขวดแดง": "/product-images/medicine/red-inhaler-bottle.png",
+  "น้ำมันมวย ตรานำมวย": "/product-images/medicine/muay-cream.png",
+  // ยาเม็ด/ยาน้ำ เพิ่มใหม่
+  "ไทลินอล พาราเซตามอล 500 มก.": "/product-images/medicine/tylenol-500.png",
+  "พาราเซตามอล พาราแคป 500 มก.": "/product-images/medicine/paracap-500.png",
+  "พาราเซตามอล เซมอล 500 มก.": "/product-images/medicine/cemol-500.png",
+  "ทิฟฟี่ ไซรัป (Tiffy)": "/product-images/medicine/tiffy-syrup.png",
+  "สเตร็ปซิล ฮันนี่&เลมอน (Strepsils)": "/product-images/medicine/strepsils-honey-lemon.png",
+  ยาอมมะแว้ง: "/product-images/medicine/mawaeng-lozenge.png",
+  "ยาอมมายบาซิน โอทีซี เลมอน (Mybacin OTC)": "/product-images/medicine/mybacin-otc-lemon.png",
+  "อัลเลอร์นิค เซทิริซีน (Allernix)": "/product-images/medicine/allernix.png",
+  "เคาน์เตอร์เพน (Counterpain)": "/product-images/medicine/counterpain.png",
+  "เคาน์เตอร์เพน คูล (Counterpain Cool)": "/product-images/medicine/counterpain-cool.png",
+  "ซาลอนพาส แผ่นแปะ (Salonpas)": "/product-images/medicine/salonpas.png",
+  "ผงถ่าน มายคาร์บอน (Activated Charcoal)": "/product-images/medicine/mycarbon-charcoal.png",
+  "ผงถ่าน คาร์บอน (Activated Charcoal)": "/product-images/medicine/carbon-charcoal-caps.png",
   // ดูแลช่องปาก
   "ศิริราช น้ำยาบ้วนปาก (สีชมพู)": "/product-images/oral-care/siriraj-mouthwash-pink.png",
   "ศิริราช น้ำยาบ้วนปาก รสมิ้นต์ (สีเขียว)": "/product-images/oral-care/siriraj-mouthwash-mint.png",
@@ -436,6 +452,7 @@ const productImageByName: Record<string, string> = {
 // ถ้ามีคีย์ตรงนี้ จะใช้อันนี้ก่อน productImageByName ทำให้แต่ละแบบมีรูปของตัวเอง
 const productImageByKey: Record<string, string> = {
   "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png",
+  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบขวด": "/product-images/medicine/pimsen-nam-bottle.png",
   "ยาหม่องตราถ้วยทอง 2493 | กระปุก 50 กรัม": "/product-images/medicine/thuai-thong-balm-50g.png",
   "ยาหม่องตราถ้วยทอง 2493 | ตลับเล็ก 8 กรัม": "/product-images/medicine/thuai-thong-balm-8g.png",
   "ยาดมสมุนไพร ตราหงส์ไทย | สีเหลือง": "/product-images/medicine/hong-thai-yellow-herbal-inhaler.png",
@@ -1227,7 +1244,25 @@ const medicineProducts: Product[] = [
   { name: "ยาน้ำเขากุ้ย (Kao-Kui Water)", unit: "ขวด", sizeLabel: "แก้ไข้ ร้อนใน กระหายน้ำ" },
   { name: "ยาหอม ตรา 5 เจดีย์", unit: "ซอง", sizeLabel: "แก้วิงเวียน บำรุงหัวใจ" },
   { name: "ยาหอมเบอร์ 33 ตราห้าม้า", unit: "ขวด", sizeLabel: "บำรุงหัวใจ แก้วิงเวียน" },
-  { name: "ขมิ้นชัน แคปซูล ตราอภัยภูเบศร", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด" }
+  { name: "ขมิ้นชัน แคปซูล ตราอภัยภูเบศร", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด" },
+  // แก้ปวด / ลดไข้
+  { name: "ไทลินอล พาราเซตามอล 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 500 มก." },
+  { name: "พาราเซตามอล พาราแคป 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 500 มก." },
+  { name: "พาราเซตามอล เซมอล 500 มก.", unit: "ขวด", sizeLabel: "แก้ปวด ลดไข้ · 500 มก." },
+  // หวัด / ไอ / เจ็บคอ
+  { name: "ทิฟฟี่ ไซรัป (Tiffy)", unit: "ขวด", sizeLabel: "บรรเทาหวัด · 60 มล." },
+  { name: "สเตร็ปซิล ฮันนี่&เลมอน (Strepsils)", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ · 8 เม็ด" },
+  { name: "ยาอมมะแว้ง", unit: "ซอง", sizeLabel: "บรรเทาไอ ขับเสมหะ" },
+  { name: "ยาอมมายบาซิน โอทีซี เลมอน (Mybacin OTC)", unit: "ซอง", sizeLabel: "บรรเทาระคายคอ" },
+  // ภูมิแพ้
+  { name: "อัลเลอร์นิค เซทิริซีน (Allernix)", unit: "กล่อง", sizeLabel: "แก้ภูมิแพ้ · 1 เม็ด/วัน" },
+  // ปวดเมื่อย
+  { name: "เคาน์เตอร์เพน (Counterpain)", unit: "หลอด", sizeLabel: "ยานวดแก้ปวดเมื่อย" },
+  { name: "เคาน์เตอร์เพน คูล (Counterpain Cool)", unit: "หลอด", sizeLabel: "เจลนวดสูตรเย็น" },
+  { name: "ซาลอนพาส แผ่นแปะ (Salonpas)", unit: "ซอง", sizeLabel: "แผ่นแปะแก้ปวด" },
+  // ระบบทางเดินอาหาร
+  { name: "ผงถ่าน มายคาร์บอน (Activated Charcoal)", unit: "กล่อง", sizeLabel: "แก้ท้องเสีย ดูดสารพิษ" },
+  { name: "ผงถ่าน คาร์บอน (Activated Charcoal)", unit: "แผง", sizeLabel: "แก้ท้องเสีย · แคปซูล" }
 ].map((product, index) => ({
   id: 14000 + index,
   category: "ยาสามัญประจำบ้าน",
@@ -1685,7 +1720,7 @@ const medicineSubcategoryKeywords: Record<Exclude<MedicineSubcategory, "ทั�
   "แก้ปวด / ลดไข้": ["แก้ปวด", "ลดไข้", "ไข้", "ปวดหัว", "ปวดศีรษะ", "พารา", "พาราเซตามอล", "ไทลินอล", "Tylenol", "ซาร่า", "Sara", "ทัมใจ", "บวดหาย", "แอสไพริน", "Aspirin", "ไอบูโพรเฟน", "Ibuprofen"],
   "หวัด / ไอ / เจ็บคอ": ["หวัด", "แก้หวัด", "ไอ", "แก้ไอ", "เจ็บคอ", "เสมหะ", "ละลายเสมหะ", "น้ำมูก", "คัดจมูก", "ทิฟฟี่", "Tiffy", "ดีคอลเจน", "Decolgen", "ยาอม", "สเตร็ปซิล", "Strepsils", "ฟิชเชอร์แมน", "มายบาซิน", "กษัยการ"],
   "ระบบทางเดินอาหาร": ["ท้องเสีย", "ท้องเดิน", "ท้องอืด", "ท้องเฟ้อ", "อาหารไม่ย่อย", "ยาธาตุ", "ขับลม", "ผงถ่าน", "คาร์บอน", "เกลือแร่", "ORS", "โออาร์เอส", "อีโน", "Eno", "ยาลดกรด", "กรดไหลย้อน", "แอนตาซิล", "Antacid", "ท้องผูก", "ยาระบาย", "ถ่ายพยาธิ", "พยาธิ"],
-  "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ"],
+  "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ", "อัลเลอร์นิค", "Allernix"],
   "ผิวหนัง / แมลงกัดต่อย": ["ผิวหนัง", "แมลงกัด", "แมลงสัตว์กัดต่อย", "ยุงกัด", "ทาแก้คัน", "แก้คัน", "คาลาไมน์", "Calamine", "ผื่น", "เชื้อรา", "กลาก", "เกลื้อน", "เบตาดีน", "Betadine", "ยาแดง", "ยาม่วง", "เจนเชียน", "ใส่แผล", "ครีมทาแผล", "ยากันยุง", "กันยุง", "เสลดพังพอน", "พญายอ", "คาดรามีน", "Cadramine", "คาเนสเทน", "Canesten", "ไลมาริน", "Lymarin", "คีล่า", "Kela", "ไดโป", "Dipo", "ฟังจิเดอร์ม", "Fungiderm", "ซีมา", "Zema", "ฮ่องกงฟุต", "โทนาฟ", "TONAF", "ไมโครัล", "โคลไทรมาโซล", "Clotrimazole", "แฟงโก้", "Fango", "เดอร์มาติกซ์", "Dermatix", "แผลเป็น"],
   "ปวดเมื่อย": ["ปวดเมื่อย", "ปวดกล้ามเนื้อ", "ปวดข้อ", "ปวดหลัง", "ปวดเอว", "เคาน์เตอร์เพน", "Counterpain", "ยานวด", "เจลนวด", "แผ่นแปะ", "แปะแก้ปวด", "ซาลอนพาส", "Salonpas"],
   "ยาสมุนไพร / บรรเทาอาการ": ["สมุนไพร", "ฟ้าทะลายโจร", "ขิง", "กระชาย", "ยาเขียว", "ยาหอม", "ประสะ", "ยาลม", "ยาต้ม", "ยาผง", "มะขามแขก", "ชาสมุนไพร", "กษัยเส้น", "เขากุ้ย", "Kao-Kui", "อภัยภูเบศร"],
