@@ -74,7 +74,7 @@ const storageKey = "fangfangshop-products";
 // เวอร์ชันของ catalog ในโค้ด — เมื่อแก้รายการสินค้าครั้งใหญ่ให้บวมเลขนี้
 // ถ้าเวอร์ชันใน localStorage ไม่ตรง จะล้างข้อมูลเก่าทิ้งแล้วใช้ catalog ใหม่ (กันสินค้าซ้ำ/ค้าง)
 const productsDataVersionKey = "fangfangshop-products-version";
-const productsDataVersion = "2026-07-24-catalog-5";
+const productsDataVersion = "2026-07-30-catalog-17";
 const searchHistoryStorageKey = "fangfangshop-search-history";
 const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
@@ -257,6 +257,22 @@ const productImageByName: Record<string, string> = {
   "ยาดมตราถ้วยทอง กลิ่นเลมอน": "/product-images/medicine/thuai-thong-lemon-inhaler.png",
   "ยาดมสมุนไพร ตราวังว่าน": "/product-images/medicine/wangwan-herbal-inhaler.png",
   "ยาดมโป๊ยเซียน มาร์คทู": "/product-images/medicine/poy-sian-inhaler.png",
+  "ยาดมแบบขวด ขวดแดง": "/product-images/medicine/red-inhaler-bottle.png",
+  "น้ำมันมวย ตรานำมวย": "/product-images/medicine/muay-cream.png",
+  // ยาเม็ด/ยาน้ำ เพิ่มใหม่
+  "ไทลินอล พาราเซตามอล 500 มก.": "/product-images/medicine/tylenol-500.png",
+  "พาราเซตามอล พาราแคป 500 มก.": "/product-images/medicine/paracap-500.png",
+  "พาราเซตามอล เซมอล 500 มก.": "/product-images/medicine/cemol-500.png",
+  "ทิฟฟี่ ไซรัป (Tiffy)": "/product-images/medicine/tiffy-syrup.png",
+  "สเตร็ปซิล ฮันนี่&เลมอน (Strepsils)": "/product-images/medicine/strepsils-honey-lemon.png",
+  ยาอมมะแว้ง: "/product-images/medicine/mawaeng-lozenge.png",
+  "ยาอมมายบาซิน โอทีซี เลมอน (Mybacin OTC)": "/product-images/medicine/mybacin-otc-lemon.png",
+  "อัลเลอร์นิค เซทิริซีน (Allernix)": "/product-images/medicine/allernix.png",
+  "เคาน์เตอร์เพน (Counterpain)": "/product-images/medicine/counterpain.png",
+  "เคาน์เตอร์เพน คูล (Counterpain Cool)": "/product-images/medicine/counterpain-cool.png",
+  "ซาลอนพาส แผ่นแปะ (Salonpas)": "/product-images/medicine/salonpas.png",
+  "ผงถ่าน มายคาร์บอน (Activated Charcoal)": "/product-images/medicine/mycarbon-charcoal.png",
+  "ผงถ่าน คาร์บอน (Activated Charcoal)": "/product-images/medicine/carbon-charcoal-caps.png",
   // ดูแลช่องปาก
   "ศิริราช น้ำยาบ้วนปาก (สีชมพู)": "/product-images/oral-care/siriraj-mouthwash-pink.png",
   "ศิริราช น้ำยาบ้วนปาก รสมิ้นต์ (สีเขียว)": "/product-images/oral-care/siriraj-mouthwash-mint.png",
@@ -435,7 +451,9 @@ const productImageByName: Record<string, string> = {
 // รูปแยกตาม "แบบ" ของสินค้า (สำหรับสินค้าที่ชื่อซ้ำกันแต่คนละแบบ) — คีย์ = `ชื่อ | sizeLabel`
 // ถ้ามีคีย์ตรงนี้ จะใช้อันนี้ก่อน productImageByName ทำให้แต่ละแบบมีรูปของตัวเอง
 const productImageByKey: Record<string, string> = {
+  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบโรลออน": "/product-images/medicine/pimsen-poysian-rollon.png",
   "พิมเสนน้ำ ตราโป๊ยเซียน | แบบตลับ": "/product-images/medicine/pimsen-nam-poysian.png",
+  "พิมเสนน้ำ ตราโป๊ยเซียน | แบบขวด": "/product-images/medicine/pimsen-nam-bottle.png",
   "ยาหม่องตราถ้วยทอง 2493 | กระปุก 50 กรัม": "/product-images/medicine/thuai-thong-balm-50g.png",
   "ยาหม่องตราถ้วยทอง 2493 | ตลับเล็ก 8 กรัม": "/product-images/medicine/thuai-thong-balm-8g.png",
   "ยาดมสมุนไพร ตราหงส์ไทย | สีเหลือง": "/product-images/medicine/hong-thai-yellow-herbal-inhaler.png",
@@ -870,16 +888,99 @@ const beverageProducts: Product[] = [
 
 const beverageProductNames = new Set(beverageProducts.map((product) => product.name));
 
-const milkProducts: Product[] = [
-  { name: "นมไวตามินขวด", unit: "ขวด", price: 17 }
-].map((product, index) => ({
+// นม/โยเกิร์ต — หัวข้อย่อยคัดจากชื่อสินค้า (ดู matchesMilkSubcategory)
+// นม / โยเกิร์ต / นมถั่วเหลือง-น้ำเต้าหู้ / นมเปรี้ยว
+const milkProducts: Product[] = ([
+  { name: "นมไวตามินขวด", unit: "ขวด", price: 17 },
+
+  // --- นม ---
+  { name: "นมไทย-เดนมาร์ค ยูเอชที รสจืด", unit: "กล่อง", sizeLabel: "180 มล.", image: "thai-denmark-plain-180.png" },
+  { name: "โอวัลติน นมช็อกโกแลตมอลต์ ยูเอชที", unit: "กล่อง", image: "ovaltine-uht.png" },
+  { name: "โอวัลติน สมาร์ท นมช็อกโกแลตมอลต์", unit: "กล่อง", image: "ovaltine-smart.png" },
+  { name: "โฟร์โมสต์ นมโคสดแท้ 100% ไขมันต่ำ", unit: "กล่อง", image: "foremost-fresh-milk-100.png" },
+  { name: "โฟร์โมสต์ นมรสหวานกลมกล่อม", unit: "กล่อง", image: "foremost-sweet.png" },
+  { name: "โฟร์โมสต์ นมรสช็อกโกแลต", unit: "กล่อง", image: "foremost-chocolate.png" },
+  { name: "โฟร์โมสต์ นมรสสตรอเบอร์รี่", unit: "กล่อง", image: "foremost-strawberry.png" },
+  { name: "เนสท์เล่ แบร์แบรนด์ นมชมพู", unit: "กล่อง", image: "bearbrand-pink.png" },
+
+  // --- โยเกิร์ตพร้อมดื่ม ---
+  { name: "ดัชมิลล์ 4 อิน 1 นมเปรี้ยวพร้อมดื่ม รสบลูเบอร์รี่", unit: "กล่อง", image: "dutchmill-4in1-blueberry.png" },
+  { name: "ดัชมิลล์ 4 อิน 1 นมเปรี้ยวพร้อมดื่ม รสสตรอเบอร์รี่", unit: "กล่อง", image: "dutchmill-4in1-strawberry.png" },
+  { name: "ดัชมิลล์ 4 อิน 1 นมเปรี้ยวพร้อมดื่ม รสมิกซ์เบอร์รี่", unit: "กล่อง", image: "dutchmill-4in1-mixed-berries.png" },
+  { name: "ดัชมิลล์ 4 อิน 1 นมเปรี้ยวพร้อมดื่ม รสส้ม", unit: "กล่อง", image: "dutchmill-4in1-orange.png" },
+  { name: "ดัชมิลล์ 4 อิน 1 นมเปรี้ยวพร้อมดื่ม รสผลไม้รวม", unit: "กล่อง", image: "dutchmill-4in1-mixed-fruits.png" },
+
+  // --- นมเปรี้ยว ---
+  { name: "ยาคูลท์ นมเปรี้ยว", unit: "ขวด", sizeLabel: "80 มล.", image: "yakult-80.png" },
+  { name: "ยาคูลท์ ไลท์ นมเปรี้ยว", unit: "ขวด", image: "yakult-light.png" },
+  { name: "บีทาเก้น ไลท์ นมเปรี้ยว", unit: "ขวด", sizeLabel: "ไขมัน 0% แลคโตสฟรี", image: "betagen-light.png" },
+  { name: "บีทาเก้น คอมบูฉะ ชาหมัก รสออริจินัล", unit: "ขวด", image: "betagen-kombucha-original.png" },
+
+  // --- นมถั่วเหลือง / น้ำเต้าหู้ ---
+  { name: "ไวตามิ้ลค์ สูตรออริจินัล ยูเอชที", unit: "กล่อง", image: "vitamilk-original-uht.png" },
+  { name: "ไวตามิ้ลค์ สูตรข้าวบาร์เลย์และมอลต์", unit: "กล่อง", sizeLabel: "300 มล.", image: "vitamilk-barley-malt-300.png" },
+  { name: "ไวตามิ้ลค์ สูตรเจ", unit: "กล่อง", sizeLabel: "250 มล.", image: "vitamilk-vegan-250.png" },
+  { name: "ไวตามิ้ลค์ สูตรออริจินัล ขวดแก้ว", unit: "ขวด", image: "vitamilk-original-bottle.png" },
+  { name: "ไวตามิ้ลค์ สูตรงาดำ ขวดแก้ว", unit: "ขวด", image: "vitamilk-black-sesame-bottle.png" },
+  { name: "ไวตามิ้ลค์ สูตรชาไทย ขวดแก้ว", unit: "ขวด", image: "vitamilk-thai-tea-bottle.png" },
+  { name: "แลคตาซอย ออริจินัล รสหวาน", unit: "กล่อง", sizeLabel: "300 มล.", image: "lactasoy-original-300.png" },
+  { name: "ดีน่า สูตรงาดำ 2 เท่า", unit: "กล่อง", sizeLabel: "180 มล.", image: "dna-black-sesame-180.png" },
+  { name: "ดีน่า Extra Black Sesame งาดำ ขวด", unit: "ขวด", image: "dna-extra-black-sesame-bottle.png" },
+  { name: "ดีน่า แบล็ค ไฮโปรตีน", unit: "กล่อง", sizeLabel: "โปรตีนสูง 2 เท่า", image: "dna-black-high-protein.png" },
+  { name: "ดีน่า กาบา จมูกข้าวญี่ปุ่น", unit: "กล่อง", image: "dna-gaba-box.png" },
+  { name: "ดีน่า กาบา จมูกข้าวญี่ปุ่น สูตรน้ำตาลน้อย", unit: "กล่อง", sizeLabel: "230 มล.", image: "dna-gaba-less-sugar-230.png" },
+  { name: "ดีน่า กาบา จมูกข้าวญี่ปุ่น ขวด", unit: "ขวด", image: "dna-gaba-bottle.png" },
+  { name: "ดีน่า ไรซ์เบอร์รี่", unit: "กล่อง", sizeLabel: "วิตามิน 11 ชนิด", image: "dna-riceberry.png" },
+
+  // --- โยเกิร์ตถ้วย: ดัชชี่ ---
+  { name: "ดัชชี่ โยเกิร์ต รสออริจินัล", unit: "ถ้วย", image: "dutchie-original.png" },
+  { name: "ดัชชี่ โยเกิร์ต รสสตรอเบอร์รี่", unit: "ถ้วย", image: "dutchie-strawberry.png" },
+  { name: "ดัชชี่ โยเกิร์ต ผลไม้รวม", unit: "ถ้วย", image: "dutchie-mixed-fruit.png" },
+  { name: "ดัชชี่ โยเกิร์ต วุ้นมะพร้าว", unit: "ถ้วย", image: "dutchie-nata-de-coco.png" },
+  { name: "ดัชชี่ โยเกิร์ต ธัญพืช ถั่วแดง เม็ดบัว", unit: "ถ้วย", image: "dutchie-cereal-beans-lotus.png" },
+  { name: "ดัชชี่ โยเกิร์ต สโนว์แพร์ & คาโมมายล์", unit: "ถ้วย", image: "dutchie-snow-pear-chamomile.png" },
+  { name: "ดัชชี่ โยเกิร์ต 0% ไขมัน ไฮไฟเบอร์ รสธรรมชาติ", unit: "ถ้วย", image: "dutchie-0fat-natural.png" },
+  { name: "ดัชชี่ โยเกิร์ต 0% ไขมัน ไฮไฟเบอร์ รสสตรอเบอร์รี่", unit: "ถ้วย", image: "dutchie-0fat-strawberry.png" },
+  { name: "ดัชชี่ โยเกิร์ต โพรไบโอติก รสสตรอเบอร์รี่", unit: "ถ้วย", image: "dutchie-probiotic-strawberry.png" },
+  { name: "ดัชชี่ คิดส์ โยเกิร์ต ผลไม้รวม", unit: "ถ้วย", image: "dutchie-kids-mixed-fruit.png" },
+  { name: "ดัชชี่ คิดส์ โยเกิร์ต รสสตรอเบอร์รี่", unit: "ถ้วย", image: "dutchie-kids-strawberry.png" },
+  { name: "ดัชชี่ กรีกสไตล์ โยเกิร์ต มิกซ์เบอร์รี่ พร้อมกราโนล่า", unit: "ถ้วย", sizeLabel: "โปรตีน 2 เท่า", image: "dutchie-greek-granola-berry.png" },
+  { name: "ดัชชี่ กรีกสไตล์ โยเกิร์ต สตรอเบอร์รี่ & ไวท์ช็อกโกแลต พร้อมกราโนล่า", unit: "ถ้วย", sizeLabel: "โปรตีน 2 เท่า", image: "dutchie-greek-strawberry-white-choc.png" },
+
+  // --- โยเกิร์ตถ้วย: เมจิ ---
+  { name: "เมจิ โยเกิร์ต ผสมผลไม้รวม", unit: "ถ้วย", image: "meiji-mixed-fruit.png" },
+  { name: "เมจิ โยเกิร์ต รสส้มมิคัง", unit: "ถ้วย", image: "meiji-mikan-orange.png" },
+  { name: "เมจิ โยเกิร์ต โพรไบโอติก ผสมมะม่วง", unit: "ถ้วย", image: "meiji-probiotic-mango.png" },
+  { name: "เมจิ โยเกิร์ต โพรไบโอติก ผสมสตรอเบอร์รี่", unit: "ถ้วย", image: "meiji-probiotic-strawberry.png" },
+  { name: "เมจิ โยเกิร์ต โพรไบโอติก ผสมพีช", unit: "ถ้วย", image: "meiji-probiotic-peach.png" },
+  { name: "เมจิ โยเกิร์ต โพรไบโอติก ผสมแอปเปิ้ลเขียว", unit: "ถ้วย", image: "meiji-probiotic-green-apple.png" },
+  { name: "เมจิ โยเกิร์ต โพรไบโอติก ผสมองุ่น", unit: "ถ้วย", image: "meiji-probiotic-grape.png" },
+
+  // --- โยเกิร์ตถ้วย: เมจิ บัลแกเรีย ---
+  { name: "เมจิ บัลแกเรีย โยเกิร์ต รสธรรมชาติ", unit: "ถ้วย", image: "meiji-bulgaria-natural.png" },
+  { name: "เมจิ บัลแกเรีย โยเกิร์ต 0% ไขมัน น้ำตาลน้อย", unit: "ถ้วย", image: "meiji-bulgaria-0fat.png" },
+  { name: "เมจิ บัลแกเรีย เซ็ตโยเกิร์ต ผสมแอปเปิ้ล", unit: "ถ้วย", image: "meiji-bulgaria-set-apple.png" },
+  { name: "เมจิ บัลแกเรีย เซ็ตโยเกิร์ต ผสมสตรอเบอร์รี่", unit: "ถ้วย", image: "meiji-bulgaria-set-strawberry.png" },
+  { name: "เมจิ บัลแกเรีย เซ็ตโยเกิร์ต ผสมยูซุ ออเรนจ์", unit: "ถ้วย", image: "meiji-bulgaria-set-yuzu.png" },
+  { name: "เมจิ บัลแกเรีย โยเกิร์ต โกลเด้นฮันนี่", unit: "ถ้วย", image: "meiji-bulgaria-golden-honey.png" },
+
+  // --- โยเกิร์ตพร้อมดื่ม: เมจิ บัลแกเรีย ---
+  { name: "เมจิ บัลแกเรีย โยเกิร์ตพร้อมดื่ม รสผลไม้รวม", unit: "ขวด", sizeLabel: "น้ำตาลน้อยลง 25%", image: "meiji-bulgaria-drink-mixed-fruit.png" },
+  { name: "เมจิ บัลแกเรีย โยเกิร์ตพร้อมดื่ม รสแอปเปิ้ล", unit: "ขวด", sizeLabel: "0% ไขมัน", image: "meiji-bulgaria-drink-apple.png" },
+  { name: "เมจิ บัลแกเรีย โยเกิร์ตพร้อมดื่ม รสไวลด์เบอร์รี่", unit: "ขวด", image: "meiji-bulgaria-drink-wildberry.png" },
+
+  // --- โยเกิร์ตถ้วย: อื่น ๆ ---
+  { name: "ริเชส โยเกิร์ต ผสมฟรุตสลัด", unit: "ถ้วย", sizeLabel: "น้ำตาลน้อยลง 39%", image: "richesse-fruitsalad.png" }
+] as { name: string; unit?: string; sizeLabel?: string; price?: number; image?: string }[]).map(({ image, ...product }, index) => ({
   id: 9500 + index,
   category: "นม/โยเกิร์ต",
   stock: 20,
   minStock: 5,
+  unit: "กล่อง",
+  price: 0,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: image ? `/product-images/milk/${image}` : productImageByName[product.name]
 }));
 
 const bulkPackProducts: Product[] = [
@@ -1041,7 +1142,7 @@ const alcoholProductNames = new Set([
   ...alcoholProducts.map((product) => product.name)
 ]);
 
-const instantNoodleProducts: Product[] = [
+const instantNoodleProducts: Product[] = ([
   { name: "มาม่า รสต้มยำกุ้งน้ำข้น", unit: "ซอง" },
   { name: "มาม่า รสเย็นตาโฟต้มยำหม้อไฟ", unit: "ซอง", sizeLabel: "60 กรัม" },
   { name: "มาม่า รสหมูสับ", unit: "ซอง", sizeLabel: "60 กรัม" },
@@ -1058,10 +1159,11 @@ const instantNoodleProducts: Product[] = [
   { name: "ยำยำ สูตรเด็ด รสสไปซี่ล็อบสเตอร์", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ยำยำ สูตรเด็ด รสหมูสับโคชูจัง", unit: "ถ้วย", sizeLabel: "คัพ" },
   // ยำยำ ช้างน้อย ซองเล็ก 20 กรัม
-  { name: "ยำยำ ช้างน้อย รสซุปเปอร์เลมอน", unit: "ซอง", sizeLabel: "20 กรัม" },
-  { name: "ยำยำ ช้างน้อย รสบาร์บีคิว", unit: "ซอง", sizeLabel: "20 กรัม" },
-  { name: "ยำยำ ช้างน้อย รสข้าวโพด", unit: "ซอง", sizeLabel: "20 กรัม" },
-  { name: "ยำยำ ช้างน้อย รสต้มยำกุ้ง", unit: "ซอง", sizeLabel: "20 กรัม" },
+  { name: "ยำยำ ช้างน้อย รสซุปเปอร์เลมอน", unit: "ซอง", sizeLabel: "20 กรัม", image: "yumyum-chang-noi-super-lemon.png" },
+  { name: "ยำยำ ช้างน้อย รสบาร์บีคิว", unit: "ซอง", sizeLabel: "20 กรัม", image: "yumyum-chang-noi-bbq.png" },
+  { name: "ยำยำ ช้างน้อย รสข้าวโพด", unit: "ซอง", sizeLabel: "20 กรัม", image: "yumyum-chang-noi-corn.png" },
+  { name: "ยำยำ ช้างน้อย รสต้มยำกุ้ง", unit: "ซอง", sizeLabel: "20 กรัม", image: "yumyum-chang-noi-tomyum.png" },
+  { name: "ยำยำ ช้างน้อย รสโนริสาหร่าย", unit: "ซอง", sizeLabel: "20 กรัม", image: "yumyum-chang-noi-nori.png" },
   { name: "ควิกแซ่บ คัพ รสต้มยำกุ้ง", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ควิกแซ่บ คัพ รสต้มยำพริกเผา", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "ควิกแซ่บ คัพ รสต้มโคล้ง", unit: "ถ้วย", sizeLabel: "คัพ" },
@@ -1081,37 +1183,267 @@ const instantNoodleProducts: Product[] = [
   { name: "นิสชิน คัพ รสสาหร่าย", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "นิสชิน คัพ รสไก่ข้าวโพด", unit: "ถ้วย", sizeLabel: "คัพ" },
   { name: "นิสชิน คัพ รสไก่เห็ดหอม", unit: "ถ้วย", sizeLabel: "คัพ" }
-].map((product, index) => ({
+] as { name: string; unit?: string; sizeLabel?: string; image?: string }[]).map(({ image, ...product }, index) => ({
   id: 10000 + index,
   category: "บะหมี่กึ่งสำเร็จรูป",
   stock: 20,
   minStock: 5,
+  unit: "ซอง",
   price: 0,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: image ? `/product-images/snack/${image}` : productImageByName[product.name]
 }));
 
+// โรลออน อยู่หมวด "สุขภาพ/สวย" — เข้าหมวดย่อยผ่าน keyword "โรลออน"/"ระงับกลิ่นกาย"
+const rollOnProducts: Product[] = [
+  // วีไวต์
+  { name: "วีไวต์ โรลออน Pleasure Floral", unit: "ขวด", image: "vivite-pleasure-floral.png" },
+  { name: "วีไวต์ โรลออน Crystal White", unit: "ขวด", image: "vivite-crystal-white.png" },
+  { name: "วีไวต์ โรลออน In Love Fresh", unit: "ขวด", image: "vivite-in-love-fresh.png" },
+  { name: "วีไวต์ โรลออน Clear & Confident", unit: "ขวด", image: "vivite-clear-confident.png" },
+  { name: "วีไวต์ โรลออน English Pear & Freesia", unit: "ขวด", image: "vivite-english-pear-freesia.png" },
+  { name: "วีไวต์ โรลออน Mood Sense Joy", unit: "ขวด", image: "vivite-mood-sense-joy.png" },
+  { name: "วีไวต์ โรลออน Super Vitamin Charming Aura", unit: "ขวด", image: "vivite-super-vitamin.png" },
+  { name: "วีไวต์ โรลออน Glow Up", unit: "ขวด", image: "vivite-glow-up.png" },
+  { name: "วีไวต์ โรลออน Snail White", unit: "ขวด", image: "vivite-snail-white.png" },
+  { name: "วีไวต์ โรลออน Super Smooth Less Shave", unit: "ขวด", image: "vivite-super-smooth.png" },
+  { name: "วีไวต์ โรลออน Sunny Fresh Bright & Firm", unit: "ขวด", image: "vivite-sunny-fresh.png" },
+
+  // เอ็กซิท
+  { name: "เอ็กซิท โรลออน Sport Fresh", unit: "ขวด", image: "exit-sport-fresh.png" },
+  { name: "เอ็กซิท โรลออน Extra Protect", unit: "ขวด", sizeLabel: "45 มล.", image: "exit-extra-protect.png" },
+  { name: "เอ็กซิท โรลออน Cool Active", unit: "ขวด", sizeLabel: "72 ชั่วโมง", image: "exit-cool-active.png" },
+  { name: "เอ็กซิท โรลออน Tech Perfume", unit: "ขวด", sizeLabel: "72 ชั่วโมง", image: "exit-tech-perfume.png" },
+  { name: "เอ็กซิท โรลออน Clear & Protect", unit: "ขวด", image: "exit-clear-protect.png" },
+  { name: "เอ็กซิท โรลออน ON", unit: "ขวด", sizeLabel: "32.5 มล.", image: "exit-on.png" },
+  { name: "เอ็กซิท โรลออน Style Perfume", unit: "ขวด", sizeLabel: "72 ชั่วโมง", image: "exit-style-perfume.png" },
+
+  // นีเวีย
+  { name: "นีเวีย เมน โรลออน Cool Kick Extra Dry", unit: "ขวด", image: "nivea-men-cool-kick.png" },
+  { name: "นีเวีย เมน โรลออน Deep Extreme", unit: "ขวด", image: "nivea-men-deep-extreme.png" },
+  { name: "นีเวีย เมน โรลออน Deep Darkwood", unit: "ขวด", image: "nivea-men-deep-darkwood.png" },
+  { name: "นีเวีย เมน โรลออน Deep Espresso", unit: "ขวด", image: "nivea-men-deep-espresso.png" },
+  { name: "นีเวีย โรลออน Pearl & Beauty", unit: "ขวด", sizeLabel: "50 มล.", image: "nivea-pearl-beauty.png" },
+
+  // เภสัช
+  { name: "เภสัช โรลออน Sky Fresh", unit: "ขวด", image: "bhaesaj-sky-fresh.png" },
+  { name: "เภสัช โรลออน Purple Joy", unit: "ขวด", image: "bhaesaj-purple-joy.png" },
+  { name: "เภสัช โรลออน Sweety Pink", unit: "ขวด", image: "bhaesaj-sweety-pink.png" },
+  { name: "เภสัช โรลออน Lively Green", unit: "ขวด", image: "bhaesaj-lively-green.png" },
+
+  // ทเวลฟ์ พลัส
+  { name: "ทเวลฟ์ พลัส โรลออน Double White Sakura", unit: "ขวด", image: "twelve-plus-double-white-sakura.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Less Shave Nourish", unit: "ขวด", image: "twelve-plus-less-shave-nourish.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Firming & Reduce Wrinkle", unit: "ขวด", image: "twelve-plus-firming.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Smooth Radiance", unit: "ขวด", image: "twelve-plus-smooth-radiance.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Snow Bright", unit: "ขวด", image: "twelve-plus-snow-bright.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Less Shave Renew", unit: "ขวด", image: "twelve-plus-less-shave-renew.png" },
+  { name: "ทเวลฟ์ พลัส โรลออน Less Shave Snail Care", unit: "ขวด", image: "twelve-plus-less-shave-snail.png" },
+  { name: "ทเวลฟ์ พลัส x เบบี้มายด์ โรลออน Organic Bright", unit: "ขวด", image: "twelve-plus-babi-mild-organic.png" },
+  { name: "12 พลัส โรลออน นาโน คอลลาเจน", unit: "ขวด", sizeLabel: "24 ชั่วโมง", image: "twelve-plus-nano-collagen.png" },
+
+  // เอเวอร์เซ้นส์
+  { name: "เอเวอร์เซ้นส์ โรลออน โยเกิร์ต Red Love Apple", unit: "ขวด", image: "eversense-red-love-apple.png" },
+  { name: "เอเวอร์เซ้นส์ โรลออน โยเกิร์ต เอ็กซ์ตร้าไวท์ (ส้ม)", unit: "ขวด", image: "eversense-extra-white-orange.png" },
+  { name: "เอเวอร์เซ้นส์ โรลออน โยเกิร์ต เอ็กซ์ตร้าไวท์ (ชมพู)", unit: "ขวด", image: "eversense-extra-white-pink.png" },
+
+  // เต่าเหยียบโลก
+  { name: "เต่าเหยียบโลก โรลออน Pomegranate Smooth & Clear", unit: "ขวด", image: "taoyeablok-pomegranate.png" },
+  { name: "เต่าเหยียบโลก โรลออน Heart Pea Natural Fresh & Firm", unit: "ขวด", image: "taoyeablok-heart-pea.png" },
+
+  // อื่น ๆ
+  { name: "ท็อป คันทรี่ โรลออน Anti-Perspirant", unit: "ขวด", sizeLabel: "60 มล.", image: "top-country.png" },
+  { name: "Simple โรลออน Gentle Care", unit: "ขวด", sizeLabel: "48 ชั่วโมง", image: "simple-gentle-care.png" },
+  { name: "เบบี้มายด์ Ultra Mild Deo โรลออน Organic", unit: "ขวด", image: "babi-mild-ultra-mild-deo.png" },
+  { name: "เรโซนา โรลออน Sexy Bouquet", unit: "ขวด", sizeLabel: "48 ชั่วโมง", image: "rexona-sexy-bouquet.png" },
+  { name: "เรโซนา Powder Dry สเปรย์ระงับกลิ่นกาย", unit: "กระป๋อง", sizeLabel: "48 ชั่วโมง", image: "rexona-powder-dry-spray.png" }
+].map(({ image, ...product }, index) => ({
+  id: 11300 + index,
+  category: "สุขภาพ/สวย",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  ...product,
+  imageUrl: `/product-images/roll-on/${image}`
+}));
+
+// ป้องกันแมลง อยู่หมวด "สุขภาพ/สวย" — เข้าหมวดย่อยผ่าน keyword "กันยุง"/"ไล่ยุง"
+const insectRepellentProducts: Product[] = [
+  { name: "บั๊กกี้บู โลชั่นกันยุง Anti-Mosquito", unit: "หลอด", sizeLabel: "40 มล.", image: "buggie-boo-lotion-40.png" },
+  { name: "ซอฟเฟล สเปรย์ฉีดกันยุง กลิ่นเนเชอรัล", unit: "ขวด", image: "soffell-spray-natural.png" },
+  { name: "ซอฟเฟล สเปรย์ฉีดกันยุง กลิ่นเฟรช", unit: "ขวด", image: "soffell-spray-fresh.png" },
+  { name: "ซอฟเฟล สเปรย์ฉีดกันยุง กลิ่นฟลอรัล", unit: "ขวด", image: "soffell-spray-floral.png" },
+  { name: "ซอฟเฟล โลชั่นทากันยุง กลิ่นฟลอรัล", unit: "ขวด", image: "soffell-lotion-floral-bottle.png" },
+  { name: "ซอฟเฟล โลชั่นทากันยุง กลิ่นฟลอรัล แบบซอง", unit: "ซอง", image: "soffell-lotion-floral-sachet.png" },
+  { name: "ซอฟเฟล โลชั่นทากันยุง กลิ่นเฟรช แบบซอง", unit: "ซอง", image: "soffell-lotion-fresh-sachet.png" },
+  { name: "OFF! Sakura โลชั่นทากันยุง", unit: "ซอง", image: "off-sakura-lotion.png" },
+  { name: "ก.ย.15 มิลกี้โลชั่นทากันยุง กลิ่นเฟรชบลอสซั่ม", unit: "ซอง", sizeLabel: "8 กรัม", image: "koryor15-milky-lotion.png" },
+  { name: "ก.ย.15 มิลกี้โลชั่นทากันยุง กลิ่นลาเวนเดอร์", unit: "ซอง", sizeLabel: "8 กรัม", image: "koryor15-milky-lavender.png" },
+  { name: "ก.ย.15 มิลกี้โลชั่นทากันยุง กลิ่นนายด์ ลิลลี่", unit: "ซอง", sizeLabel: "8 กรัม", image: "koryor15-milky-night-lily.png" },
+  { name: "ก.ย.15 โลชั่นทากันยุง แบบขวด", unit: "ขวด", image: "koryor15-lotion-bottle.png" },
+  { name: "ก.ย.15 โลชั่นทากันยุง กลิ่นลาเวนเดอร์ แบบขวด", unit: "ขวด", sizeLabel: "50 กรัม", image: "koryor15-lotion-bottle-lavender.png" },
+  { name: "ก.ย.15 แผ่นทากันยุง กลิ่นหอม", unit: "ซอง", sizeLabel: "1 ซอง ใช้ได้ 2 ครั้ง", image: "koryor15-wipe.png" },
+  { name: "ก.ย.15 ยาจุดกันยุง กลิ่นลาเวนเดอร์", unit: "กล่อง", image: "koryor15-coil-lavender.png" },
+  { name: "ไบกอน ยาจุดกันยุง กลิ่นยูคาลิปตัส", unit: "กล่อง", sizeLabel: "10 ขด", image: "baygon-coil-eucalyptus.png" },
+  { name: "ไบกอน ยาจุดกันยุง สูตรควันน้อย กลิ่นเฟรชบลอสซั่ม", unit: "กล่อง", sizeLabel: "10 ขด", image: "baygon-coil-low-smoke.png" },
+  { name: "ชิลด์ท็อกซ์ ยาจุดกันยุง สูตรควันน้อย", unit: "กล่อง", sizeLabel: "11 ชั่วโมง", image: "shieldtox-coil-low-smoke.png" },
+  { name: "ห่านฟ้า ยาจุดกันยุง สูตรควันน้อย", unit: "กล่อง", sizeLabel: "10 ขด", image: "hanfa-coil-low-smoke.png" },
+  { name: "อาท พลัส ยาจุดกันยุง จัมโบ้ สูตรควันน้อย", unit: "กล่อง", sizeLabel: "12 ชั่วโมง", image: "ars-plus-coil-jumbo.png" },
+  { name: "อาท โนแมท พลัส เครื่องไล่ยุงไฟฟ้า 90 วัน ไร้กลิ่น", unit: "กล่อง", sizeLabel: "90 วัน", image: "ars-nomat-plus-90.png" },
+  { name: "อาท โนแมท พลัส เครื่องไล่ยุงไฟฟ้า 30 วัน กลิ่นเฟรชกรีน", unit: "กล่อง", sizeLabel: "30 วัน", image: "ars-nomat-plus-30.png" },
+  { name: "เรนเจอร์ สเก้าท์ เครื่องไล่ยุงไฟฟ้า ไร้สารแต่งกลิ่น", unit: "กล่อง", sizeLabel: "30 วัน", image: "ranger-scout-electric.png" },
+  { name: "บั๊กซ์อเวย์ ยาจุดกันยุงสำหรับสุนัข แบบกระป๋อง", unit: "กระป๋อง", sizeLabel: "56 ขด", image: "bugs-away-dog-can-56.png" },
+  { name: "บั๊กซ์อเวย์ ยาจุดกันยุงสำหรับสุนัข แบบกล่อง", unit: "กล่อง", sizeLabel: "28 ขด", image: "bugs-away-dog-box-28.png" },
+  { name: "เฮิร์บการ์ด ยาจุดกันยุงสำหรับสัตว์เลี้ยง", unit: "กล่อง", sizeLabel: "12 ขด", image: "herb-guard-pet-coil-12.png" },
+  { name: "แซม-บัค ยาหม่องขี้ผึ้ง ทาแมลงกัดต่อย", unit: "ตลับ", sizeLabel: "ทาหลังโดนยุง/แมลงกัด", image: "zam-buk-balm.png" }
+].map(({ image, ...product }, index) => ({
+  id: 11200 + index,
+  category: "สุขภาพ/สวย",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  ...product,
+  imageUrl: `/product-images/insect-repellent/${image}`
+}));
+
+// แชมพู/ครีมนวด อยู่หมวด "สุขภาพ/สวย" — เข้าหมวดย่อยผ่าน keyword "แชมพู"/"ครีมนวด"
+// sizeLabel ใช้เป็นป้ายกำกับวิธีใช้ เช่น "ทั้งสระและถูตัว" (ของเด็ก) หรือ "แชมพู + ครีมนวด" (2 in 1)
+const hairCareProducts: Product[] = [
+  {
+    name: "จอห์นสัน Active Kids Shiny Drops แชมพูเด็ก",
+    unit: "ขวด",
+    sizeLabel: "200 มล. แชมพูเด็ก",
+    image: "johnsons-active-kids-shiny-drops.png"
+  },
+  {
+    name: "ซันซิล แชมพู 2 อิน 1",
+    unit: "ขวด",
+    sizeLabel: "แชมพู + ครีมนวด",
+    image: "sunsilk-2in1.png"
+  },
+  {
+    name: "โคโดโม Organic แชมพูเด็ก สูตร 3 ปีขึ้นไป",
+    unit: "ขวด",
+    sizeLabel: "ทั้งสระและถูตัว",
+    image: "kodomo-organic-shampoo-3plus.png"
+  },
+  {
+    name: "โคโดโม Organic แชมพูเด็กแรกเกิด",
+    unit: "ขวด",
+    sizeLabel: "ทั้งสระและถูตัว",
+    image: "kodomo-organic-shampoo-newborn.png"
+  },
+
+  // --- แชมพูผู้ใหญ่ ---
+  { name: "ซันซิล แชมพู สูตรผมนุ่มลื่นสลวย", unit: "ขวด", sizeLabel: "ขวดม่วง", image: "sunsilk-shampoo-purple.png" },
+  { name: "ซันซิล แชมพู สูตรผมยาวสวยสุขภาพดี", unit: "ขวด", sizeLabel: "ขวดเขียว", image: "sunsilk-shampoo-green.png" },
+  { name: "แพนทีน แชมพู แฮร์ฟอล คอนโทรล", unit: "ขวด", image: "pantene-shampoo-hairfall.png" },
+  { name: "เฮดแอนด์โชว์เดอร์ แชมพู คูล เมนทอล", unit: "ขวด", sizeLabel: "ขจัดรังแค", image: "head-shoulders-cool-menthol.png" },
+  { name: "เฮดแอนด์โชว์เดอร์ แชมพู 2 อิน 1 คูล เมนทอล", unit: "ขวด", sizeLabel: "แชมพู + ครีมนวด", image: "head-shoulders-2in1-cool-menthol.png" },
+  { name: "เคลียร์ แชมพู ไอซ์คูล เมนทอล", unit: "ขวด", sizeLabel: "ขจัดรังแค", image: "clear-ice-cool-menthol.png" },
+  { name: "เคลียร์ แชมพู สคาล์ปแคร์ วิตามินซี แอปเปิ้ลไซเดอร์", unit: "ขวด", sizeLabel: "ขจัดรังแค", image: "clear-scalp-care-apple-cider.png" },
+
+  // --- ครีมนวดผม ---
+  { name: "ซันซิล ครีมนวดผม สูตรเซรั่ม ผมมีน้ำหนักจัดทรงง่าย", unit: "ขวด", sizeLabel: "ขวดชมพู", image: "sunsilk-conditioner-pink.png" },
+  { name: "ซันซิล ครีมนวดผม สูตรผมยาวสวยสุขภาพดี", unit: "ขวด", sizeLabel: "ขวดเขียว", image: "sunsilk-conditioner-green.png" },
+  { name: "แพนทีน ครีมนวดผม แฮร์ฟอล คอนโทรล", unit: "ขวด", image: "pantene-conditioner-hairfall.png" },
+  { name: "แพนทีน ครีมนวดผม เดลี่ มอยส์เจอร์ รีนิวอัล", unit: "ขวด", image: "pantene-conditioner-moisture-renewal.png" },
+
+  // --- แชมพูยา (ขจัดรังแค/เชื้อรา) ---
+  { name: "ไนโซรัล แชมพู คีโตโคนาโซล 2%", unit: "ขวด", sizeLabel: "ยาสระผม แก้รังแค/เชื้อรา", image: "nizoral-shampoo.png" },
+  { name: "เซลซัน แชมพู ซีลีเนียม ซัลไฟด์ 2.5%", unit: "ขวด", sizeLabel: "ยาสระผม แก้รังแค · 30 มล.", image: "selsun-shampoo-30.png" },
+
+  // --- แชมพูเด็ก ---
+  { name: "โคโดโม คิดส์ แชมพูเด็ก Pearly Pink", unit: "ขวด", sizeLabel: "6 ปีขึ้นไป", image: "kodomo-kids-pearly-pink.png" },
+  { name: "ดีนี่ Organic แชมพูเด็ก", unit: "ขวด", sizeLabel: "แชมพูเด็ก", image: "dnee-organic-baby-shampoo.png" },
+  { name: "น่ารัก เบบี้แชมพู สูตรคาโมมายล์", unit: "ขวด", sizeLabel: "ขวดชมพู", image: "narak-baby-shampoo-chamomile.png" },
+  { name: "น่ารัก เบบี้แชมพู สูตรคาโมมายล์ ขวดปั๊ม", unit: "ขวด", sizeLabel: "ขวดปั๊มใหญ่", image: "narak-baby-shampoo-chamomile-pump.png" },
+  { name: "น่ารัก เบบี้แชมพู สูตรมายด์", unit: "ขวด", sizeLabel: "ขวดเหลือง", image: "narak-baby-shampoo-mild.png" },
+
+  // --- แชมพูเด็กแบบใช้ได้ทั้งตัว ---
+  { name: "ดีนี่ คิดส์ แชมพูและสบู่เหลว สีชมพู", unit: "ขวด", sizeLabel: "ทั้งสระและถูตัว", image: "dnee-kids-head-body-pink.png" },
+  { name: "ดีนี่ คิดส์ แชมพูและสบู่เหลว สีม่วง", unit: "ขวด", sizeLabel: "ทั้งสระและถูตัว", image: "dnee-kids-head-body-purple.png" },
+  { name: "ดีนี่ คิดส์ แชมพูและสบู่เหลว สีฟ้า แอนตี้แบคทีเรีย", unit: "ขวด", sizeLabel: "ทั้งสระและถูตัว", image: "dnee-kids-head-body-blue.png" },
+  { name: "ดีนี่ คิดส์ Organic แชมพูและสบู่เหลว สีม่วง แอนตี้แบคทีเรีย", unit: "ขวด", sizeLabel: "ทั้งสระและถูตัว", image: "dnee-kids-organic-head-body-purple.png" }
+].map(({ image, ...product }, index) => ({
+  id: 11100 + index,
+  category: "สุขภาพ/สวย",
+  stock: 20,
+  minStock: 5,
+  price: 0,
+  updatedBy: "เจ้าของร้าน",
+  ...product,
+  imageUrl: `/product-images/health-beauty/${image}`
+}));
+
+// ของใช้ส่วนตัว แยกเป็น 2 หมวดย่อยด้วยคำว่า "กางเกง" ในชื่อ (ดู matchesPersonalCareSubcategory)
+const personalCareImageBase = "/product-images/personal-care";
+
 const personalCareProducts: Product[] = [
-  { name: "โซฟี แบบกระชับ 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 6 ชิ้น" },
-  { name: "โซฟี Cooling Fresh มีปีก 23 ซม.", unit: "แพ็ก", sizeLabel: "23 ซม. 8 ชิ้น" },
-  { name: "โซฟี Charcoal Fresh กลางคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 14 ชิ้น" },
-  { name: "โซฟี หลับสนิทตลอดคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 12 ชิ้น" },
-  { name: "ลอรีเอะ Soft & Safe สลิม กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "4 ชิ้น" },
-  { name: "เอลิส Fairy Wings 30 ซม. กลางวัน-กลางคืน", unit: "แพ็ก", sizeLabel: "30 ซม. 12 ชิ้น" },
-  { name: "เอลิส Fairy Wings 22.5 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "22.5 ซม. 16 ชิ้น" },
-  { name: "เอลิส Fairy Wings 25 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "25 ซม. 14 ชิ้น" },
-  { name: "เอลิส Fairy Wings 35 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "35 ซม. 10 ชิ้น" },
-  { name: "เอลิส Fairy Wings 42 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "42 ซม. 6 ชิ้น" }
-].map((product, index) => ({
+  // --- ผ้าอนามัย (แบบแผ่น) ---
+  { name: "โซฟี แบบกระชับ 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 6 ชิ้น", image: "sofy-comfort-fit-29-6.png" },
+  { name: "โซฟี แบบกระชับ 25 ซม.", unit: "แพ็ก", sizeLabel: "25 ซม. 18 ชิ้น", image: "sofy-comfort-fit-25-18.png" },
+  { name: "โซฟี แบบกระชับ หลับสนิทตลอดคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 8 ชิ้น", image: "sofy-comfort-night-29-8.png" },
+  { name: "โซฟี แบบกระชับ หลับสนิทตลอดคืน 42 ซม.", unit: "แพ็ก", sizeLabel: "42 ซม. 8 ชิ้น", image: "sofy-comfort-night-42-8.png" },
+  { name: "โซฟี หลับสนิทตลอดคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 12 ชิ้น", image: "sofy-night-29-12.png" },
+  { name: "โซฟี หลับสนิทตลอดคืน 29 ซม. แพ็กใหญ่", unit: "แพ็ก", sizeLabel: "29 ซม. 16 ชิ้น", image: "sofy-night-29-16.png" },
+  { name: "โซฟี Cooling Fresh มีปีก 23 ซม.", unit: "แพ็ก", sizeLabel: "23 ซม. 8 ชิ้น", image: "sofy-cooling-fresh-23-8.png" },
+  { name: "โซฟี Cooling Fresh สลิม 25 ซม.", unit: "แพ็ก", sizeLabel: "25 ซม. 10 ชิ้น", image: "sofy-cooling-fresh-slim-25-10.png" },
+  { name: "โซฟี Cooling Fresh 25 ซม.", unit: "แพ็ก", sizeLabel: "25 ซม. 12 ชิ้น", image: "sofy-cooling-fresh-25-12.png" },
+  { name: "โซฟี Cooling Fresh Extra 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 12 ชิ้น", image: "sofy-cooling-fresh-extra-29-12.png" },
+  { name: "โซฟี Cooling Fresh กลางคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 14 ชิ้น", image: "sofy-cooling-fresh-night-29-14.png" },
+  { name: "โซฟี Cooling Fresh กลางคืน 35 ซม.", unit: "แพ็ก", sizeLabel: "35 ซม. 9 ชิ้น", image: "sofy-cooling-fresh-night-35-9.png" },
+  { name: "โซฟี Charcoal Fresh กลางคืน 29 ซม.", unit: "แพ็ก", sizeLabel: "29 ซม. 14 ชิ้น", image: "sofy-charcoal-fresh-29-14.png" },
+  { name: "ลอรีเอะ Soft & Safe สลิม กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "4 ชิ้น", price: 12, image: "laurier-soft-safe-slim-day-4.png" },
+  { name: "ลอรีเอะ Soft & Safe แม็กซี่ กลางวัน ไม่มีปีก", unit: "แพ็ก", sizeLabel: "20 ชิ้น", image: "laurier-maxi-day-20.png" },
+  { name: "ลอรีเอะ Soft & Safe หลับสบาย 30 ซม.", unit: "แพ็ก", sizeLabel: "30 ซม. 6 ชิ้น", image: "laurier-night-30-6.png" },
+  { name: "ลอรีเอะ Soft & Safe หลับสบาย 30 ซม. แพ็กใหญ่", unit: "แพ็ก", sizeLabel: "30 ซม. 16 ชิ้น", image: "laurier-night-30-16.png" },
+  { name: "เอลิส Fairy Wings 22.5 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "22.5 ซม. 16 ชิ้น", image: "elis-fairy-wings-225-16.png" },
+  { name: "เอลิส Fairy Wings 25 ซม. กลางวัน มีปีก", unit: "แพ็ก", sizeLabel: "25 ซม. 14 ชิ้น", image: "elis-fairy-wings-25-14.png" },
+  { name: "เอลิส Fairy Wings 30 ซม. กลางวัน-กลางคืน", unit: "แพ็ก", sizeLabel: "30 ซม. 12 ชิ้น", image: "elis-fairy-wings-30-12.png" },
+  { name: "เอลิส Fairy Wings 35 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "35 ซม. 10 ชิ้น", image: "elis-fairy-wings-35.png" },
+  { name: "เอลิส Fairy Wings 42 ซม. กลางคืน", unit: "แพ็ก", sizeLabel: "42 ซม. 6 ชิ้น", image: "elis-fairy-wings-42-6.png" },
+
+  // --- ผ้าอนามัยแบบกางเกงใน ---
+  { name: "โซฟี หลับสนิทตลอดคืน ผ้าอนามัยแบบกางเกง ไซซ์ L", unit: "แพ็ก", sizeLabel: "2 ชิ้น", image: "sofy-night-pants-l-2.png" },
+  { name: "โซฟี หลับสนิทตลอดคืน ผ้าอนามัยแบบกางเกง ไซซ์ XL", unit: "แพ็ก", sizeLabel: "2 ชิ้น", image: "sofy-night-pants-xl-2.png" },
+  { name: "ลอรีเอะ หลับสบาย ผ้าอนามัยแบบกางเกง อัลตราสลิม ไซซ์ L", unit: "แพ็ก", sizeLabel: "2 ชิ้น", image: "laurier-night-pants-l-2.png" },
+  { name: "โดโด้ เลิฟ ผ้าอนามัยแบบกางเกง ไซซ์ M-L", unit: "แพ็ก", sizeLabel: "10 ชิ้น", image: "dodo-love-pants-ml-10.png" },
+
+  // --- ผลิตภัณฑ์ทำความสะอาดจุดซ่อนเร้น ---
+  { name: "บีไนซ์ Intimate ทำความสะอาดจุดซ่อนเร้น", unit: "ขวด", image: "benice-intimate.png" },
+  { name: "มิสทิน Ladycare Intimate Cleanser สูตร Cool", unit: "ขวด", image: "mistine-ladycare-cool.png" },
+  { name: "มิสทิน Ladycare Intimate Cleanser สูตร Gentle", unit: "ขวด", image: "mistine-ladycare-gentle.png" },
+  { name: "มิสทิน Ladycare Anti Odor Complex", unit: "ขวด", image: "mistine-ladycare-anti-odor.png" },
+  { name: "มิสทิน Ladycare Natural Balance Hygienic Cleanser", unit: "ขวด", image: "mistine-ladycare-natural-balance.png" },
+  { name: "ซอลเจลล่า Saugella Dermoliquido", unit: "ขวด", image: "saugella-dermoliquido.png" },
+  { name: "ซอลเจลล่า Saugella Attiva สูตรปกป้อง", unit: "ขวด", image: "saugella-attiva.png" },
+  { name: "มิสทิน Ladycare Intimate Cleanser ขวดชมพู", unit: "ขวด", image: "mistine-ladycare-classic-pink.png" },
+  { name: "มิสทิน Ladycare Intimate Cleanser ขวดฟ้า", unit: "ขวด", image: "mistine-ladycare-classic-blue.png" },
+  { name: "มิสทิน Ladycare Intimate Cleanser ขวดม่วง", unit: "ขวด", image: "mistine-ladycare-classic-purple.png" },
+  { name: "แลคตาซิด Lactacyd Soft & Silky", unit: "ขวด", image: "lactacyd-soft-silky.png" },
+  { name: "แลคตาซิด Lactacyd All-Day Care", unit: "ขวด", image: "lactacyd-all-day-care.png" },
+  { name: "แลคตาซิด Lactacyd Odor Fresh", unit: "ขวด", image: "lactacyd-odor-fresh.png" },
+  { name: "แลคตาซิด Lactacyd Extra Sensitive", unit: "ขวด", image: "lactacyd-extra-sensitive.png" },
+  { name: "แลคตาซิด Lactacyd Extra Milky", unit: "ขวด", image: "lactacyd-extra-milky.png" },
+  { name: "โชกุบุสสึ Feminine Cleansing สูตร Everyday Confidence", unit: "ขวด", image: "shokubutsu-everyday-confidence.png" },
+  { name: "โชกุบุสสึ Feminine Cleansing สูตร Daily Gentle Care", unit: "ขวด", image: "shokubutsu-daily-gentle-care.png" },
+  { name: "RADA Lady Care Clean", unit: "ขวด", sizeLabel: "50 มล.", image: "rada-lady-care-clean.png" },
+  { name: "Rien Feminine Care สูตร Extra Care", unit: "ขวด", image: "rien-feminine-care-extra.png" },
+  { name: "Oriental Princess Feminine Hygiene สูตร Soft Touch", unit: "ขวด", image: "oriental-princess-soft-touch.png" },
+  { name: "เบบี้มายด์ Ultra Mild Feminine Cleansing สูตร Organic", unit: "ขวด", image: "babi-mild-ultra-mild-organic.png" }
+].map(({ image, ...product }, index) => ({
   id: 11000 + index,
   category: "ของใช้ส่วนตัว",
   stock: 20,
   minStock: 5,
   price: 0,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: `${personalCareImageBase}/${image}`
 }));
 
 const snackProducts: Product[] = (
@@ -1138,8 +1470,8 @@ const snackProducts: Product[] = (
     { name: "PR Big Bag รสสาหร่าย", price: 20, sizeLabel: "80 กรัม" },
     { name: "PR Big Bag รสมะเขือเทศ", price: 20, sizeLabel: "80 กรัม" },
     { name: "PR Big Bag รสกุ้งสไปซี่", price: 20, sizeLabel: "80 กรัม" }
-  ] as { name: string; price?: number; sizeLabel?: string; unit?: string }[]
-).map((product, index) => ({
+  ] as { name: string; price?: number; sizeLabel?: string; unit?: string; image?: string }[]
+).map(({ image, ...product }, index) => ({
   id: 12000 + index,
   category: "ขนมและของกินเล่น",
   stock: 20,
@@ -1147,8 +1479,8 @@ const snackProducts: Product[] = (
   unit: "ซอง",
   price: 5,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: image ? `/product-images/snack/${image}` : productImageByName[product.name]
 }));
 
 const chocolateProducts: Product[] = [
@@ -1174,16 +1506,32 @@ const chocolateProducts: Product[] = [
   ...product
 }));
 
-const medicineProducts: Product[] = [
-  { name: "ยาดมแบบขวด ขวดแดง", unit: "ขวด" },
-  { name: "ยาดมตราเสือ (Tiger Balm Inhaler)" },
-  { name: "ยาดมโป๊ยเซียน มาร์คทู", sizeLabel: "คละสี" },
-  { name: "ยาดมเป๊ปเปอร์มินท์ฟิลด์", sizeLabel: "คละสี" },
+// ยาสามัญประจำบ้าน — `image` = ไฟล์ใน /product-images/medicine/ (เว้นว่างได้ จะ fallback ไป productImageByName)
+// ชื่อที่ซ้ำกันหลายแบบ (พิมเสนน้ำ / ยาหม่องถ้วยทอง / ยาดมหงส์ไทย) ต้องผูกรูปผ่าน productImageByKey เท่านั้น
+type MedicineSeed = {
+  name: string;
+  unit?: string;
+  sizeLabel?: string;
+  price?: number;
+  image?: string;
+};
+
+const medicineImageBase = "/product-images/medicine";
+
+const medicineProducts: Product[] = ([
+  // --- ยาดม / พิมเสน ---
+  { name: "ยาดมแบบขวด ขวดแดง", unit: "ขวด", image: "inhaler-bottle-red.png" },
+  { name: "ยาดมตราเสือ (Tiger Balm Inhaler)", image: "tiger-balm-inhaler.png" },
+  { name: "ยาดมโป๊ยเซียน มาร์คทู", sizeLabel: "คละสี", image: "poysian-mark-two.png" },
+  { name: "ยาดมเป๊ปเปอร์มินท์ฟิลด์", sizeLabel: "คละสี", image: "peppermint-field.png" },
+  { name: "ยาดมเป๊ปเปอร์มินท์ฟิลด์ แบล็ค", unit: "หลอด", image: "peppermint-field-black.png" },
+  { name: "ยาดมส้มมือ ตราจรุงจิต", unit: "หลอด", image: "jarungjit-inhaler.png" },
+  { name: "ยาดมสมุนไพร ตราโพธิ์ประดิษฐ์", unit: "หลอด", image: "pho-pradit-inhaler.png" },
   { name: "ยาดมตราถ้วยทอง กลิ่นเลมอน" },
   // ยาดมสมุนไพรแบบกระปุก
   { name: "ยาดมสมุนไพร ตราหงส์ไทย", unit: "กระปุก", sizeLabel: "สีเหลือง" },
   { name: "ยาดมสมุนไพร ตราหงส์ไทย", unit: "กระปุก", sizeLabel: "สีเขียว" },
-  { name: "ยาดมสมุนไพร ตราวังว่าน", unit: "กระปุก" },
+  { name: "ยาดมสมุนไพร ตราวังว่าน", unit: "กระปุก", image: "wangwan-herbal-balm.png" },
   { name: "ยาดมสมุนไพร ตรามังกรทอง", unit: "กระปุก" },
   // พิมเสนน้ำ ตราโป๊ยเซียน
   { name: "พิมเสนน้ำ ตราโป๊ยเซียน", unit: "หลอด", sizeLabel: "แบบโรลออน" },
@@ -1191,44 +1539,143 @@ const medicineProducts: Product[] = [
   { name: "พิมเสนน้ำ ตราโป๊ยเซียน", unit: "กระปุก", sizeLabel: "แบบตลับ" },
   // ยาหม่อง
   { name: "ยาหม่องตราถ้วยทอง 2493", unit: "กระปุก", sizeLabel: "กระปุก 50 กรัม" },
-  { name: "ยาหม่องตราเสือ (Tiger Balm HR)", unit: "กระปุก" },
-  { name: "น้ำมันโอสถทิพย์", unit: "กระปุก", sizeLabel: "สีเขียว" },
-  { name: "ยาหม่องตราวังว่าน", unit: "กระปุก", sizeLabel: "100 กรัม" },
-  { name: "ยาหม่องโอสถ ตรารำม้า", unit: "กระปุก", sizeLabel: "200 กรัม" },
+  { name: "ยาหม่องตราเสือ (Tiger Balm HR)", unit: "กระปุก", image: "tiger-balm-hr.png" },
+  { name: "น้ำมันโอสถทิพย์", unit: "กระปุก", sizeLabel: "สีเขียว", image: "osot-thip-green.png" },
+  { name: "ยาหม่องตราวังว่าน", unit: "กระปุก", sizeLabel: "100 กรัม", image: "wangwan-balm-brown.png" },
+  { name: "ยาหม่องโอสถ ตรารำม้า", unit: "กระปุก", sizeLabel: "200 กรัม", image: "osot-ram-ma-balm.png" },
   { name: "ยาหม่องตราถ้วยทอง 2493", unit: "ตลับ", sizeLabel: "ตลับเล็ก 8 กรัม" },
-  { name: "ยาหม่องสำเภาทอง สูตรไพล", unit: "กระปุก" },
-  { name: "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)", unit: "ซอง", sizeLabel: "บรรเทาระคายคอ · 10 เม็ด" },
-  { name: "ยาหม่องไพล (Compound Phlai Balm)", unit: "กระปุก" },
-  { name: "วิกส์ วาโปรับ (Vicks VapoRub)", unit: "ตลับ" },
+  { name: "ยาหม่องน้ำ ตราถ้วยทอง 2493", unit: "ขวด", image: "golden-cup-oil.png" },
+  { name: "ยาหม่องสมุนไพร ตราวังพรม สูตร 2", unit: "กระปุก", sizeLabel: "50 กรัม", image: "wangprom-balm-formula2.png" },
+  { name: "ยาหม่องสำเภาทอง สูตรไพล", unit: "กระปุก", image: "sampao-thong-phlai-balm.png" },
+  { name: "ยาอมมายบาซิน รสมินต์ (Mybacin Throat)", unit: "ซอง", sizeLabel: "บรรเทาระคายคอ · 10 เม็ด", image: "mybacin-throat-mint.png" },
+  { name: "ยาหม่องไพล (Compound Phlai Balm)", unit: "กระปุก", sizeLabel: "20 กรัม", image: "phlai-balm-mor-eiang.png" },
+  { name: "วิกส์ วาโปรับ (Vicks VapoRub)", unit: "ตลับ", image: "vicks-vaporub.png" },
   { name: "ยาน้ำสเปรย์ ตรานำมวย", unit: "ขวด", sizeLabel: "สเปรย์ 40 มล." },
-  { name: "น้ำมันมวย ตรานำมวย", unit: "ขวด" },
+  { name: "น้ำมันมวย ตรานำมวย", unit: "ขวด", image: "nam-man-muay.png" },
+  { name: "ครีมยาบรรเทาปวดเมื่อย ตรามวย", unit: "หลอด", sizeLabel: "ชนิดครีม", image: "muay-pain-cream.png" },
   // ผิวหนัง / แมลงกัดต่อย — sizeLabel ใช้กำกับว่ายาช่วยเรื่องอะไร
-  { name: "ยาทาเสลดพังพอน ชนิดตลับ", unit: "ตลับ", sizeLabel: "แก้แมลงกัดต่อย" },
-  { name: "คาดรามีน-วี โลชั่น (Cadramine-V Lotion)", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน · 60 มล." },
-  { name: "คาลาไมน์ โลชั่น (Calamine Lotion)", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน" },
-  { name: "คาลาไมน์พญายอ", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน แมลงกัด" },
-  { name: "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 10 กรัม" },
-  { name: "ไลมาริน ครีม (Lymarin Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา/แบคทีเรีย · 15 กรัม" },
+  { name: "ยาทาเสลดพังพอน ชนิดตลับ", unit: "ตลับ", sizeLabel: "แก้แมลงกัดต่อย", image: "saled-phangphon-tin.png" },
+  { name: "คาดรามีน-วี โลชั่น (Cadramine-V Lotion)", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน · 60 มล.", image: "cadramine-v-lotion.png" },
+  { name: "คาลาไมน์ โลชั่น (Calamine Lotion)", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน · 60 มล.", image: "calamine-lotion.png" },
+  { name: "คาลาไมน์พญายอ", unit: "ขวด", sizeLabel: "แก้ผดผื่นคัน แมลงกัด", image: "calamine-phayayor.png" },
+  { name: "คาเนสเทน ยาครีมฆ่าเชื้อรา (Canesten)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 10 กรัม", image: "canesten-cream.png" },
+  { name: "ไลมาริน ครีม (Lymarin Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา/แบคทีเรีย · 15 กรัม", image: "lymarin-cream.png" },
   { name: "คีล่า โลชั่น (Kela Lotion)", unit: "ขวด", sizeLabel: "แก้ผื่นแพ้ผิวหนัง" },
   { name: "เบต้า-ไดโป ครีม (Beta-Dipo Cream)", unit: "หลอด", sizeLabel: "แก้ผื่นแพ้อักเสบ · 10 กรัม" },
-  { name: "ฟังจิเดอร์ม-บี ครีม (Fungiderm-B Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 20 กรัม" },
-  { name: "ซีมา ครีม รักษาฮ่องกงฟุต (Zema Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา (ฮ่องกงฟุต) · 10 กรัม" },
-  { name: "โทนาฟ ครีม (TONAF Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 5 กรัม" },
-  { name: "ไมโครัล ครีม (Micoral Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา" },
-  { name: "ยาครีมโคลไทรมาโซล 1% (Clotrimazole)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 15 กรัม" },
-  { name: "แฟงโก้-บี ครีม (Fango-B Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 15 กรัม" },
-  { name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", unit: "ขวด", sizeLabel: "ฆ่าเชื้อ ใส่แผล" },
+  { name: "ฟังจิเดอร์ม-บี ครีม (Fungiderm-B Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 20 กรัม", image: "fungiderm-b-cream.png" },
+  { name: "ซีมา ครีม รักษาฮ่องกงฟุต (Zema Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา (ฮ่องกงฟุต) · 10 กรัม", image: "zema-cream.png" },
+  { name: "ซีมา โลชั่น (Zema Lotion)", unit: "ขวด", sizeLabel: "ยาทาเชื้อรา ชนิดน้ำ", image: "zema-lotion.png" },
+  { name: "โทนาฟ ครีม (TONAF Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 5 กรัม", image: "tonaf-cream.png" },
+  { name: "ไมโครัล ครีม (Micoral Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา", image: "micoral-cream.png" },
+  { name: "ยาครีมโคลไทรมาโซล 1% (Clotrimazole)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 15 กรัม", image: "clotrimazole-cream.png" },
+  { name: "แฟงโก้-บี ครีม (Fango-B Cream)", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 15 กรัม", image: "fango-b-cream.png" },
+  { name: "มายด้า-บี ครีม (Myda-B Cream)", unit: "หลอด", sizeLabel: "แก้ผื่นแพ้อักเสบ · 25 กรัม", image: "myda-b-cream.png" },
+  { name: "โคลเบท ครีม (Clobet Cream)", unit: "หลอด", sizeLabel: "แก้ผื่นแพ้อักเสบ · 15 กรัม", image: "clobet-cream.png" },
+  { name: "คานาโซน ซี.บี. ครีม", unit: "หลอด", sizeLabel: "ยาทาเชื้อรา · 15 กรัม", image: "kanazone-cb.png" },
+  { name: "เฟนิสทิล เจล (Fenistil Gel)", unit: "หลอด", sizeLabel: "แก้คัน แมลงกัดต่อย · 20 กรัม", image: "fenistil-gel.png" },
+  { name: "บีแพนเธน ออยเมนต์ (Bepanthen Ointment)", unit: "หลอด", sizeLabel: "บำรุงผิวแห้ง ผื่นผ้าอ้อม · 50 กรัม", image: "bepanthen-ointment.png" },
+  { name: "บีแพนเธน เซนซิเดิร์ม ครีม (Bepanthen Sensiderm)", unit: "หลอด", sizeLabel: "แก้คัน ผื่นภูมิแพ้ · 20 กรัม", image: "bepanthen-sensiderm.png" },
+  { name: "เยนเชี่ยนไวโอเลต ตราสหการ", unit: "ขวด", sizeLabel: "ทาแผล ฆ่าเชื้อ", image: "gentian-violet-sahakarn.png" },
+  { name: "ไพแร็ต-ไวโอเล็ต (Pyrad-Violet)", unit: "ขวด", sizeLabel: "ทาแผล ฆ่าเชื้อ · 450 มล.", image: "pyrad-violet.png" },
+  // เบตาดีน อยู่ในหมวด "ปฐมพยาบาล" แล้ว (ไม่ใส่ซ้ำที่นี่)
   { name: "เดอร์มาติกซ์ อัลตร้า (Dermatix Ultra)", unit: "หลอด", sizeLabel: "เจลลดรอยแผลเป็น" },
   // ยาสมุนไพร / บรรเทาอาการ
   { name: "ฟ้าทะลายโจร แคปซูล (Phyto Care)", unit: "กล่อง", sizeLabel: "บรรเทาเจ็บคอ · 100 แคปซูล" },
-  { name: "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร", unit: "กล่อง", sizeLabel: "แก้ไข้" },
-  { name: "ยากษัยเส้น ตราเด็กในพานทอง", unit: "กล่อง", sizeLabel: "แก้ปวดเมื่อย/ยาระบาย · 10 แคปซูล" },
+  { name: "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร", unit: "กล่อง", sizeLabel: "แก้ไข้", image: "fah-talai-jone-abhaibhubejhr.png" },
+  { name: "ฟ้าทะลายโจร แคปซูล ตราอภัยภูเบศร แบบกระปุก", unit: "กระปุก", sizeLabel: "แก้ไข้ เจ็บคอ", image: "fah-talai-jone-abhai-jar.png" },
+  { name: "ยากษัยเส้น ตราเด็กในพานทอง", unit: "กล่อง", sizeLabel: "คลายปวดเมื่อย/ยาระบาย · 10 แคปซูล", image: "kasaisen-dek-nai-phan-thong.png" },
+  { name: "ยากษัยเส้น ตราม้าปลาคู่", unit: "กล่อง", sizeLabel: "บรรเทาปวดเมื่อยตามร่างกาย", image: "kasaisen-ma-pla-khu.png" },
   { name: "ยาแก้ท้องเสีย ตราเขากวาง", unit: "ขวด", sizeLabel: "แก้ท้องเสีย ท้องร่วง" },
-  { name: "ยาน้ำเขากุ้ย (Kao-Kui Water)", unit: "ขวด", sizeLabel: "แก้ไข้ ร้อนใน กระหายน้ำ" },
-  { name: "ยาหอม ตรา 5 เจดีย์", unit: "ซอง", sizeLabel: "แก้วิงเวียน บำรุงหัวใจ" },
+  { name: "ยาน้ำเขากุ้ย (Kao-Kui Water)", unit: "ขวด", sizeLabel: "แก้ไข้ ร้อนใน กระหายน้ำ", image: "kao-kui-water.png" },
+  { name: "ยาน้ำเขากุ้ย ตราเคเอ็มพี", unit: "ขวด", sizeLabel: "แก้ไข้ ร้อนใน · 240 มล.", image: "kao-kui-kmp.png" },
+  { name: "ยาน้ำแก้ตัวร้อนเขากุย ตราแพะ", unit: "ขวด", sizeLabel: "แก้ไข้ ตัวร้อน ร้อนใน", image: "kao-kui-goat.png" },
+  { name: "ยาธาตุน้ำขาว ตรากระต่ายบิน", unit: "ขวด", sizeLabel: "แก้ท้องอืด ท้องเฟ้อ · 200 มล.", image: "ya-that-nam-khao-rabbit.png" },
+  { name: "ยาหอม ตรา 5 เจดีย์", unit: "ซอง", sizeLabel: "แก้วิงเวียน บำรุงหัวใจ", image: "yahom-five-pagodas.png" },
   { name: "ยาหอมเบอร์ 33 ตราห้าม้า", unit: "ขวด", sizeLabel: "บำรุงหัวใจ แก้วิงเวียน" },
-  { name: "ขมิ้นชัน แคปซูล ตราอภัยภูเบศร", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด" }
-].map((product, index) => ({
+  { name: "ขมิ้นชัน แคปซูล ตราอภัยภูเบศร", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด", image: "turmeric-abhaibhubejhr.png" },
+  { name: "ขมิ้นชัน แคปซูล ตราไพลดาว", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด", image: "turmeric-phlaidao.png" },
+  { name: "ขมิ้นชัน แคปซูล ตราอ้วยอันโอสถ", unit: "กระปุก", sizeLabel: "บรรเทาท้องอืด · 100 แคปซูล", image: "turmeric-ouay-un.png" },
+  { name: "ขมิ้นชัน แคปซูล ไฟโตแคร์", unit: "กล่อง", sizeLabel: "บรรเทาท้องอืด · 100 แคปซูล", image: "turmeric-phytocare.png" },
+  { name: "ยาแคปซูลบัวบก ตราอภัยภูเบศร", unit: "กระปุก", sizeLabel: "ยาสมุนไพร", image: "centella-abhaibhubejhr.png" },
+  // แก้ปวด / ลดไข้
+  { name: "ไทลินอล พาราเซตามอล 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 500 มก.", image: "tylenol-500.png" },
+  { name: "ไทลินอล 8 ชั่วโมง 650 มก.", unit: "กล่อง", sizeLabel: "ปวดกล้ามเนื้อ · 10 เม็ด", image: "tylenol-8hr-650.png" },
+  { name: "พาราเซตามอล พาราแคป 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 500 มก.", image: "paracap-500.png" },
+  { name: "พาราเซตามอล เซมอล 500 มก.", unit: "ขวด", sizeLabel: "แก้ปวด ลดไข้ · 100 เม็ด", image: "cemol-500.png" },
+  { name: "พาราเซตามอล มายพารา 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 10x10 เม็ด", image: "mypara-500.png" },
+  { name: "พาราเซตามอล ซาร่า 500 มก.", unit: "กล่อง", sizeLabel: "แก้ปวด ลดไข้ · 500 มก.", image: "sara-paracetamol-500.png" },
+  { name: "ทัมใจ ตรากิเลน", unit: "ซอง", sizeLabel: "ยาแก้ปวด ลดไข้ ชนิดผง", image: "thumjai.png" },
+  { name: "พอนสแตน 500 (Ponstan)", unit: "แผง", sizeLabel: "แก้ปวด ปวดประจำเดือน", image: "ponstan-500.png" },
+  { name: "เอ็ม.16 พาตาร์ 75 ยาแก้ปวดฟัน", unit: "ชุด", sizeLabel: "บรรเทาปวดฟัน", image: "m16-patar-75.png" },
+  // หวัด / ไอ / เจ็บคอ
+  { name: "ทิฟฟี่ ไซรัป (Tiffy)", unit: "ขวด", sizeLabel: "บรรเทาหวัด · 60 มล." },
+  { name: "ทิฟฟี่ เดย์ ชนิดเม็ด", unit: "ซอง", sizeLabel: "บรรเทาหวัด · 4 เม็ด", image: "tiffy-day-tablet.png" },
+  { name: "ทิฟฟี่ รับ (Tiffy Rub)", unit: "ตลับ", sizeLabel: "ทาบรรเทาหวัด คัดจมูก", image: "tiffy-rub.png" },
+  { name: "ดีคอลเจน ชนิดเม็ด", unit: "ซอง", sizeLabel: "บรรเทาหวัด คัดจมูก", image: "decolgen-tablet.png" },
+  { name: "คลอร์เฟนิรามีน 4 มก.", unit: "กระปุก", sizeLabel: "แก้แพ้ ลดน้ำมูก · 100 เม็ด", image: "chlorpheniramine-4mg.png" },
+  { name: "โซลแมกซ์ คาร์โบซิสเทอีน 500 มก.", unit: "แผง", sizeLabel: "ละลายเสมหะ", image: "solmax-carbocisteine.png" },
+  { name: "สเตร็ปซิล ฮันนี่&เลมอน (Strepsils)", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ · 8 เม็ด", image: "strepsils-honey-lemon.png" },
+  { name: "สเตร็ปซิล คูล (Strepsils Cool)", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ · 8 เม็ด", image: "strepsils-cool.png" },
+  { name: "สเตร็ปซิล ออเรนจ์ + วิตามินซี", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ", image: "strepsils-orange-vitc.png" },
+  { name: "สเตร็ปซิล ซิตรัส เลมอน ไม่มีน้ำตาล", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ · 6 เม็ด", image: "strepsils-citrus-lemon.png" },
+  { name: "ดิฟแลม ฮันนี่&เลมอน (Difflam)", unit: "แผง", sizeLabel: "ยาอมเจ็บคอ · 8 เม็ด", image: "difflam-honey-lemon.png" },
+  { name: "เบตาดีน สเปรย์พ่นคอ (Betadine Throat Spray)", unit: "ขวด", sizeLabel: "พ่นคอ · 12 มล.", image: "betadine-throat-spray.png" },
+  { name: "ยาอมมะแว้ง", unit: "ซอง", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "ma-waeng-lozenge.png" },
+  { name: "ยาอมมะแว้ง ตราไอยรา รสบ๊วย", unit: "ซอง", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "ma-waeng-aiyara-buoy.png" },
+  { name: "ยาอมมายบาซิน โอทีซี เลมอน (Mybacin OTC)", unit: "ซอง", sizeLabel: "บรรเทาระคายคอ · 8 เม็ด", image: "mybacin-otc-lemon.png" },
+  { name: "ยาอมสมุนไพร ตรามังกรทอง รสเปลือกส้ม", unit: "ซอง", sizeLabel: "บรรเทาไอ ชุ่มคอ", image: "dragon-lozenge-orange-peel.png" },
+  { name: "ยาอมสมุนไพร ตรามังกรทอง รสบ๊วยเค็ม", unit: "ซอง", sizeLabel: "บรรเทาไอ ชุ่มคอ", image: "dragon-lozenge-salty-plum.png" },
+  { name: "ยาอมสมุนไพร ตราคุณเปรมา", unit: "ซอง", sizeLabel: "บรรเทาไอ ชุ่มคอ", image: "khun-prema-lozenge.png" },
+  { name: "ยาอมกำกิกเผี่ยง (Gumgig Pean)", unit: "แผง", sizeLabel: "ขับเสมหะ ชุ่มคอ · 20 เม็ด", image: "gumgig-pean.png" },
+  { name: "ยาอมโบตัน ตรากิเลน", unit: "ซอง", sizeLabel: "ชุ่มคอ", image: "botan-lozenge.png" },
+  { name: "ยาอมแก้ไอ ตราตะขาบ 5 ตัว", unit: "ซอง", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "takhap-5-tua-lozenge.png" },
+  { name: "ยูอีคอฟ ยาอมผสมมะขามป้อม", unit: "ซอง", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "ucough-lozenge.png" },
+  { name: "ฟิชเชอร์แมนส์ เฟรนด์ รสเชอร์รี่", unit: "ซอง", sizeLabel: "ยาอมชุ่มคอ", image: "fishermans-friend-cherry.png" },
+  { name: "ฟิชเชอร์แมนส์ เฟรนด์ รสสเปียร์มินต์", unit: "ซอง", sizeLabel: "ยาอมชุ่มคอ", image: "fishermans-friend-spearmint.png" },
+  { name: "ฟิชเชอร์แมนส์ เฟรนด์ รสแมนดาริน", unit: "ซอง", sizeLabel: "ยาอมชุ่มคอ", image: "fishermans-friend-mandarin.png" },
+  { name: "ฟิชเชอร์แมนส์ เฟรนด์ รสแบล็คเคอร์แรนท์", unit: "ซอง", sizeLabel: "ยาอมชุ่มคอ", image: "fishermans-friend-blackcurrant.png" },
+  // ยาน้ำแก้ไอ
+  { name: "ยาน้ำแก้ไอ ตราอาปาเช่", unit: "ขวด", sizeLabel: "สมุนไพร บรรเทาไอ", image: "cough-apache.png" },
+  { name: "ยาน้ำแก้ไอ ตราเสือดาว ผสมมะขามป้อม", unit: "ขวด", sizeLabel: "บรรเทาไอ · 60 มล.", image: "cough-leopard-makhampom.png" },
+  { name: "ยาน้ำแก้ไอ ตราเสือดาว รสน้ำผึ้งผสมมะนาว", unit: "ขวด", sizeLabel: "บรรเทาไอ · 60 มล.", image: "cough-leopard-honey-lemon.png" },
+  { name: "ยาน้ำแก้ไอเปล้าน้ำเงิน ตราเสือดาว", unit: "ขวด", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "cough-plao-namngoen.png" },
+  { name: "ยาน้ำแก้ไอมะแว้ง ตราไอยรา", unit: "ขวด", sizeLabel: "บรรเทาไอ ขับเสมหะ", image: "cough-aiyara-ma-waeng.png" },
+  { name: "ยาน้ำแก้ไอผสมมะขามป้อม ตราอภัยภูเบศร", unit: "ขวด", sizeLabel: "บรรเทาไอ · 120 มล.", image: "cough-abhai-makhampom.png" },
+  { name: "ยาน้ำแก้ไอมะแว้งน้ำดำ ไฟโตแคร์", unit: "ขวด", sizeLabel: "บรรเทาไอ · 60 มล.", image: "ma-waeng-black-phytocare.png" },
+  { name: "ยาน้ำแก้ไอผสมมะขามป้อม สูตรเย็น ไฟโตแคร์", unit: "ขวด", sizeLabel: "บรรเทาไอ · 60 มล.", image: "cough-phytocare-cool.png" },
+  { name: "ยูอีคอฟ ไซรัป ผสมมะขามป้อม", unit: "ขวด", sizeLabel: "บรรเทาไอ · 120 มล.", image: "ucough-syrup.png" },
+  { name: "ยาน้ำแก้ไอโยกี (Yoki Cough Syrup)", unit: "ขวด", sizeLabel: "บรรเทาไอ · 60 มล.", image: "yoki-cough-syrup.png" },
+  // ภูมิแพ้
+  { name: "อัลเลอร์นิค เซทิริซีน (Allernix)", unit: "กล่อง", sizeLabel: "แก้ภูมิแพ้ · 1 เม็ด/วัน", image: "allernix.png" },
+  { name: "เดสต้า เดสลอราทาดีน 5 มก. (DESTA)", unit: "แผง", sizeLabel: "แก้ภูมิแพ้ · 10 เม็ด", image: "desta-5mg.png" },
+  // ปวดเมื่อย
+  { name: "เคาน์เตอร์เพน (Counterpain)", unit: "หลอด", sizeLabel: "ยานวดคลายกล้ามเนื้อ", image: "counterpain.png" },
+  { name: "เคาน์เตอร์เพน คูล (Counterpain Cool)", unit: "หลอด", sizeLabel: "เจลนวดสูตรเย็น", image: "counterpain-cool.png" },
+  { name: "เคาน์เตอร์เพน พลัส (Counterpain Plus)", unit: "หลอด", sizeLabel: "เจลลดอักเสบ ข้อเสื่อม", image: "counterpain-plus.png" },
+  { name: "เคาน์เตอร์เพน แผ่นแปะ", unit: "ซอง", sizeLabel: "แผ่นแปะบรรเทาปวด · 4 แผ่น", image: "counterpain-plaster-warm.png" },
+  { name: "ซาลอนพาส แผ่นแปะ (Salonpas)", unit: "ซอง", sizeLabel: "แผ่นแปะคลายปวดเมื่อย · 10 แผ่น", image: "salonpas-patch.png" },
+  { name: "ซาลอนพาส ครีม (Salonpas Cream)", unit: "หลอด", sizeLabel: "ครีมนวดคลายปวด · 30 กรัม", image: "salonpas-cream.png" },
+  { name: "นีโอบัน แผ่นแปะ (Neobun)", unit: "กล่อง", sizeLabel: "แผ่นแปะคลายปวด · 10 แผ่น", image: "neobun-plaster.png" },
+  { name: "ยาหม่องตราเสือ แผ่นแปะ สูตรร้อน", unit: "ซอง", sizeLabel: "แผ่นแปะคลายปวด", image: "tiger-balm-plaster-rd.png" },
+  // ระบบทางเดินอาหาร
+  { name: "ผงถ่าน มายคาร์บอน (Activated Charcoal)", unit: "กล่อง", sizeLabel: "แก้ท้องเสีย ดูดสารพิษ", image: "mycarbon.png" },
+  { name: "ผงถ่าน คาร์บอน (Activated Charcoal)", unit: "แผง", sizeLabel: "แก้ท้องเสีย · 10 แคปซูล", image: "greater-carbon.png" },
+  { name: "แอนตาซิล เจล (Antacil Gel)", unit: "ขวด", sizeLabel: "ลดกรด แก้แสบท้อง · 240 มล.", image: "antacil-gel.png" },
+  { name: "แอนตาซิล ชนิดเม็ด (Antacil)", unit: "กล่อง", sizeLabel: "ลดกรด แก้แสบท้อง", image: "antacil-tablet.png" },
+  { name: "เบลซิด ฟอร์ท (Belcid Forte)", unit: "ขวด", sizeLabel: "ลดกรด แก้ท้องอืด · 240 มล.", image: "belcid-forte.png" },
+  { name: "อีโน ผงฟู่ รสส้ม (ENO)", unit: "ซอง", sizeLabel: "ลดกรด แก้ท้องอืด", image: "eno-orange.png" },
+  { name: "อีโน ผงฟู่ รสเลมอน (ENO)", unit: "ซอง", sizeLabel: "ลดกรด แก้ท้องอืด", image: "eno-lemon.png" },
+  // เกลือแร่
+  { name: "ผงเกลือแร่ ออรีด้า รสส้ม (ORS)", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "ors-oreeda-orange.png" },
+  { name: "ผงเกลือแร่ นีโอ-ไลต์ รสส้ม", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "neo-lyte-orange.png" },
+  { name: "ผงเกลือแร่ โอ อาร์ เอส-เอชอาร์ รสส้ม", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "ops-sea-ors-hr-orange.png" },
+  { name: "ผงเกลือแร่ สตรอง-เค รสส้ม", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "strong-k-orange.png" },
+  { name: "ผงเกลือแร่ ซี-ไลท์ กลิ่นมะนาว", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "c-lyte-lemon.png" },
+  { name: "ผงเกลือแร่ ซี-ไลท์ กลิ่นส้ม", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "c-lyte-orange.png" },
+  { name: "ผงเกลือแร่ รอแยล-ดี (Royal-D)", unit: "ซอง", sizeLabel: "ชดเชยการเสียน้ำ", image: "royal-d.png" },
+  // ล้างจมูก
+  { name: "คลีนแอนด์แคร์ สเปรย์น้ำเกลือพ่นจมูก", unit: "ขวด", sizeLabel: "พ่นล้างจมูก · 18 มล.", image: "klean-kare-nizzy-spray.png" }
+] as MedicineSeed[]).map(({ image, ...product }, index) => ({
   id: 14000 + index,
   category: "ยาสามัญประจำบ้าน",
   stock: 20,
@@ -1236,24 +1683,49 @@ const medicineProducts: Product[] = [
   unit: "หลอด",
   price: 0,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: image ? `${medicineImageBase}/${image}` : productImageByName[product.name]
 }));
 
-const firstAidProducts: Product[] = [
-  { name: "สำลีก้อน", unit: "ถุง", sizeLabel: "ใช้ทำความสะอาดแผล" },
+const firstAidProducts: Product[] = ([
+  // สำลี / ผ้าก๊อซ / ผ้าพันแผล
+  { name: "สำลีก้อน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "ใช้ทำความสะอาดแผล", image: "cotton-ball-ambulance.png" },
+  { name: "สำลีม้วน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "200 กรัม", image: "cotton-roll-ambulance.png" },
+  { name: "สำลีแผ่น ตรารถพยาบาล", unit: "ถุง", sizeLabel: "100 กรัม", image: "cotton-pad-ambulance.png" },
   { name: "คอตตอนบัด ตราไวท์แรบบิท", unit: "ถุง", sizeLabel: "ก้านสำลี 100 ก้าน" },
   { name: "สำลีก้าน ตรารถพยาบาล", unit: "ถุง", sizeLabel: "ก้านสำลี 200 ก้าน x3" },
-  { name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", unit: "ขวด", sizeLabel: "ฆ่าเชื้อ ใส่แผล" }
-].map((product, index) => ({
+  { name: "ผ้าก๊อซแผ่น ตราไวท์พลูม", unit: "ห่อ", sizeLabel: "100 ชิ้น", image: "gauze-white-plume.png" },
+  { name: "ผ้าก๊อซปิดแผลพร้อมใช้ SOS Plus", unit: "ซอง", sizeLabel: "8x8 ซม. 4 แผ่น", image: "sos-plus-gauze.png" },
+  { name: "ผ้าพันแผล ตรารถพยาบาล", unit: "ม้วน", sizeLabel: "36 นิ้ว x 100 หลา", image: "bandage-ambulance.png" },
+  // พลาสเตอร์
+  { name: "ไทเกอร์พลาส พลาสเตอร์ใส (Tigerplast Clear)", unit: "กล่อง", sizeLabel: "พลาสเตอร์ปิดแผล 10 แผ่น", image: "tigerplast-clear.png" },
+  { name: "ไทเกอร์พลาส ผ้ายืด (Tigerplast Elastic Fabric)", unit: "กล่อง", sizeLabel: "100 แผ่น", image: "tigerplast-elastic-fabric.png" },
+  { name: "ไทเกอร์พลาส เซนซิทีฟ (Tigerplast Sensitive)", unit: "กล่อง", sizeLabel: "ผิวบอบบาง 10 แผ่น", image: "tigerplast-sensitive.png" },
+  { name: "เทนโซพล้าส พลาสเตอร์ยา (Tensoplast)", unit: "กล่อง", sizeLabel: "100 แผ่น", image: "tensoplast-100.png" },
+  { name: "นีโอพลาสท์-เอส พลาสเตอร์ยา (Neoplast-S)", unit: "กล่อง", sizeLabel: "100 แผ่น", image: "neoplast-s.png" },
+  { name: "ไรโนบัน พลาสเตอร์ยา (Rhinobun)", unit: "กล่อง", sizeLabel: "10 แผ่น", image: "rhinobun-plaster.png" },
+  // น้ำเกลือ / น้ำยาฆ่าเชื้อ
+  { name: "คลีนแอนด์แคร์ น้ำเกลือล้างแผล", unit: "ขวด", sizeLabel: "100 มล.", image: "klean-kare-nss-100.png" },
+  { name: "คลีนแอนด์แคร์ น้ำเกลือล้างแผล", unit: "ขวด", sizeLabel: "200 มล.", image: "klean-kare-nss-200.png" },
+  { name: "คลีนแอนด์แคร์ น้ำเกลือล้างแผล", unit: "ขวด", sizeLabel: "500 มล.", image: "klean-kare-nss-500.png" },
+  { name: "คลีนแอนด์แคร์ น้ำเกลือล้างแผล", unit: "ขวด", sizeLabel: "1000 มล.", image: "klean-kare-nss-1000.png" },
+  { name: "ซอฟคลีน น้ำเกลือล้างแผล (Sofclens)", unit: "ขวด", sizeLabel: "1000 มล.", image: "sofclens-nss.png" },
+  { name: "แอลกอฮอล์ 70% ตราศิริบัญชา", unit: "ขวด", sizeLabel: "ขวดเล็ก", image: "alcohol-70-small.png" },
+  { name: "แอลกอฮอล์ 70% ตราศิริบัญชา", unit: "ขวด", sizeLabel: "ขวดใหญ่", image: "alcohol-70-large.png" },
+  { name: "แอลซอฟ แอลกอฮอล์ 70% (ALSOFF)", unit: "ขวด", sizeLabel: "450 มล.", image: "alsoff-alcohol-70.png" },
+  { name: "ไฮโดรเจนเพอร์ออกไซด์ ตราศิริบัญชา", unit: "ขวด", sizeLabel: "ขวดเล็ก", image: "hydrogen-peroxide-60.png" },
+  { name: "ไฮโดรเจนเพอร์ออกไซด์ ตราศิริบัญชา", unit: "ขวด", sizeLabel: "450 มล.", image: "hydrogen-peroxide-450.png" },
+  { name: "เบตาดีน น้ำยาใส่แผล (Betadine Antiseptic)", unit: "ขวด", sizeLabel: "ฆ่าเชื้อ ใส่แผล", image: "betadine-antiseptic.png" }
+] as MedicineSeed[]).map(({ image, ...product }, index) => ({
   id: 15000 + index,
   category: "ปฐมพยาบาล",
   stock: 20,
   minStock: 5,
+  unit: "ชิ้น",
   price: 0,
   updatedBy: "เจ้าของร้าน",
-  imageUrl: productImageByName[product.name],
-  ...product
+  ...product,
+  imageUrl: image ? `/product-images/first-aid/${image}` : productImageByName[product.name]
 }));
 
 const oralCareProducts: Product[] = [
@@ -1335,10 +1807,12 @@ const initialProducts: Product[] = [
   { id: 3007, name: "น้ำแข็งหลอดเล็ก", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 0, updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/ice/ice-tube-small.png" },
   { id: 3004, name: "น้ำแข็ง 10 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 10, sizeLabel: "ถุง 10 บาท", updatedBy: "เจ้าของร้าน" },
   { id: 3005, name: "น้ำแข็ง 20 บาท", category: "น้ำแข็ง", stock: 20, minStock: 5, unit: "ถุง", price: 20, sizeLabel: "ถุง 20 บาท", updatedBy: "เจ้าของร้าน" },
-  { id: 15100, name: "ไทเกอร์พลาส พลาสเตอร์ใส (Tigerplast Clear)", category: "ปฐมพยาบาล", stock: 20, minStock: 5, unit: "กล่อง", price: 0, sizeLabel: "พลาสเตอร์ปิดแผล", updatedBy: "เจ้าของร้าน", imageUrl: "/product-images/medicine/tigerplast-clear.png" },
   ...seasoningProducts,
   ...instantNoodleProducts,
   ...personalCareProducts,
+  ...hairCareProducts,
+  ...insectRepellentProducts,
+  ...rollOnProducts,
   ...snackProducts,
   ...chocolateProducts,
   ...medicineProducts,
@@ -1533,13 +2007,14 @@ function matchesDryFoodSubcategory(product: Product, subcategory: DryFoodSubcate
 }
 
 const beverageCategory = "เครื่องดื่ม(น้ำดื่ม น้ำอัดลม ชา กาแฟ)";
-const beverageSubcategories = ["ทั้งหมด", "น้ำดื่ม/น้ำแร่", "น้ำอัดลม/โซดา", "น้ำผลไม้", "ชา", "กาแฟ", "สุขภาพ", "ชูกำลัง/เกลือแร่"] as const;
+const beverageSubcategories = ["ทั้งหมด", "น้ำดื่ม/น้ำแร่", "น้ำอัดลม/โซดา", "น้ำผลไม้", "เจเล่พร้อมดื่ม", "ชา", "กาแฟ", "สุขภาพ", "ชูกำลัง/เกลือแร่"] as const;
 type BeverageSubcategory = (typeof beverageSubcategories)[number];
 
 const beverageSubcategoryKeywords: Record<Exclude<BeverageSubcategory, "ทั้งหมด">, string[]> = {
   "น้ำดื่ม/น้ำแร่": ["น้ำทิพย์", "น้ำวีด้า", "น้ำดื่ม", "คริสตัล"],
   "น้ำอัดลม/โซดา": ["สิงห์", "โซดา", "เป๊บซี่", "โค้ก", "แฟนต้า", "มิรินด้า", "เซเว่นอัป", "สไปรท์"],
   น้ำผลไม้: ["น้ำผลไม้", "มาลี", "ทิปโก้", "ดอยคำ", "ดีโด้", "ยูนิฟ", "กาโตะ", "สแปลช", "Splash", "มินิทเมด", "Minute Maid", "น้ำส้ม", "น้ำองุ่น", "น้ำแอปเปิ้ล", "น้ำมะพร้าว", "น้ำลิ้นจี่", "สับปะรด"],
+  เจเล่พร้อมดื่ม: ["เจเล่", "Jele", "เยลลี่พร้อมดื่ม", "เจลลี่พร้อมดื่ม", "บิวติ", "Beautie"],
   ชา: ["เย็นเย็น", "น้ำจับใจ", "โออิชิ", "อิชิตัน"],
   กาแฟ: ["เนสกาแฟ", "กาแฟเบอร์ดี้", "กาแฟ"],
   สุขภาพ: ["ยันฮี", "แบรนด์", "วีด้า"],
@@ -1549,6 +2024,12 @@ const beverageSubcategoryKeywords: Record<Exclude<BeverageSubcategory, "ทั�
 function matchesBeverageSubcategory(product: Product, subcategory: BeverageSubcategory) {
   if (subcategory === "ทั้งหมด") {
     return true;
+  }
+
+  // เจเล่เป็นเยลลี่พร้อมดื่ม ไม่ให้ไปโผล่ในหัวข้อน้ำผลไม้/อื่นๆ
+  const isJele = beverageSubcategoryKeywords["เจเล่พร้อมดื่ม"].some((keyword) => product.name.includes(keyword));
+  if (isJele) {
+    return subcategory === "เจเล่พร้อมดื่ม";
   }
 
   return beverageSubcategoryKeywords[subcategory].some((keyword) => product.name.includes(keyword));
@@ -1573,25 +2054,26 @@ function matchesMilkSubcategory(product: Product, subcategory: MilkSubcategory) 
   const isSoy = ["ถั่วเหลือง", "น้ำเต้าหู้", "นมถั่ว", "แลคตาซอย", "Lactasoy", "ไวตามิลค์", "ไวตามิ้ลค์", "วีซอย", "V-Soy", "ดีน่า"].some(
     (keyword) => searchableMilkText.includes(keyword)
   );
-  const isSour = ["นมเปรี้ยว", "เปรี้ยว", "ยาคูลท์", "Yakult", "ดัชชี่", "Dutchie", "บีทาเก้น", "Betagen", "ดีไลท์"].some((keyword) =>
+  const isSour = ["นมเปรี้ยว", "เปรี้ยว", "ยาคูลท์", "Yakult", "ดัชมิลล์", "Dutch Mill", "บีทาเก้น", "Betagen", "ดีไลท์"].some((keyword) =>
     searchableMilkText.includes(keyword)
   );
   const isYogurt = ["โยเกิร์ต", "Yogurt", "โยเกิ"].some((keyword) => searchableMilkText.includes(keyword));
 
-  if (subcategory === "นมถั่วเหลือง / น้ำเต้าหู้") {
-    return isSoy;
+  // จัดตามลำดับความสำคัญ — สินค้าหนึ่งชิ้นอยู่หัวข้อเดียว
+  // โยเกิร์ตต้องมาก่อนนมเปรี้ยว ไม่งั้น "ดัชชี่ โยเกิร์ต..." จะไปโผล่ทั้งสองที่
+  if (isYogurt) {
+    return subcategory === "โยเกิร์ต";
   }
 
-  if (subcategory === "นมเปรี้ยว") {
-    return isSour;
+  if (isSoy) {
+    return subcategory === "นมถั่วเหลือง / น้ำเต้าหู้";
   }
 
-  if (subcategory === "โยเกิร์ต") {
-    return isYogurt;
+  if (isSour) {
+    return subcategory === "นมเปรี้ยว";
   }
 
-  // นม (นมจืด/นมรสต่างๆ) — ตัดถั่วเหลือง/นมเปรี้ยว/โยเกิร์ตออก
-  if (isSoy || isSour || isYogurt) {
+  if (subcategory !== "นม") {
     return false;
   }
 
@@ -1640,7 +2122,16 @@ const healthBeautySubcategories = [
   "ทั้งหมด",
   "ยาและเวชภัณฑ์",
   "อุปกรณ์สุขภาพ",
-  "สุขอนามัย",
+  "แชมพู / ครีมนวด",
+  "สบู่ / เจลอาบน้ำ",
+  "โลชั่น / ครีมบำรุง",
+  "ออยล์",
+  "แป้ง",
+  "โรลออน",
+  "น้ำหอม",
+  "ครีมทาหน้า",
+  "เซรั่ม",
+  "วิตามินบำรุงผิว",
   "ป้องกันแมลง",
   "ดูแลช่องปาก",
   "แม่และเด็ก"
@@ -1650,11 +2141,42 @@ type HealthBeautySubcategory = (typeof healthBeautySubcategories)[number];
 const healthBeautySubcategoryKeywords: Record<Exclude<HealthBeautySubcategory, "ทั้งหมด">, string[]> = {
   ยาและเวชภัณฑ์: ["ยา", "เวชภัณฑ์", "พารา", "พาราเซตามอล", "แก้ปวด", "ลดไข้", "ยาแก้", "ยาหม่อง", "ยาดม"],
   อุปกรณ์สุขภาพ: ["อุปกรณ์สุขภาพ", "ปรอท", "เทอร์โมมิเตอร์", "เครื่องวัด", "หน้ากาก", "แมสก์", "ถุงมือ"],
-  สุขอนามัย: ["สุขอนามัย", "แชมพู", "ครีมนวด", "สบู่", "เจลล้างมือ", "ทิชชู่", "ผ้าอนามัย", "แป้ง", "โลชั่น"],
+  "แชมพู / ครีมนวด": ["แชมพู", "ยาสระผม", "ครีมนวด", "คอนดิชันเนอร์", "Shampoo", "Conditioner", "บำรุงผม"],
+  "สบู่ / เจลอาบน้ำ": ["สบู่", "เจลอาบน้ำ", "ครีมอาบน้ำ", "ชาวเวอร์", "Shower", "Soap"],
+  "โลชั่น / ครีมบำรุง": ["โลชั่น", "Lotion", "ครีมบำรุงผิว", "บำรุงผิวกาย", "บอดี้", "Body"],
+  ออยล์: ["ออยล์", "Oil", "ออยล์บำรุง", "เบบี้ออยล์", "น้ำมันมะพร้าว", "น้ำมันมะกอก", "น้ำมันบำรุง", "น้ำมันนวด"],
+  แป้ง: ["แป้ง", "แป้งฝุ่น", "แป้งเย็น", "แป้งทาตัว", "แป้งเด็ก", "แป้งพัฟ", "Powder"],
+  โรลออน: ["โรลออน", "Roll On", "Roll-on", "ระงับกลิ่นกาย", "ดับกลิ่นกาย", "Deodorant"],
+  น้ำหอม: ["น้ำหอม", "Perfume", "โคโลญ", "Cologne", "EDT", "EDP"],
+  ครีมทาหน้า: ["ครีมทาหน้า", "ครีมหน้า", "บำรุงหน้า", "บำรุงผิวหน้า", "มอยส์เจอร์", "Moistur", "กันแดด", "Sunscreen"],
+  เซรั่ม: ["เซรั่ม", "เซรัม", "Serum", "เอสเซนส์", "Essence"],
+  วิตามินบำรุงผิว: ["วิตามิน", "Vitamin", "คอลลาเจน", "Collagen", "กลูต้า", "Gluta", "อาหารเสริมผิว"],
   ป้องกันแมลง: ["ป้องกันแมลง", "ยากันยุง", "กันยุง", "ไล่ยุง", "แมลง", "สเปรย์กันยุง"],
   ดูแลช่องปาก: ["ดูแลช่องปาก", "แปรงสีฟัน", "ยาสีฟัน", "น้ำยาบ้วนปาก", "ไหมขัดฟัน", "ช่องปาก", "ป้ายปาก", "แผลในปาก"],
   แม่และเด็ก: ["แม่และเด็ก", "เด็ก", "ทารก", "แพมเพิร์ส", "ผ้าอ้อม", "ขวดนม", "จุกนม", "แป้งเด็ก"]
 };
+
+// ลำดับความสำคัญในการจัดหัวข้อย่อย — สินค้าหนึ่งชิ้นจะอยู่หัวข้อ "แรกสุด" ที่ตรงเท่านั้น
+// ต้องเรียงจากเฉพาะเจาะจงไปกว้าง ไม่งั้นชื่อจะไปตกหัวข้ออื่น เช่น
+// "โรลออน Tech Perfume" ต้องอยู่ "โรลออน" ไม่ใช่ "น้ำหอม",
+// "โลชั่นกันยุง" ต้องอยู่ "ป้องกันแมลง" ไม่ใช่ "โลชั่น / ครีมบำรุง"
+const healthBeautySubcategoryPriority: Exclude<HealthBeautySubcategory, "ทั้งหมด">[] = [
+  "ป้องกันแมลง",
+  "โรลออน",
+  "ดูแลช่องปาก",
+  "แชมพู / ครีมนวด",
+  "สบู่ / เจลอาบน้ำ",
+  "แป้ง",
+  "น้ำหอม",
+  "เซรั่ม",
+  "ครีมทาหน้า",
+  "ออยล์",
+  "โลชั่น / ครีมบำรุง",
+  "วิตามินบำรุงผิว",
+  "อุปกรณ์สุขภาพ",
+  "ยาและเวชภัณฑ์",
+  "แม่และเด็ก"
+];
 
 function matchesHealthBeautySubcategory(product: Product, subcategory: HealthBeautySubcategory) {
   if (subcategory === "ทั้งหมด") {
@@ -1662,8 +2184,11 @@ function matchesHealthBeautySubcategory(product: Product, subcategory: HealthBea
   }
 
   const searchableHealthBeautyText = `${product.name} ${product.sizeLabel ?? ""}`;
+  const matched = healthBeautySubcategoryPriority.find((candidate) =>
+    healthBeautySubcategoryKeywords[candidate].some((keyword) => searchableHealthBeautyText.includes(keyword))
+  );
 
-  return healthBeautySubcategoryKeywords[subcategory].some((keyword) => searchableHealthBeautyText.includes(keyword));
+  return matched === subcategory;
 }
 
 const medicineCategory = "ยาสามัญประจำบ้าน";
@@ -1685,7 +2210,7 @@ const medicineSubcategoryKeywords: Record<Exclude<MedicineSubcategory, "ทั�
   "แก้ปวด / ลดไข้": ["แก้ปวด", "ลดไข้", "ไข้", "ปวดหัว", "ปวดศีรษะ", "พารา", "พาราเซตามอล", "ไทลินอล", "Tylenol", "ซาร่า", "Sara", "ทัมใจ", "บวดหาย", "แอสไพริน", "Aspirin", "ไอบูโพรเฟน", "Ibuprofen"],
   "หวัด / ไอ / เจ็บคอ": ["หวัด", "แก้หวัด", "ไอ", "แก้ไอ", "เจ็บคอ", "เสมหะ", "ละลายเสมหะ", "น้ำมูก", "คัดจมูก", "ทิฟฟี่", "Tiffy", "ดีคอลเจน", "Decolgen", "ยาอม", "สเตร็ปซิล", "Strepsils", "ฟิชเชอร์แมน", "มายบาซิน", "กษัยการ"],
   "ระบบทางเดินอาหาร": ["ท้องเสีย", "ท้องเดิน", "ท้องอืด", "ท้องเฟ้อ", "อาหารไม่ย่อย", "ยาธาตุ", "ขับลม", "ผงถ่าน", "คาร์บอน", "เกลือแร่", "ORS", "โออาร์เอส", "อีโน", "Eno", "ยาลดกรด", "กรดไหลย้อน", "แอนตาซิล", "Antacid", "ท้องผูก", "ยาระบาย", "ถ่ายพยาธิ", "พยาธิ"],
-  "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ"],
+  "ภูมิแพ้": ["ภูมิแพ้", "แก้แพ้", "แพ้อากาศ", "คลอเฟนิรามีน", "Chlorpheniramine", "CPM", "ลอราทาดีน", "Loratadine", "เซทิริซีน", "Cetirizine", "แอนตี้ฮีสตามีน", "ลมพิษ", "อัลเลอร์นิค", "Allernix"],
   "ผิวหนัง / แมลงกัดต่อย": ["ผิวหนัง", "แมลงกัด", "แมลงสัตว์กัดต่อย", "ยุงกัด", "ทาแก้คัน", "แก้คัน", "คาลาไมน์", "Calamine", "ผื่น", "เชื้อรา", "กลาก", "เกลื้อน", "เบตาดีน", "Betadine", "ยาแดง", "ยาม่วง", "เจนเชียน", "ใส่แผล", "ครีมทาแผล", "ยากันยุง", "กันยุง", "เสลดพังพอน", "พญายอ", "คาดรามีน", "Cadramine", "คาเนสเทน", "Canesten", "ไลมาริน", "Lymarin", "คีล่า", "Kela", "ไดโป", "Dipo", "ฟังจิเดอร์ม", "Fungiderm", "ซีมา", "Zema", "ฮ่องกงฟุต", "โทนาฟ", "TONAF", "ไมโครัล", "โคลไทรมาโซล", "Clotrimazole", "แฟงโก้", "Fango", "เดอร์มาติกซ์", "Dermatix", "แผลเป็น"],
   "ปวดเมื่อย": ["ปวดเมื่อย", "ปวดกล้ามเนื้อ", "ปวดข้อ", "ปวดหลัง", "ปวดเอว", "เคาน์เตอร์เพน", "Counterpain", "ยานวด", "เจลนวด", "แผ่นแปะ", "แปะแก้ปวด", "ซาลอนพาส", "Salonpas"],
   "ยาสมุนไพร / บรรเทาอาการ": ["สมุนไพร", "ฟ้าทะลายโจร", "ขิง", "กระชาย", "ยาเขียว", "ยาหอม", "ประสะ", "ยาลม", "ยาต้ม", "ยาผง", "มะขามแขก", "ชาสมุนไพร", "กษัยเส้น", "เขากุ้ย", "Kao-Kui", "อภัยภูเบศร"],
@@ -1785,6 +2310,45 @@ function matchesPetSubcategory(product: Product, subcategory: PetSubcategory) {
   return petSubcategoryKeywords[subcategory].some((keyword) => searchablePetText.includes(keyword));
 }
 
+const cannedFoodCategory = "อาหารกระป๋อง";
+const cannedFoodSubcategories = [
+  "ทั้งหมด",
+  "ปลากระป๋อง",
+  "ทูน่ากระป๋อง",
+  "หอยกระป๋อง",
+  "ผลไม้กระป๋อง",
+  "ผักกระป๋อง",
+  "อาหารพร้อมทาน",
+  "น้ำพริกกระป๋อง"
+] as const;
+type CannedFoodSubcategory = (typeof cannedFoodSubcategories)[number];
+
+const cannedFoodSubcategoryKeywords: Record<Exclude<CannedFoodSubcategory, "ทั้งหมด">, string[]> = {
+  ปลากระป๋อง: ["ปลากระป๋อง", "ปลาซาร์ดีน", "ซาร์ดีน", "ปลาแมคเคอเรล", "แมคเคอเรล", "ปลาในซอส", "ปุ้มปุ้ย", "โรซ่า", "สามแม่ครัว", "นกพิราบ"],
+  ทูน่ากระป๋อง: ["ทูน่า", "Tuna", "ซีเล็ค", "Sealect", "เนเชอรัล ทูน่า"],
+  หอยกระป๋อง: ["หอยกระป๋อง", "หอยลาย", "หอยแมลงภู่", "หอยนางรม", "หอยเชลล์", "หอยตลับ"],
+  ผลไม้กระป๋อง: ["ผลไม้กระป๋อง", "ลำไยกระป๋อง", "ลิ้นจี่กระป๋อง", "เงาะกระป๋อง", "สับปะรดกระป๋อง", "ผลไม้รวมกระป๋อง", "ลอยแก้ว"],
+  ผักกระป๋อง: ["ผักกระป๋อง", "ข้าวโพดหวาน", "ข้าวโพดกระป๋อง", "เห็ดฟาง", "หน่อไม้", "ผักรวม", "ถั่วลันเตา"],
+  อาหารพร้อมทาน: ["พร้อมทาน", "แกงเขียวหวาน", "พะแนง", "ผัดเผ็ด", "สปาเก็ตตี้", "แฮม", "หมูสับ", "ไส้กรอก", "โจ๊ก", "ข้าวต้ม"],
+  น้ำพริกกระป๋อง: ["น้ำพริก", "พริกเผา", "น้ำพริกเผา", "น้ำพริกนรก", "น้ำพริกปลาย่าง"]
+};
+
+function matchesCannedFoodSubcategory(product: Product, subcategory: CannedFoodSubcategory) {
+  if (subcategory === "ทั้งหมด") {
+    return true;
+  }
+
+  const searchableCannedFoodText = `${product.name} ${product.sizeLabel ?? ""}`;
+  // จัดตามลำดับ — สินค้าหนึ่งชิ้นอยู่หัวข้อเดียว (ทูน่าต้องมาก่อนปลากระป๋อง)
+  const matched = (
+    ["น้ำพริกกระป๋อง", "ทูน่ากระป๋อง", "หอยกระป๋อง", "ปลากระป๋อง", "ผลไม้กระป๋อง", "ผักกระป๋อง", "อาหารพร้อมทาน"] as const
+  ).find((candidate) =>
+    cannedFoodSubcategoryKeywords[candidate].some((keyword) => searchableCannedFoodText.includes(keyword))
+  );
+
+  return matched === subcategory;
+}
+
 const herbalDrinkCategory = "น้ำสมุนไพรโฮมเมด";
 const herbalDrinkSubcategories = ["ทั้งหมด", "น้ำสมุนไพรมีน้ำตาล", "น้ำสมุนไพรไม่มีน้ำตาล"] as const;
 type HerbalDrinkSubcategory = (typeof herbalDrinkSubcategories)[number];
@@ -1816,11 +2380,18 @@ function matchesPersonalCareSubcategory(product: Product, subcategory: PersonalC
 
   const searchablePersonalCareText = `${product.name} ${product.sizeLabel ?? ""}`;
   const isPants = searchablePersonalCareText.includes("กางเกง");
-  const isWash =
-    searchablePersonalCareText.includes("ทำความสะอาด") ||
-    searchablePersonalCareText.includes("จุดซ่อนเร้น") ||
-    searchablePersonalCareText.includes("เฟมินิน") ||
-    searchablePersonalCareText.includes("Feminine");
+  const isWash = [
+    "ทำความสะอาด",
+    "จุดซ่อนเร้น",
+    "เฟมินิน",
+    "Feminine",
+    "Intimate",
+    "Ladycare",
+    "Lady Care",
+    "Hygien",
+    "Saugella",
+    "Lactacyd"
+  ].some((keyword) => searchablePersonalCareText.includes(keyword));
 
   if (subcategory === "ผ้าอนามัยแบบกางเกงใน") {
     return isPants;
@@ -2217,6 +2788,7 @@ export default function Home() {
   const [candySubcategory, setCandySubcategory] = useState<CandySubcategory>("ทั้งหมด");
   const [meatSubcategory, setMeatSubcategory] = useState<MeatSubcategory>("ทั้งหมด");
   const [eggSubcategory, setEggSubcategory] = useState<EggSubcategory>("ทั้งหมด");
+  const [cannedFoodSubcategory, setCannedFoodSubcategory] = useState<CannedFoodSubcategory>("ทั้งหมด");
   const [status, setStatus] = useState<"ทั้งหมด" | StockStatus>("ทั้งหมด");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -2337,12 +2909,14 @@ export default function Home() {
                                     ? item.category === personalCareCategory && matchesPersonalCareSubcategory(item, personalCareSubcategory)
                                     : category === milkCategory
                                       ? item.category === milkCategory && matchesMilkSubcategory(item, milkSubcategory)
-                                      : item.category === category);
+                                      : category === cannedFoodCategory
+                                        ? item.category === cannedFoodCategory && matchesCannedFoodSubcategory(item, cannedFoodSubcategory)
+                                        : item.category === category);
       const matchesStatus = status === "ทั้งหมด" || itemStatus === status;
 
       return matchesText && matchesCategory && matchesStatus;
     }).sort(sortProducts);
-  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, category, dryFoodSubcategory, eggSubcategory, firstAidSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, milkSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
+  }, [alcoholSubcategory, beverageSubcategory, candySubcategory, cannedFoodSubcategory, category, dryFoodSubcategory, eggSubcategory, firstAidSubcategory, healthBeautySubcategory, herbalDrinkSubcategory, householdSubcategory, instantNoodleSubcategory, meatSubcategory, medicineSubcategory, milkSubcategory, personalCareSubcategory, petSubcategory, products, query, status, supplementSubcategory]);
 
   function commitSearchHistory(value: string) {
     const trimmedValue = value.trim();
@@ -2490,6 +3064,10 @@ export default function Home() {
       setCandySubcategory("ทั้งหมด");
     }
 
+    if (nextCategory !== cannedFoodCategory) {
+      setCannedFoodSubcategory("ทั้งหมด");
+    }
+
     if (nextCategory !== meatCategory) {
       setMeatSubcategory("ทั้งหมด");
     }
@@ -2533,6 +3111,7 @@ export default function Home() {
                   width={22}
                   height={22}
                   loading="eager"
+                  unoptimized
                 />
               ) : null}
               {item}
@@ -2704,6 +3283,7 @@ export default function Home() {
                       width={22}
                       height={22}
                       loading="eager"
+                      unoptimized
                     />
                   ) : null}
                   {getCategoryLabel(item)}
@@ -2803,6 +3383,10 @@ export default function Home() {
 
         {category === candyCategory ? (
           renderSubcategoryScroller("หัวข้อย่อยลูกอมและหมากฝรั่ง", candySubcategories, candySubcategory, setCandySubcategory)
+        ) : null}
+
+        {category === cannedFoodCategory ? (
+          renderSubcategoryScroller("หัวข้อย่อยอาหารกระป๋อง", cannedFoodSubcategories, cannedFoodSubcategory, setCannedFoodSubcategory)
         ) : null}
 
         {category === meatCategory ? (
