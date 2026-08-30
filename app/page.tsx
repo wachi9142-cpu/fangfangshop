@@ -43,6 +43,13 @@ import {
 import type { UploadProps } from "antd";
 import NextImage from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  createProduct as apiCreateProduct,
+  fetchProducts as apiFetchProducts,
+  login as apiLogin,
+  logout as apiLogout,
+  setToken
+} from "./api";
 
 type StockStatus = "พร้อมขาย" | "ใกล้หมด" | "หมด";
 
@@ -80,14 +87,8 @@ const shopImageStorageKey = "fangfangshop-shop-image";
 const defaultShopImageUrl = "/shop-images/fangfang-shop.png";
 const authStorageKey = "fangfangshop-auth";
 
-// ล็อกอินแบบง่ายสำหรับพนักงาน/เจ้าของร้าน (ยังไม่ใช้ backend)
-// ปรับหรือเพิ่มบัญชีได้ที่นี่ เมื่อทำ backend จริงให้ย้ายไปตรวจสอบฝั่งเซิร์ฟเวอร์
-type StaffAccount = { username: string; password: string; displayName: string };
-
-const staffAccounts: StaffAccount[] = [
-  { username: "owner", password: "1234", displayName: "เจ้าของร้าน" },
-  { username: "staff", password: "1234", displayName: "พนักงานขาย" }
-];
+// การล็อกอินย้ายไปตรวจสอบที่ backend แล้ว (POST /auth/login ดู app/api.ts)
+// บัญชีเริ่มต้น owner/1234, staff/1234 อยู่ในตาราง users ของ backend
 const smsRedImage = "/product-images/tobacco-soft/sms-red.svg";
 const smsGreenImage = "/product-images/tobacco-soft/sms-green.svg";
 const lmRedImage = "/product-images/tobacco-soft/lm-red.svg";
@@ -2832,6 +2833,18 @@ export default function Home() {
     if (savedStaffName) {
       setStaffName(savedStaffName);
     }
+
+    // โหลดสินค้าจาก backend เป็นแหล่งข้อมูลหลัก
+    // ถ้าต่อ backend ไม่ได้ จะใช้ข้อมูลจาก localStorage/แคตตาล็อกในโค้ดแทน (กันจอว่าง)
+    apiFetchProducts()
+      .then((serverProducts) => {
+        if (serverProducts.length > 0) {
+          setProducts(serverProducts);
+        }
+      })
+      .catch(() => {
+        // เงียบไว้ — fallback เป็นข้อมูล local ที่โหลดไว้แล้ว
+      });
   }, []);
 
   useEffect(() => {
@@ -2971,42 +2984,44 @@ export default function Home() {
     form.resetFields();
   }
 
-  function handleLogin(values: { username: string; password: string }) {
-    const account = staffAccounts.find(
-      (item) => item.username === values.username.trim() && item.password === values.password
-    );
-
-    if (!account) {
-      message.error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
-      return;
+  async function handleLogin(values: { username: string; password: string }) {
+    try {
+      const result = await apiLogin(values.username.trim(), values.password);
+      setToken(result.token);
+      setStaffName(result.displayName);
+      window.localStorage.setItem(authStorageKey, result.displayName);
+      setIsLoginOpen(false);
+      loginForm.resetFields();
+      message.success(`เข้าสู่ระบบในชื่อ ${result.displayName}`);
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "เข้าสู่ระบบไม่สำเร็จ");
     }
-
-    setStaffName(account.displayName);
-    window.localStorage.setItem(authStorageKey, account.displayName);
-    setIsLoginOpen(false);
-    loginForm.resetFields();
-    message.success(`เข้าสู่ระบบในชื่อ ${account.displayName}`);
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    await apiLogout();
     setStaffName(null);
     window.localStorage.removeItem(authStorageKey);
     setIsAddOpen(false);
     message.success("ออกจากระบบแล้ว");
   }
 
-  function addProduct(values: ProductFormValues) {
-    const nextProduct: Product = {
-      id: Date.now(),
-      ...values,
-      category: normalizeCategory(values.category),
-      imageUrl
-    };
+  async function addProduct(values: ProductFormValues) {
+    try {
+      const created = await apiCreateProduct({
+        ...values,
+        category: normalizeCategory(values.category),
+        imageUrl: imageUrl || undefined
+      });
 
-    setProducts((currentProducts) => [nextProduct, ...currentProducts]);
-    setCategory("ทั้งหมด");
-    setStatus("ทั้งหมด");
-    closeAddModal();
+      setProducts((currentProducts) => [created as Product, ...currentProducts]);
+      setCategory("ทั้งหมด");
+      setStatus("ทั้งหมด");
+      closeAddModal();
+      message.success("เพิ่มสินค้าเรียบร้อย");
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "เพิ่มสินค้าไม่สำเร็จ");
+    }
   }
 
   function selectCategory(nextCategory: string) {
