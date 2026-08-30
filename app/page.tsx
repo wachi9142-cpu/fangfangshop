@@ -50,6 +50,9 @@ import {
   logout as apiLogout,
   setToken
 } from "./api";
+import { avatarPresets, presetAvatarValue, presetPrefix, renderPresetAvatar } from "./avatars";
+import { compressImage, fileToDataUrl } from "./image-utils";
+import { avatarStorageKey, productImagePrefix, readAllImages, writeImage } from "./local-images";
 
 type StockStatus = "พร้อมขาย" | "ใกล้หมด" | "หมด";
 
@@ -2627,6 +2630,26 @@ function sortProducts(productA: Product, productB: Product) {
   return productA.id - productB.id;
 }
 
+/** คีย์ประจำสินค้าแต่ละแบบ (ชื่อ + ป้ายขนาด) — ต้องตรงกับฝั่ง backend */
+function productVariantKey(name: string, sizeLabel?: string | null) {
+  return `${name.trim()}|${(sizeLabel ?? "").trim()}`;
+}
+
+/** ทับรูปสินค้าด้วยรูปที่พนักงานอัปโหลดไว้ (ถ้ามี) */
+function applyImageOverrides(productList: Product[], overrides: Record<string, string>) {
+  if (Object.keys(overrides).length === 0) {
+    return productList;
+  }
+
+  return productList.map((product) => {
+    const overrideUrl = overrides[productVariantKey(product.name, product.sizeLabel)];
+
+    return overrideUrl && product.imageUrl !== overrideUrl
+      ? { ...product, imageUrl: overrideUrl }
+      : product;
+  });
+}
+
 function mergeSavedProducts(savedProducts: Product[]) {
   const hydratedProducts = savedProducts
     .filter((product) => typeof product.id === "number")
@@ -2795,6 +2818,13 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [previewBanner, setPreviewBanner] = useState<{ imageUrl: string; title: string } | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+  // กำลังอัปโหลดรูปอยู่ไหม (ใช้แสดง spinner บนปุ่ม)
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  // รูปที่พนักงานอัปโหลดไว้ เก็บใน ref เพราะต้องใช้ทับรูปทุกครั้งที่โหลดสินค้าใหม่
+  const imageOverridesRef = useRef<Record<string, string>>({});
+  // รูปประจำตัวของคนที่ล็อกอินอยู่ ("preset:cat" หรือ URL รูปที่อัปเอง)
+  const [staffAvatar, setStaffAvatar] = useState<string | null>(null);
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [shopImageUrl, setShopImageUrl] = useState(defaultShopImageUrl);
   const [staffName, setStaffName] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -2834,16 +2864,67 @@ export default function Home() {
       setStaffName(savedStaffName);
     }
 
-    // โหลดสินค้าจาก backend เป็นแหล่งข้อมูลหลัก
+    // โหลดสินค้าจาก backend มารวมกับแคตตาล็อกในโค้ด (ยึดค่าจาก server เป็นหลักเมื่อชื่อตรงกัน)
     // ถ้าต่อ backend ไม่ได้ จะใช้ข้อมูลจาก localStorage/แคตตาล็อกในโค้ดแทน (กันจอว่าง)
     apiFetchProducts()
       .then((serverProducts) => {
-        if (serverProducts.length > 0) {
-          setProducts(serverProducts);
+        if (serverProducts.length === 0) {
+          return;
         }
+
+        setProducts((currentProducts) => {
+          const serverByKey = new Map(
+            serverProducts.map((item) => [productVariantKey(item.name, item.sizeLabel), item])
+          );
+          const matchedKeys = new Set<string>();
+          const mergedProducts = currentProducts.map((product) => {
+            const key = productVariantKey(product.name, product.sizeLabel);
+            const serverProduct = serverByKey.get(key);
+
+            if (!serverProduct) {
+              return product;
+            }
+
+            matchedKeys.add(key);
+
+            return {
+              ...product,
+              ...serverProduct,
+              imageUrl: serverProduct.imageUrl ?? product.imageUrl
+            } as Product;
+          });
+          // สินค้าที่มีเฉพาะบนเซิร์ฟเวอร์ (พนักงานเพิ่งเพิ่ม) เอามาต่อไว้ด้านบน
+          const serverOnlyProducts = serverProducts.filter(
+            (item) => !matchedKeys.has(productVariantKey(item.name, item.sizeLabel))
+          ) as Product[];
+
+          return applyImageOverrides(
+            [...serverOnlyProducts, ...mergedProducts],
+            imageOverridesRef.current
+          );
+        });
       })
       .catch(() => {
         // เงียบไว้ — fallback เป็นข้อมูล local ที่โหลดไว้แล้ว
+      });
+
+    // โหลดรูปที่เก็บไว้ในเครื่อง (รูปสินค้า + รูปประจำตัว) แล้วทับรูปเดิมจากแคตตาล็อก
+    readAllImages()
+      .then((storedImages) => {
+        const overrides: Record<string, string> = {};
+
+        Object.entries(storedImages).forEach(([key, value]) => {
+          if (key.startsWith(productImagePrefix)) {
+            overrides[key.slice(productImagePrefix.length)] = value;
+          }
+        });
+
+        imageOverridesRef.current = overrides;
+        setProducts((currentProducts) => applyImageOverrides(currentProducts, overrides));
+        setStaffAvatar(storedImages[avatarStorageKey] ?? null);
+      })
+      .catch(() => {
+        // เงียบไว้ — ยังใช้รูปเดิมจากแคตตาล็อกได้
       });
   }, []);
 
@@ -2944,22 +3025,109 @@ export default function Home() {
     ].slice(0, 8));
   }
 
+  // ย่อรูปที่เลือกมาแล้วแปลงเป็นข้อความ (data URL) เพื่อเก็บลงเครื่อง
+  async function preparePickedImage(file: File): Promise<string | null> {
+    setIsUploadingImage(true);
+
+    try {
+      return await fileToDataUrl(await compressImage(file));
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "อ่านรูปไม่สำเร็จ");
+      return null;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
   const uploadProps: UploadProps = {
     accept: "image/*",
     maxCount: 1,
     showUploadList: false,
     beforeUpload: (file) => {
-      const reader = new FileReader();
+      void preparePickedImage(file).then((url) => {
+        if (url) {
+          setImageUrl(url);
+        }
+      });
 
-      reader.onload = () => {
-        setImageUrl(String(reader.result));
-      };
+      // คืน false เพื่อไม่ให้ antd อัปโหลดเอง — เราจัดการเองด้านบนแล้ว
+      return false;
+    }
+  };
 
-      reader.readAsDataURL(file);
+  // ---- รูปประจำตัวพนักงาน (เก็บในเครื่อง) ----
+  async function chooseAvatar(avatar: string) {
+    try {
+      await writeImage(avatarStorageKey, avatar);
+      setStaffAvatar(avatar);
+      setIsAvatarOpen(false);
+      message.success("เปลี่ยนรูปประจำตัวแล้ว");
+    } catch {
+      message.error("บันทึกรูปประจำตัวไม่สำเร็จ");
+    }
+  }
+
+  const staffAvatarUploadProps: UploadProps = {
+    accept: "image/*",
+    maxCount: 1,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      void preparePickedImage(file).then((url) => {
+        if (url) {
+          void chooseAvatar(url);
+        }
+      });
 
       return false;
     }
   };
+
+  // รูปที่อัปเองจะเป็น URL ส่วนรูปสำเร็จรูปขึ้นต้นด้วย preset:
+  const hasUploadedAvatar = Boolean(staffAvatar && !staffAvatar.startsWith(presetPrefix));
+
+  // เปลี่ยนรูปของสินค้าที่มีอยู่แล้ว (พนักงานที่ล็อกอินเท่านั้น)
+  const productImageUploadProps: UploadProps = {
+    accept: "image/*",
+    maxCount: 1,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      void changeProductImage(file);
+
+      return false;
+    }
+  };
+
+  async function changeProductImage(file: File) {
+    const product = selectedProduct;
+
+    if (!product) {
+      return;
+    }
+
+    const url = await preparePickedImage(file);
+
+    if (!url) {
+      return;
+    }
+
+    const key = productVariantKey(product.name, product.sizeLabel);
+
+    try {
+      await writeImage(`${productImagePrefix}${key}`, url);
+    } catch {
+      message.error("บันทึกรูปสินค้าไม่สำเร็จ");
+      return;
+    }
+
+    imageOverridesRef.current = { ...imageOverridesRef.current, [key]: url };
+    setProducts((currentProducts) =>
+      currentProducts.map((item) =>
+        productVariantKey(item.name, item.sizeLabel) === key ? { ...item, imageUrl: url } : item
+      )
+    );
+    setSelectedProduct({ ...product, imageUrl: url });
+    message.success("เปลี่ยนรูปสินค้าเรียบร้อย");
+  }
 
   const shopImageUploadProps: UploadProps = {
     accept: "image/*",
@@ -3165,6 +3333,36 @@ export default function Home() {
                   )}
                 </div>
               )}
+              {isStaff ? (
+                <button
+                  className={`brand-mark${hasUploadedAvatar ? " has-image" : ""}`}
+                  type="button"
+                  aria-label="เลือกรูปประจำตัว"
+                  onClick={() => setIsAvatarOpen(true)}
+                >
+                  {hasUploadedAvatar ? (
+                    // รูปเก็บเป็น data URL ในเครื่อง จึงใช้ img ธรรมดา (next/image ไม่รับ data URL)
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt="รูปประจำตัวพนักงาน"
+                      className="brand-mark-image"
+                      src={staffAvatar as string}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover"
+                      }}
+                    />
+                  ) : (
+                    renderPresetAvatar(staffAvatar ?? presetAvatarValue("cat"), 28)
+                  )}
+                  <span className="brand-mark-edit" aria-hidden="true">
+                    <EditOutlined />
+                  </span>
+                </button>
+              ) : null}
               <div className="brand-text">
                 <h1>Fang Fang Shop</h1>
                 <p>{isStaff ? `พนักงาน: ${staffName}` : "รายการสินค้าและราคาในร้าน"}</p>
@@ -3590,6 +3788,57 @@ export default function Home() {
 
       <Modal
         centered
+        destroyOnHidden
+        footer={null}
+        open={isAvatarOpen}
+        title="รูปประจำตัว"
+        onCancel={() => setIsAvatarOpen(false)}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+          {avatarPresets.map((preset) => {
+            const value = presetAvatarValue(preset.id);
+            const isSelected = staffAvatar === value;
+
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                title={preset.label}
+                onClick={() => void chooseAvatar(value)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "10px 2px",
+                  borderRadius: 14,
+                  cursor: "pointer",
+                  background: isSelected ? "#f3e7d3" : "transparent",
+                  border: `2px solid ${isSelected ? "#b07a4e" : "transparent"}`
+                }}
+              >
+                <preset.Icon size={40} />
+                <span style={{ fontSize: 12, color: "#6f4a2b" }}>{preset.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: 18, display: "flex", justifyContent: "center" }}>
+          <Upload {...staffAvatarUploadProps}>
+            <Button icon={<UploadOutlined />} loading={isUploadingImage}>
+              เพิ่มรูปจากเครื่อง
+            </Button>
+          </Upload>
+        </div>
+
+        <p style={{ marginTop: 10, marginBottom: 0, textAlign: "center", fontSize: 12, color: "#8a6b4f" }}>
+          บนมือถือจะเลือกได้ทั้งถ่ายรูปใหม่และเลือกจากคลังภาพ
+        </p>
+      </Modal>
+
+      <Modal
+        centered
         className="product-preview-modal"
         footer={null}
         open={Boolean(selectedProduct)}
@@ -3623,6 +3872,15 @@ export default function Home() {
             <p className="product-preview-detail">
               {getProductCategoryLabel(selectedProduct)} · {selectedProduct.sizeLabel ?? selectedProduct.unit}
             </p>
+            {isStaff ? (
+              <div style={{ marginTop: 12 }}>
+                <Upload {...productImageUploadProps}>
+                  <Button icon={<UploadOutlined />} loading={isUploadingImage}>
+                    {selectedProduct.imageUrl ? "เปลี่ยนรูปสินค้า" : "เพิ่มรูปสินค้า"}
+                  </Button>
+                </Upload>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </Modal>
@@ -3657,7 +3915,9 @@ export default function Home() {
               </div>
             )}
             <Upload {...uploadProps}>
-              <Button icon={<UploadOutlined />}>เลือกรูปสินค้า</Button>
+              <Button icon={<UploadOutlined />} loading={isUploadingImage}>
+                เลือกรูปสินค้า
+              </Button>
             </Upload>
           </div>
 

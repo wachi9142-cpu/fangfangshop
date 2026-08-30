@@ -15,8 +15,10 @@ export type ApiProduct = {
   isPlaceholder?: boolean;
 };
 
+// ค่าเริ่มต้นตรงกับ PORT ใน ../fangfangshop-back/.env (4000)
+// ถ้าเปลี่ยนพอร์ต backend ให้ตั้ง NEXT_PUBLIC_API_BASE ใน .env.local ทับได้
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") ?? "http://localhost:4001";
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") ?? "http://localhost:4000";
 
 const tokenStorageKey = "fangfangshop-token";
 
@@ -59,10 +61,15 @@ export async function login(
     const data = (await res.json().catch(() => null)) as { error?: string } | null;
     throw new Error(data?.error ?? "เข้าสู่ระบบไม่สำเร็จ");
   }
-  return (await res.json()) as { token: string; username: string; displayName: string };
+  // backend คืนรูปแบบ { token, user: { username, displayName } } — แผ่ให้แบนเพื่อให้ใช้ง่าย
+  const data = (await res.json()) as {
+    token: string;
+    user: { username: string; displayName: string };
+  };
+  return { token: data.token, username: data.user.username, displayName: data.user.displayName };
 }
 
-// ---- ออกจากระบบ (ลบ session ฝั่ง server ด้วย) ----
+// ---- ออกจากระบบ (ลบ session ฝั่ง server ด้วย ถ้ามี endpoint) ----
 export async function logout(): Promise<void> {
   try {
     await fetch(`${API_BASE}/auth/logout`, { method: "POST", headers: authHeaders() });
