@@ -44,15 +44,26 @@ import type { UploadProps } from "antd";
 import NextImage from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  changePassword as apiChangePassword,
   createProduct as apiCreateProduct,
+  fetchMe as apiFetchMe,
   fetchProducts as apiFetchProducts,
+  fetchUsers as apiFetchUsers,
   login as apiLogin,
   logout as apiLogout,
-  setToken
+  updateMe as apiUpdateMe,
+  updateProduct as apiUpdateProduct,
+  uploadImage as apiUploadImage,
+  clearToken,
+  getToken,
+  resolveImageUrl,
+  setToken,
+  type ApiUser
 } from "./api";
 import { avatarPresets, presetAvatarValue, presetPrefix, renderPresetAvatar } from "./avatars";
 import { compressImage, fileToDataUrl } from "./image-utils";
 import { avatarStorageKey, productImagePrefix, readAllImages, writeImage } from "./local-images";
+import { migrateLocalImages } from "./migrate-images";
 
 type StockStatus = "พร้อมขาย" | "ใกล้หมด" | "หมด";
 
@@ -2635,13 +2646,22 @@ function productVariantKey(name: string, sizeLabel?: string | null) {
   return `${name.trim()}|${(sizeLabel ?? "").trim()}`;
 }
 
-/** ทับรูปสินค้าด้วยรูปที่พนักงานอัปโหลดไว้ (ถ้ามี) */
+/**
+ * ทับรูปสินค้าด้วยรูปที่เก็บไว้ในเครื่อง (cache ตอนออฟไลน์)
+ *
+ * ⚠️ รูปจากคลังกลางของ backend (`/images/...`) คือแหล่งความจริง — ห้ามให้ cache ในเครื่องทับ
+ * cache จะใช้ก็ต่อเมื่อสินค้าตัวนั้นยังไม่มีรูปจากเซิร์ฟเวอร์
+ */
 function applyImageOverrides(productList: Product[], overrides: Record<string, string>) {
   if (Object.keys(overrides).length === 0) {
     return productList;
   }
 
   return productList.map((product) => {
+    if (product.imageUrl?.startsWith("/images/")) {
+      return product;
+    }
+
     const overrideUrl = overrides[productVariantKey(product.name, product.sizeLabel)];
 
     return overrideUrl && product.imageUrl !== overrideUrl
@@ -2790,6 +2810,30 @@ function PawMark({ size = 18 }: { size?: number }) {
   );
 }
 
+/**
+ * รูปประจำตัวคน — รองรับทั้งรูปสำเร็จรูป ("preset:cat") และรูปที่อัปเอง
+ *
+ * รูปที่อัปเองเป็น path จาก API (`/images/...`) ต้องต่อ API_BASE ก่อนใช้เป็น src
+ * และใช้ <img> ธรรมดาเพราะ next/image ไม่รับ data URL (ตอนออฟไลน์ยังเป็น data URL อยู่)
+ */
+function StaffAvatarMark({ avatar, size = 32 }: { avatar?: string | null; size?: number }) {
+  if (avatar && !avatar.startsWith(presetPrefix)) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        alt=""
+        className="staff-avatar-image"
+        src={resolveImageUrl(avatar)}
+        width={size}
+        height={size}
+        style={{ width: size, height: size, objectFit: "cover", borderRadius: "50%" }}
+      />
+    );
+  }
+
+  return <>{renderPresetAvatar(avatar ?? presetAvatarValue("cat"), size)}</>;
+}
+
 export default function Home() {
   const { message } = App.useApp();
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -2827,8 +2871,16 @@ export default function Home() {
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [shopImageUrl, setShopImageUrl] = useState(defaultShopImageUrl);
   const [staffName, setStaffName] = useState<string | null>(null);
+  // username ของคนที่ล็อกอินอยู่ (ต่างจาก staffName ที่เป็นชื่อไว้แสดง)
+  const [staffUsername, setStaffUsername] = useState<string | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginForm] = Form.useForm<{ username: string; password: string }>();
+  // รายชื่อคนในบ้านจาก GET /users — ใช้ทำปุ่มเลือกคนตอนล็อกอิน
+  const [staffUsers, setStaffUsers] = useState<ApiUser[]>([]);
+  const [pickedUser, setPickedUser] = useState<ApiUser | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profileForm] = Form.useForm<{ displayName: string }>();
+  const [passwordForm] = Form.useForm<{ currentPassword: string; newPassword: string }>();
   const isStaff = staffName !== null;
   const categoryRowRef = useRef<HTMLDivElement>(null);
   const [form] = Form.useForm<ProductFormValues>();
@@ -2858,11 +2910,43 @@ export default function Home() {
       setShopImageUrl(savedShopImage);
     }
 
+    // ชื่อที่จำไว้ในเครื่อง ใช้แสดงชั่วคราวระหว่างรอ /auth/me ตอบ (กันหัวเว็บกระพริบ)
     const savedStaffName = window.localStorage.getItem(authStorageKey);
 
-    if (savedStaffName) {
+    if (savedStaffName && getToken()) {
       setStaffName(savedStaffName);
     }
+
+    // รายชื่อคนในบ้าน ไว้ทำปุ่มเลือกคนตอนล็อกอิน
+    apiFetchUsers()
+      .then(setStaffUsers)
+      .catch(() => {
+        // ต่อ API ไม่ได้ — ยังพิมพ์ชื่อผู้ใช้เองได้อยู่
+      });
+
+    // เช็คว่า token ที่เก็บไว้ยังใช้ได้ไหม แล้วดึงชื่อ/รูปล่าสุดจากเซิร์ฟเวอร์
+    apiFetchMe()
+      .then((user) => {
+        if (!user) {
+          // token หมดอายุ/ถูกล้าง — ล้างสถานะล็อกอินฝั่งเครื่องให้ตรงกัน
+          clearToken();
+          window.localStorage.removeItem(authStorageKey);
+          setStaffName(null);
+          setStaffUsername(null);
+          return;
+        }
+
+        setStaffName(user.displayName);
+        setStaffUsername(user.username);
+        window.localStorage.setItem(authStorageKey, user.displayName);
+
+        if (user.avatarUrl) {
+          setStaffAvatar(user.avatarUrl);
+        }
+      })
+      .catch(() => {
+        // ต่อ API ไม่ได้ — คงสถานะเดิมไว้ก่อน ไม่เตะผู้ใช้ออกเพราะเน็ตหลุด
+      });
 
     // โหลดสินค้าจาก backend มารวมกับแคตตาล็อกในโค้ด (ยึดค่าจาก server เป็นหลักเมื่อชื่อตรงกัน)
     // ถ้าต่อ backend ไม่ได้ จะใช้ข้อมูลจาก localStorage/แคตตาล็อกในโค้ดแทน (กันจอว่าง)
@@ -2921,7 +3005,8 @@ export default function Home() {
 
         imageOverridesRef.current = overrides;
         setProducts((currentProducts) => applyImageOverrides(currentProducts, overrides));
-        setStaffAvatar(storedImages[avatarStorageKey] ?? null);
+        // รูปประจำตัวจาก /auth/me มาก่อนเสมอ — ค่าในเครื่องเป็นแค่ตัวสำรองตอนยังไม่ได้คำตอบ
+        setStaffAvatar((current) => current ?? storedImages[avatarStorageKey] ?? null);
       })
       .catch(() => {
         // เงียบไว้ — ยังใช้รูปเดิมจากแคตตาล็อกได้
@@ -3025,12 +3110,29 @@ export default function Home() {
     ].slice(0, 8));
   }
 
-  // ย่อรูปที่เลือกมาแล้วแปลงเป็นข้อความ (data URL) เพื่อเก็บลงเครื่อง
-  async function preparePickedImage(file: File): Promise<string | null> {
+  // ย่อรูปที่เลือกมาแล้วส่งขึ้นคลังรูปกลางของ backend — คืน path เช่น "/images/<sha256>.jpg"
+  // ถ้าอัปไม่ได้ (เช่นเน็ตหลุด) จะคืน data URL ไว้ใช้ในเครื่องไปก่อน
+  async function preparePickedImage(
+    file: File,
+    kind: "product" | "avatar" = "product"
+  ): Promise<string | null> {
     setIsUploadingImage(true);
 
     try {
-      return await fileToDataUrl(await compressImage(file));
+      const compressed = await compressImage(file);
+
+      try {
+        const uploaded = await apiUploadImage(compressed, kind);
+        return uploaded.url;
+      } catch (uploadError) {
+        // อัปขึ้นเซิร์ฟเวอร์ไม่ได้ — ใช้รูปในเครื่องไปก่อน แต่ต้องบอกให้รู้ว่าคนอื่นยังไม่เห็น
+        message.warning(
+          uploadError instanceof Error
+            ? `${uploadError.message} — เก็บรูปไว้ในเครื่องก่อน คนอื่นจะยังไม่เห็น`
+            : "อัปโหลดรูปขึ้นเซิร์ฟเวอร์ไม่สำเร็จ — เก็บรูปไว้ในเครื่องก่อน"
+        );
+        return await fileToDataUrl(compressed);
+      }
     } catch (error) {
       message.error(error instanceof Error ? error.message : "อ่านรูปไม่สำเร็จ");
       return null;
@@ -3055,16 +3157,21 @@ export default function Home() {
     }
   };
 
-  // ---- รูปประจำตัวพนักงาน (เก็บในเครื่อง) ----
+  // ---- รูปประจำตัวพนักงาน — เก็บบนเซิร์ฟเวอร์ (PATCH /auth/me) ให้ทุกเครื่องเห็นตรงกัน ----
   async function chooseAvatar(avatar: string) {
     try {
-      await writeImage(avatarStorageKey, avatar);
-      setStaffAvatar(avatar);
-      setIsAvatarOpen(false);
-      message.success("เปลี่ยนรูปประจำตัวแล้ว");
-    } catch {
-      message.error("บันทึกรูปประจำตัวไม่สำเร็จ");
+      await apiUpdateMe({ avatarUrl: avatar });
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "บันทึกรูปประจำตัวไม่สำเร็จ");
+      return;
     }
+
+    setStaffAvatar(avatar);
+    setIsAvatarOpen(false);
+    message.success("เปลี่ยนรูปประจำตัวแล้ว");
+
+    // เก็บสำเนาไว้ในเครื่องเป็น cache ตอนออฟไลน์
+    void writeImage(avatarStorageKey, avatar).catch(() => undefined);
   }
 
   const staffAvatarUploadProps: UploadProps = {
@@ -3072,7 +3179,7 @@ export default function Home() {
     maxCount: 1,
     showUploadList: false,
     beforeUpload: (file) => {
-      void preparePickedImage(file).then((url) => {
+      void preparePickedImage(file, "avatar").then((url) => {
         if (url) {
           void chooseAvatar(url);
         }
@@ -3112,12 +3219,16 @@ export default function Home() {
 
     const key = productVariantKey(product.name, product.sizeLabel);
 
+    // ผูกรูปกับสินค้าบนเซิร์ฟเวอร์ — นี่คือแหล่งความจริง ทุกเครื่องจะเห็นรูปเดียวกัน
     try {
-      await writeImage(`${productImagePrefix}${key}`, url);
-    } catch {
-      message.error("บันทึกรูปสินค้าไม่สำเร็จ");
+      await apiUpdateProduct(product.id, { imageUrl: url });
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "บันทึกรูปสินค้าไม่สำเร็จ");
       return;
     }
+
+    // เก็บสำเนาไว้ในเครื่องเป็น cache ตอนออฟไลน์
+    void writeImage(`${productImagePrefix}${key}`, url).catch(() => undefined);
 
     imageOverridesRef.current = { ...imageOverridesRef.current, [key]: url };
     setProducts((currentProducts) =>
@@ -3155,23 +3266,99 @@ export default function Home() {
   async function handleLogin(values: { username: string; password: string }) {
     try {
       const result = await apiLogin(values.username.trim(), values.password);
+
       setToken(result.token);
       setStaffName(result.displayName);
+      setStaffUsername(result.username);
+      setStaffAvatar(result.avatarUrl ?? null);
       window.localStorage.setItem(authStorageKey, result.displayName);
       setIsLoginOpen(false);
+      setPickedUser(null);
       loginForm.resetFields();
       message.success(`เข้าสู่ระบบในชื่อ ${result.displayName}`);
+
+      // ย้ายรูปเก่าที่เคยเก็บไว้ในเครื่องขึ้นคลังกลาง (ทำครั้งเดียวต่อคน อัปซ้ำไม่พัง)
+      void runImageMigration(result.username);
     } catch (error) {
       message.error(error instanceof Error ? error.message : "เข้าสู่ระบบไม่สำเร็จ");
+    }
+  }
+
+  /** ย้ายรูปเก่าใน IndexedDB ขึ้น API แล้วรีเฟรชรายการสินค้าให้เห็นผลทันที */
+  async function runImageMigration(username: string) {
+    try {
+      const result = await migrateLocalImages(username, products);
+
+      if (result.products === 0 && !result.avatar) {
+        return;
+      }
+
+      const moved = [
+        result.products > 0 ? `รูปสินค้า ${result.products} รูป` : null,
+        result.avatar ? "รูปประจำตัว" : null
+      ]
+        .filter(Boolean)
+        .join(" และ ");
+
+      message.success(`ย้าย${moved}ขึ้นเซิร์ฟเวอร์แล้ว ตอนนี้คนอื่นเห็นด้วย`);
+
+      const refreshed = await apiFetchMe().catch(() => null);
+      if (refreshed?.avatarUrl) {
+        setStaffAvatar(refreshed.avatarUrl);
+      }
+    } catch {
+      // ย้ายไม่สำเร็จก็ไม่เป็นไร รูปยังอยู่ในเครื่อง ลองใหม่รอบล็อกอินหน้า
     }
   }
 
   async function handleLogout() {
     await apiLogout();
     setStaffName(null);
+    setStaffUsername(null);
+    setStaffAvatar(null);
     window.localStorage.removeItem(authStorageKey);
     setIsAddOpen(false);
+    setIsProfileOpen(false);
     message.success("ออกจากระบบแล้ว");
+  }
+
+  // ---- แก้โปรไฟล์: ชื่อที่แสดง / รหัสผ่าน ----
+  function openProfile() {
+    profileForm.setFieldsValue({ displayName: staffName ?? "" });
+    passwordForm.resetFields();
+    setIsProfileOpen(true);
+  }
+
+  async function saveDisplayName(values: { displayName: string }) {
+    try {
+      const updated = await apiUpdateMe({ displayName: values.displayName.trim() });
+
+      setStaffName(updated.displayName);
+      window.localStorage.setItem(authStorageKey, updated.displayName);
+      message.success("เปลี่ยนชื่อที่แสดงแล้ว");
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "บันทึกชื่อไม่สำเร็จ");
+    }
+  }
+
+  async function submitPasswordChange(values: { currentPassword: string; newPassword: string }) {
+    try {
+      await apiChangePassword(values.currentPassword, values.newPassword);
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : "เปลี่ยนรหัสผ่านไม่สำเร็จ");
+      return;
+    }
+
+    // เปลี่ยนรหัสแล้ว session เดิมถูกล้าง ต้องล็อกอินใหม่
+    clearToken();
+    window.localStorage.removeItem(authStorageKey);
+    setStaffName(null);
+    setStaffUsername(null);
+    setStaffAvatar(null);
+    setIsProfileOpen(false);
+    passwordForm.resetFields();
+    setIsLoginOpen(true);
+    message.success("เปลี่ยนรหัสผ่านแล้ว — กรุณาเข้าสู่ระบบใหม่");
   }
 
   async function addProduct(values: ProductFormValues) {
@@ -3346,7 +3533,7 @@ export default function Home() {
                     <img
                       alt="รูปประจำตัวพนักงาน"
                       className="brand-mark-image"
-                      src={staffAvatar as string}
+                      src={resolveImageUrl(staffAvatar as string)}
                       style={{
                         position: "absolute",
                         inset: 0,
@@ -3381,6 +3568,7 @@ export default function Home() {
                     icon={<PlusOutlined />}
                     onClick={() => setIsAddOpen(true)}
                   />
+                  <Button aria-label="แก้โปรไฟล์" icon={<UserOutlined />} onClick={openProfile} />
                   <Button aria-label="ออกจากระบบ" icon={<LogoutOutlined />} onClick={handleLogout} />
                 </>
               ) : (
@@ -3662,7 +3850,7 @@ export default function Home() {
                           className="product-image"
                           height={58}
                           preview={false}
-                          src={item.imageUrl}
+                          src={resolveImageUrl(item.imageUrl)}
                           width={58}
                         />
                       ) : (
@@ -3852,7 +4040,7 @@ export default function Home() {
                 alt={selectedProduct.name}
                 className="product-preview-image"
                 preview={false}
-                src={selectedProduct.imageUrl}
+                src={resolveImageUrl(selectedProduct.imageUrl)}
               />
             ) : (
               <div className="product-preview-image product-preview-image-empty">
@@ -3908,7 +4096,7 @@ export default function Home() {
         >
           <div className="image-uploader">
             {imageUrl ? (
-              <Image alt="รูปสินค้าใหม่" className="upload-preview" preview={false} src={imageUrl} />
+              <Image alt="รูปสินค้าใหม่" className="upload-preview" preview={false} src={resolveImageUrl(imageUrl)} />
             ) : (
               <div className="upload-placeholder">
                 <PictureOutlined />
@@ -3965,6 +4153,72 @@ export default function Home() {
       <Modal
         centered
         destroyOnHidden
+        footer={null}
+        open={isProfileOpen}
+        title="โปรไฟล์ของฉัน"
+        onCancel={() => setIsProfileOpen(false)}
+      >
+        <div className="profile-head">
+          <StaffAvatarMark avatar={staffAvatar} size={64} />
+          <div>
+            <strong>{staffName}</strong>
+            <p className="tiny-text">ชื่อผู้ใช้: {staffUsername ?? "-"}</p>
+          </div>
+          <Button
+            onClick={() => {
+              setIsProfileOpen(false);
+              setIsAvatarOpen(true);
+            }}
+          >
+            เปลี่ยนรูป
+          </Button>
+        </div>
+
+        <Form form={profileForm} layout="vertical" onFinish={saveDisplayName}>
+          <Form.Item
+            label="ชื่อที่แสดง"
+            name="displayName"
+            rules={[{ required: true, message: "ชื่อที่แสดงห้ามว่าง" }]}
+            extra="ชื่อนี้จะขึ้นเป็น ผู้แก้ไขล่าสุด บนสินค้าที่แก้"
+          >
+            <Input prefix={<UserOutlined />} placeholder="ชื่อที่แสดง" />
+          </Form.Item>
+          <Button block type="primary" onClick={() => profileForm.submit()}>
+            บันทึกชื่อ
+          </Button>
+        </Form>
+
+        <div className="profile-divider" />
+
+        <Form form={passwordForm} layout="vertical" onFinish={submitPasswordChange}>
+          <Typography.Title level={5}>เปลี่ยนรหัสผ่าน</Typography.Title>
+          <Form.Item
+            label="รหัสผ่านเดิม"
+            name="currentPassword"
+            rules={[{ required: true, message: "กรอกรหัสผ่านเดิม" }]}
+          >
+            <Input.Password prefix={<LockOutlined />} autoComplete="current-password" />
+          </Form.Item>
+          <Form.Item
+            label="รหัสผ่านใหม่"
+            name="newPassword"
+            rules={[
+              { required: true, message: "กรอกรหัสผ่านใหม่" },
+              { min: 4, message: "รหัสผ่านใหม่ต้องยาวอย่างน้อย 4 ตัว" }
+            ]}
+            extra="เปลี่ยนแล้วต้องเข้าสู่ระบบใหม่"
+          >
+            <Input.Password prefix={<LockOutlined />} autoComplete="new-password" />
+          </Form.Item>
+          <Button block onClick={() => passwordForm.submit()}>
+            เปลี่ยนรหัสผ่าน
+          </Button>
+        </Form>
+      </Modal>
+
+      <Modal
+        centered
+        destroyOnHidden
         okText="เข้าสู่ระบบ"
         cancelText="ยกเลิก"
         open={isLoginOpen}
@@ -3976,12 +4230,49 @@ export default function Home() {
         onOk={() => loginForm.submit()}
       >
         <div className="login-cat">
-          <CatMark size={56} />
+          {pickedUser ? (
+            <StaffAvatarMark avatar={pickedUser.avatarUrl} size={56} />
+          ) : (
+            <CatMark size={56} />
+          )}
         </div>
-        <p className="login-hint">เข้าสู่ระบบเพื่อจัดการสต็อกและเพิ่มสินค้า (สำหรับพนักงานเท่านั้น)</p>
+        <p className="login-hint">
+          {pickedUser
+            ? `ใส่รหัสผ่านของ ${pickedUser.displayName}`
+            : "เข้าสู่ระบบเพื่อจัดการสต็อกและเพิ่มสินค้า (สำหรับพนักงานเท่านั้น)"}
+        </p>
+
+        {staffUsers.length > 0 ? (
+          <div className="login-user-grid">
+            {staffUsers.map((user) => (
+              <button
+                key={user.username}
+                className={`login-user-option${pickedUser?.username === user.username ? " is-selected" : ""}`}
+                type="button"
+                onClick={() => {
+                  setPickedUser(user);
+                  loginForm.setFieldsValue({ username: user.username });
+                }}
+              >
+                <StaffAvatarMark avatar={user.avatarUrl} size={40} />
+                <span>{user.displayName}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         <Form form={loginForm} layout="vertical" onFinish={handleLogin}>
-          <Form.Item label="ชื่อผู้ใช้" name="username" rules={[{ required: true, message: "กรอกชื่อผู้ใช้" }]}>
-            <Input prefix={<UserOutlined />} placeholder="ชื่อผู้ใช้" autoComplete="username" />
+          <Form.Item
+            label="ชื่อผู้ใช้"
+            name="username"
+            rules={[{ required: true, message: "กรอกชื่อผู้ใช้" }]}
+          >
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="ชื่อผู้ใช้"
+              autoComplete="username"
+              onChange={() => setPickedUser(null)}
+            />
           </Form.Item>
           <Form.Item label="รหัสผ่าน" name="password" rules={[{ required: true, message: "กรอกรหัสผ่าน" }]}>
             <Input.Password prefix={<LockOutlined />} placeholder="รหัสผ่าน" autoComplete="current-password" onPressEnter={() => loginForm.submit()} />

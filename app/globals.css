@@ -992,3 +992,58 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ---- หน้าจอเลือกคนตอนล็อกอิน ---- */
+.login-user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+.login-user-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.login-user-option:hover {
+  border-color: var(--teal);
+}
+
+.login-user-option.is-selected {
+  border-color: var(--teal);
+  background: var(--cream);
+  font-weight: 600;
+}
+
+/* ---- โปรไฟล์ของฉัน ---- */
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.profile-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-head p {
+  margin: 2px 0 0;
+}
+
+.profile-divider {
+  height: 1px;
+  margin: 18px 0;
+  background: var(--line);
+}
